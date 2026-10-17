@@ -1726,37 +1726,35 @@ body{
   .todo-add-row{flex-wrap:wrap;}
   .todo-add-btn{width:100%;padding:11px;}
 }
+
 /* ── SYLLABUS ROADMAP ── */
-.rm-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 14px;}
-.rm-btn,.rm-in{background:var(--surface);color:var(--text);border:1px solid var(--border2);border-radius:8px;padding:8px 12px;font:600 12px 'DM Sans',sans-serif;cursor:pointer;}
-.rm-in{cursor:auto;font-weight:500;max-width:100%;}
-.rm-btn.pri{border-color:rgba(17,138,178,0.6);background:rgba(17,138,178,0.14);color:#7fd8f0;}
-.rm-btn:hover,.rm-ic:hover{border-color:#22b8cf;}
-.rm-btn:focus-visible,.rm-ic:focus-visible,.rm-mh:focus-visible,.rm-wh:focus-visible,.rm-in:focus-visible{outline:2px solid #22b8cf;outline-offset:2px;}
-.rm-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:16px;}
-.rm-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;}
-.rm-k{font-size:11px;color:var(--muted2);font-weight:700;letter-spacing:.04em;text-transform:uppercase;}
-.rm-v{font:800 24px 'Syne',sans-serif;margin:4px 0;color:#7fd8f0;}
-.rm-v.rm-on{color:var(--green);} .rm-v.rm-at{color:var(--yellow);} .rm-v.rm-behind{color:var(--red);} .rm-v.rm-insufficient{color:var(--muted2);font-size:16px;}
-.rm-sub{font-size:12px;color:var(--muted2);}
-.rm-warn{color:var(--yellow);font-size:12px;font-weight:600;}
-.rm-month{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;overflow:hidden;}
-.rm-mh,.rm-wh{width:100%;text-align:left;background:none;border:0;color:var(--text);font:inherit;cursor:pointer;padding:12px 14px;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;}
-.rm-wh{font-size:13px;border-top:1px solid var(--border);padding:10px 14px;background:rgba(255,255,255,0.015);}
-.rm-week{padding-bottom:4px;}
-.rm-grp{font-size:11px;font-weight:700;color:var(--muted2);padding:8px 14px 2px;text-transform:uppercase;letter-spacing:.04em;}
-.rm-row{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;padding:7px 14px;font-size:13px;}
-.rm-row:hover{background:rgba(255,255,255,0.025);}
-.rm-nm{flex:1 1 180px;min-width:0;overflow-wrap:anywhere;}
-.rm-acts{display:flex;gap:4px;margin-left:auto;}
-.rm-ic{background:var(--surface);color:var(--text);border:1px solid var(--border2);border-radius:6px;min-width:30px;height:30px;cursor:pointer;font-size:13px;}
-.rm-tag{font-size:10px;font-weight:800;padding:3px 7px;border-radius:6px;letter-spacing:.03em;text-transform:uppercase;}
-.rm-tag.st{background:rgba(17,138,178,0.18);color:#7fd8f0;} .rm-tag.rv{background:rgba(167,139,250,0.18);color:#c4b5fd;} .rm-tag.mk{background:rgba(240,163,10,0.16);color:var(--gold2);}
-.rm-chip{font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;background:rgba(255,255,255,0.06);color:var(--muted2);}
-.rm-chip.done{background:var(--green-dim);color:var(--green);} .rm-chip.due{background:var(--yellow-dim);color:var(--yellow);} .rm-chip.overdue{background:rgba(239,71,111,0.14);color:var(--red);} .rm-chip.skipped{text-decoration:line-through;}
-.rm-mod{max-width:560px;max-height:88vh;overflow-y:auto;}
-.rm-form{display:grid;grid-template-columns:1fr 1fr;gap:10px;} .rm-lb{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted2);}
-@media(max-width:680px){.rm-form{grid-template-columns:1fr;} .rm-acts{margin-left:0;}}
+.rm-wrap{padding:0 24px 40px;max-width:1100px}
+.rm-head,.rm-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+.rm-head{justify-content:space-between;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px}
+.rm-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:14px}
+.rm-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px}
+.rm-card b{font-size:22px;font-family:'Syne',sans-serif;display:block}.rm-card small,.rm-note{color:var(--muted2);font-size:12px}
+.rm-month{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px}
+.rm-week{background:var(--surface);border:1px solid var(--border);border-radius:10px;margin:6px 10px}
+.rm-mh{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;width:100%;padding:12px 14px;background:none;border:0;color:var(--text);cursor:pointer;text-align:left;font:inherit}
+.rm-mh small{color:var(--muted2)}
+.rm-btn:focus-visible,.rm-mh:focus-visible,.rm-wrap select:focus-visible,.rm-wrap input:focus-visible,.rm-modal :focus-visible{outline:2px solid var(--gold2);outline-offset:2px}
+.rm-bar-p{height:5px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden;width:100%}.rm-bar-p i{display:block;height:100%;background:var(--green)}
+.rm-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:6px 12px;border-top:1px solid var(--border)}
+.rm-row.done .rm-t{text-decoration:line-through;opacity:.6}.rm-row.skipped{opacity:.5}
+.rm-t{flex:1;min-width:150px}.rm-t small{color:var(--muted2);margin-left:6px}
+.rm-sub{font-size:11px;color:var(--muted2);padding:6px 12px 0;text-transform:uppercase;letter-spacing:.5px}
+.rm-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;border:1px solid}
+.rm-badge.study{color:#5fc4e8;border-color:var(--blue)}.rm-badge.revision{color:var(--gold2);border-color:var(--gold)}.rm-badge.mock{color:var(--green);border-color:var(--green)}
+.rm-btn{background:var(--card);border:1px solid var(--border2);color:var(--text);border-radius:8px;padding:5px 10px;font:inherit;font-size:12px;cursor:pointer}.rm-btn.pri{border-color:var(--gold);color:var(--gold2)}
+.rm-wrap select,.rm-wrap input,.rm-modal select,.rm-modal input,.rm-modal textarea{background:var(--bg);color:var(--text);border:1px solid var(--border2);border-radius:8px;padding:5px 8px;font:inherit;font-size:12px}
+.rm-warn{color:var(--yellow)}.rm-err{color:var(--red)}.rm-ok{color:var(--green)}
+.rm-modal{max-width:680px;width:94vw;max-height:88vh;overflow:auto}
+.rm-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.rm-f{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted2)}
+.rm-modal textarea{width:100%;min-height:120px;font-family:monospace}.rm-sec{margin-top:18px}
+.rm-modal ul{margin:6px 0 6px 18px;font-size:12px;line-height:1.6}
+@media(max-width:680px){.rm-wrap{padding:0 12px 40px}}
 </style>
 </head>
 <body>
@@ -1954,12 +1952,12 @@ body{
           </div>
           <button class="countdown-edit-btn" onclick="openCountdownEdit()">✏ Edit Exam</button>
         </div>
-        <!-- SYLLABUS ROADMAP WIDGET -->
-        <button class="pom-widget" id="rm-widget" onclick="showView('roadmap',document.getElementById('nav-roadmap'))" style="background:linear-gradient(135deg,rgba(17,138,178,0.12),rgba(34,184,207,0.05));border-color:rgba(17,138,178,0.35);">
-          <div class="pom-widget-icon" style="background:rgba(17,138,178,0.16);">🗺️</div>
+        <!-- ROADMAP WIDGET -->
+        <button class="pom-widget" id="rm-widget" onclick="showView('roadmap',document.getElementById('nav-roadmap'))">
+          <div class="pom-widget-icon">🗺️</div>
           <div class="pom-widget-body">
-            <div class="pom-widget-title">Syllabus Roadmap</div>
-            <div class="pom-widget-sub" id="rm-widget-sub">Plan months, weeks &amp; revisions</div>
+            <div class="pom-widget-title">Syllabus Roadmap <span class="pom-widget-status" id="rm-widget-status">Not planned</span></div>
+            <div class="pom-widget-sub" id="rm-widget-sub">Plan months &amp; weeks until your exam</div>
           </div>
           <div class="pom-widget-open">Open ↗</div>
         </button>
@@ -1989,6 +1987,12 @@ body{
       </div>
     </div>
 
+    <!-- SYLLABUS ROADMAP VIEW -->
+    <div id="view-roadmap" style="display:none;">
+      <div class="top-bar"><div><h2>Syllabus Roadmap</h2><p>Plan new learning and revisions, month by month</p></div></div>
+      <div class="rm-wrap" id="rm-root"></div>
+    </div>
+    <div class="profile-modal-overlay" id="rm-overlay"><div class="profile-modal rm-modal" id="rm-modal" role="dialog" aria-modal="true"></div></div>
     <!-- ALL SUBJECTS VIEW -->
     <div id="view-all" style="display:none;">
       <div class="top-bar">
@@ -2135,12 +2139,6 @@ body{
     </div>
 
     <!-- TO-DO VIEW -->
-    <div id="view-roadmap" style="display:none;">
-      <div class="top-bar"><div><h2>🗺️ Syllabus Roadmap</h2><p id="rm-sub">Month → week → subject → topic</p></div></div>
-      <div class="dashboard" id="rm-root"></div>
-    </div>
-    <div class="modal-overlay" id="rm-modal"></div>
-
     <div id="view-todo" style="display:none;">
       <div class="top-bar">
         <div>
@@ -2837,403 +2835,6 @@ const SYLLABUS = [
 ];
 
 // ═══════════════════════════════════════════
-//  SYLLABUS ROADMAP (additive module — never writes progress/topicPct)
-// ═══════════════════════════════════════════
-let roadmap = null;
-const RM_FORMAT = 'syllabus-roadmap', RM_SCHEMA = 1, RM_TYPES = ['study','revision','mock'];
-const rmUI = {om:{}, ow:{}, rf:'all', q:'', tw:''};
-let rmPending = null, rmImp = null;
-const rmZ = n => String(n).padStart(2,'0');
-const rmISO = d => d.getFullYear()+'-'+rmZ(d.getMonth()+1)+'-'+rmZ(d.getDate());
-const rmD = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y,m-1,d); };
-const rmAdd = (s,n) => { const d = rmD(s); d.setDate(d.getDate()+n); return rmISO(d); };
-const rmE = s => String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const rmK = k => encodeURIComponent(String(k)).replace(/[.!~*'()]/g, c=>'%'+c.charCodeAt(0).toString(16).toUpperCase()); // Firebase- and ID-safe: only [A-Za-z0-9_%-]
-const rmValidDate = s => typeof s==='string' && /^\d{4}-\d{2}-\d{2}$/.test(s) && rmISO(rmD(s))===s;
-const rmToday = () => rmISO(new Date());
-
-function rmDefault(){ return {v:1, settings:{examDate:'', examEstimated:true, startDate:rmToday(), weekStart:1, weeklyHrs:30,
-  bufferDays:14, revCutoffDays:21, revIntervals:[1,7,21,45], revMins:30, defaultMins:180}, assigns:{}, effort:{}, anchors:{}, completedAt:{}}; }
-function rmLoad(d){
-  const b = rmDefault(), r = (d && d.roadmap) || {};
-  roadmap = {v:1, settings:Object.assign(b.settings, r.settings||{}), assigns:r.assigns||{}, effort:r.effort||{}, anchors:r.anchors||{}, completedAt:r.completedAt||{}};
-  if(!Array.isArray(roadmap.settings.revIntervals)) roadmap.settings.revIntervals = Object.values(roadmap.settings.revIntervals||{});
-}
-function rmR(){ if(!roadmap) rmLoad(null); return roadmap; }
-function rmExam(){ return rmR().settings.examDate || (countdownData && countdownData.date) || ''; }
-function rmWS(s){ const d = rmD(s); d.setDate(d.getDate() - ((d.getDay()-rmR().settings.weekStart+7)%7)); return rmISO(d); }
-function rmWeeks(){
-  const ex = rmExam(), st = rmR().settings.startDate; if(!rmValidDate(ex)||!rmValidDate(st)) return [];
-  const out = []; let w = rmWS(st); while(w<=ex && out.length<130){ out.push(w); w = rmAdd(w,7); } return out;
-}
-const rmPlanEnd = () => rmAdd(rmExam(), -rmR().settings.bufferDays);
-const rmRevEnd  = () => rmAdd(rmExam(), -rmR().settings.revCutoffDays);
-function rmTopics(){ const o=[]; getAllSubjects().forEach(s=>s.sections.forEach(sec=>sec.topics.forEach(t=>o.push({key:topicKey(s.id,t), sid:s.id, sname:s.name, sec:sec.label, name:t})))); return o; }
-function rmTM(){ const m={}; rmTopics().forEach(t=>m[t.key]=t); return m; }
-function rmMins(key){ const e = rmR().effort[rmK(key)]; return Math.round(((e&&e.mins)||rmR().settings.defaultMins) * ({Easy:.8,Moderate:1,Hard:1.3}[(e&&e.diff)||'Moderate']||1)); }
-const rmKnown = key => !!(rmR().effort[rmK(key)] && rmR().effort[rmK(key)].mins);
-const rmAll = () => Object.values(rmR().assigns);
-function rmWeekMins(w, type){ return rmAll().filter(a=>a.week===w && a.status!=='skipped' && (!type||a.type===type)).reduce((s,a)=>s+(a.mins||0),0); }
-function rmRevState(a){
-  if(a.status==='done') return 'done'; if(a.status==='skipped') return 'skipped';
-  const t = rmToday(); if(a.due ? a.due<t : rmAdd(a.week,6)<t) return 'overdue';
-  return a.week<=t ? 'due' : 'upcoming';
-}
-
-// ── canonical-completion date capture (recorded only when the status changes in the app) ──
-function rmNoteStatus(key, st){
-  const R = rmR(), k = rmK(key);
-  if(st==='completed'){ if(!R.completedAt[k]) R.completedAt[k] = new Date().toISOString(); }
-  else delete R.completedAt[k];
-}
-function rmAnchor(key){
-  const R = rmR(), k = rmK(key);
-  if(R.completedAt[k]) return {d:R.completedAt[k].slice(0,10), prov:false, src:'recorded'};
-  if(R.anchors[k]) return {d:R.anchors[k], prov:false, src:'user-set'};
-  return {d:rmToday(), prov:true, src:'provisional (today)'};
-}
-
-// ── planners (deterministic) ──
-function rmPlanRevisions(){
-  const R = rmR(), S = R.settings, today = rmToday(), cut = rmRevEnd(), cap = S.weeklyHrs*60;
-  const weeks = rmWeeks().filter(w=>w<=cut), load = {}; weeks.forEach(w=>load[w]=rmWeekMins(w));
-  const add = [], short = []; let prov = 0;
-  rmTopics().filter(t=>progress[t.key]==='completed').forEach(t=>{
-    const a = rmAnchor(t.key); let usedProv = false;
-    S.revIntervals.forEach((iv,i)=>{
-      const id = 'rv:'+rmK(t.key)+':'+(i+1); if(R.assigns[id]) return;        // never duplicate / never erase history
-      const due = rmAdd(a.d, iv); if(due>cut) return;
-      const from = rmWS(due<today ? today : due);
-      const w = weeks.find(x=>x>=from && load[x]+S.revMins<=cap);
-      const rec = {id, type:'revision', key:t.key, week:w, mins:S.revMins, round:i+1, due, status:'planned', prov:a.prov};
-      if(!w){ short.push(rec); return; }
-      load[w] += S.revMins; add.push(rec); usedProv = usedProv || a.prov;
-    });
-    if(usedProv) prov++;
-  });
-  return {add, short, prov};
-}
-function rmPlanStudy(){
-  const R = rmR(), S = R.settings, cap = S.weeklyHrs*60, today = rmToday(), end = rmPlanEnd();
-  const weeks = rmWeeks().filter(w=>rmAdd(w,6)>=today && w<=end), load = {}; weeks.forEach(w=>load[w]=rmWeekMins(w));
-  const have = new Set(rmAll().filter(a=>a.type==='study').map(a=>a.key)), add = [], left = []; let wi = 0;
-  rmTopics().filter(t=>progress[t.key]!=='completed' && !have.has(t.key)).forEach(t=>{
-    const rem = progress[t.key]==='in-progress' ? 1-(topicPct[t.key]||0)/100 : 1, m = Math.max(15, Math.round(rmMins(t.key)*rem));
-    while(wi<weeks.length && load[weeks[wi]]>0 && load[weeks[wi]]+m>cap) wi++;
-    if(wi>=weeks.length){ left.push(t); return; }
-    load[weeks[wi]] += m; add.push({id:'st:'+rmK(t.key), type:'study', key:t.key, week:weeks[wi], mins:m, status:'planned'});
-  });
-  return {add, left, short:left.reduce((s,t)=>s+rmMins(t.key),0)};
-}
-
-// ── mutations (roadmap data only) ──
-function rmSave(){ saveData(); rmRender(); rmRenderWidget(); }
-function rmAssign(key, week){
-  const id = 'st:'+rmK(key); if(rmR().assigns[id]){ showToast('Already scheduled.'); return; }
-  rmR().assigns[id] = {id, type:'study', key, week, mins:rmMins(key), status:'planned'}; rmSave();
-}
-function rmSetRev(id, st){
-  const a = rmR().assigns[id]; if(!a || a.type!=='revision') return;
-  a.status = st; a.doneAt = new Date().toISOString();
-  if(st==='done'){ revisions[a.key] = (revisions[a.key]||0)+1; revisionDates[a.key] = a.doneAt; } // existing revision log only; progress untouched
-  rmSave();
-}
-function rmMove(id){
-  const a = rmR().assigns[id]; if(!a || a.status==='done') return;
-  const s = prompt('Move to the week containing date (YYYY-MM-DD):', a.week); if(!s) return;
-  if(!rmValidDate(s)){ showToast('❌ Invalid date.'); return; }
-  const w = rmWS(s); if(!rmWeeks().includes(w)){ showToast('❌ Outside the roadmap range.'); return; }
-  a.week = w; delete a.due; rmSave();
-}
-function rmRemove(id){ const a = rmR().assigns[id]; if(!a) return;
-  if(a.type==='revision' && a.status!=='planned'){ showToast('Revision history is kept.'); return; }
-  delete rmR().assigns[id]; rmSave(); }
-function rmEffort(key){
-  const e = rmR().effort[rmK(key)]||{}, m = prompt('Estimated minutes for this topic (blank = unknown):', e.mins||''); if(m===null) return;
-  const d = prompt('Difficulty: Easy / Moderate / Hard', e.diff||'Moderate'); if(d===null) return;
-  const n = parseInt(m,10), df = ['Easy','Moderate','Hard'].find(x=>x.toLowerCase()===String(d).trim().toLowerCase())||'Moderate';
-  rmR().effort[rmK(key)] = {mins:n>0?n:0, diff:df}; rmSave();
-}
-function rmSetAnchor(key){
-  const s = prompt('Date this topic was completed (YYYY-MM-DD) — used as the revision anchor:', ''); if(!s) return;
-  if(!rmValidDate(s)){ showToast('❌ Invalid date.'); return; }
-  const R = rmR(); R.anchors[rmK(key)] = s;
-  if(confirm('Recalculate this topic\'s still-planned revisions from '+s+'? Completed/skipped ones are kept.')){
-    const cut = rmRevEnd(), weeks = rmWeeks();
-    rmAll().filter(a=>a.type==='revision'&&a.key===key&&a.status==='planned').forEach(a=>{
-      const due = rmAdd(s, R.settings.revIntervals[a.round-1]||0); if(due>cut) return;
-      const w = weeks.find(x=>x>=rmWS(due<rmToday()?rmToday():due)); if(w){ a.week = w; a.due = due; a.prov = false; }
-    });
-  }
-  rmSave();
-}
-function rmTodo(id){
-  const a = rmR().assigns[id], tm = rmTM()[a&&a.key]; if(!a) return;
-  if(Object.values(todos||{}).some(t=>t.link && t.link.assignmentId===id)){ showToast('Already in your To-Do list.'); return; }
-  const when = a.week>rmToday() ? a.week : rmToday();
-  todoCreate({text:(a.type==='revision'?'Revise: ':'Study: ')+(tm?tm.name:a.title||a.key), date:when, link:{type:'roadmap', assignmentId:id, topicKey:a.key||null, activity:a.type}});
-  showToast('✅ Added to To-Do.');
-}
-function rmOnTodoDone(t){   // called from todoToggleComplete; revision links touch only the revision activity
-  if(!t.link || t.link.type!=='roadmap') return;
-  const a = rmR().assigns[t.link.assignmentId]; if(!a) return;
-  if(a.type==='revision' && a.status==='planned') rmSetRev(a.id, 'done');
-  else showToast('Linked to-do done — update the topic status in the tracker when it is truly complete.');
-}
-
-// ── rendering ──
-function rmStats(){
-  const R = rmR(), tm = rmTM(), t = rmToday(), w0 = rmWS(t), A = rmAll(), st = A.filter(a=>a.type==='study'&&tm[a.key]), rv = A.filter(a=>a.type==='revision'&&a.status!=='skipped');
-  const keys = new Set(st.map(a=>a.key)), planned = new Set(st.filter(a=>a.week<=w0).map(a=>a.key));
-  const act = [...planned].filter(k=>progress[k]==='completed').length;
-  let pace = 'insufficient data'; if(planned.size>=3){ const r = act/planned.size; pace = r>=.9?'on track':r>=.6?'at risk':'behind'; }
-  return {keys, planned:planned.size, act, pace, rvPlanned:rv.length, rvDone:rv.filter(a=>a.status==='done').length, rvOver:rv.filter(a=>rmRevState(a)==='overdue').length, w0};
-}
-function rmRenderWidget(){
-  const el = document.getElementById('rm-widget-sub'); if(!el) return;
-  const s = rmStats(), ex = rmExam(); el.textContent = ex ? 'Pace: '+s.pace+' · '+s.rvOver+' overdue revisions' : 'Set your exam date to build a roadmap';
-}
-function rmAsRow(a, tm){
-  const t = tm[a.key], nm = a.type==='mock' ? (a.title||'Mock test') : (t?t.name:'⚠ missing topic '+a.key), id = rmE(a.id);
-  let tag, chip = '', act = '';
-  if(a.type==='revision'){
-    const s = rmRevState(a); tag = '<span class="rm-tag rv">Revision R'+(a.round||'?')+'</span>';
-    chip = '<span class="rm-chip '+s+'">'+s+(a.prov&&a.status==='planned'?' · provisional':'')+(a.due&&s==='overdue'?' · due '+a.due:'')+'</span>';
-    if(a.status==='planned') act += '<button class="rm-ic" data-act="rvdone" data-id="'+id+'" title="Mark revision done">✓</button><button class="rm-ic" data-act="rvskip" data-id="'+id+'" title="Skip">⏭</button>';
-    if(a.status==='planned' && a.prov) act += '<button class="rm-ic" data-act="anchor" data-key="'+rmE(a.key)+'" title="Set completion date anchor">📌</button>';
-  } else if(a.type==='study'){
-    const p = progress[a.key]||'not-started'; tag = '<span class="rm-tag st">Study</span>';
-    chip = '<span class="rm-chip '+(p==='completed'?'done':p==='in-progress'?'due':'upcoming')+'">'+STATUS_LABEL[p]+'</span>';
-  } else tag = '<span class="rm-tag mk">Mock</span>';
-  if(a.status!=='done') act += '<button class="rm-ic" data-act="todo" data-id="'+id+'" title="Add to To-Do">☑</button><button class="rm-ic" data-act="move" data-id="'+id+'" title="Move to another week">↔</button>';
-  if(a.type!=='revision' || a.status==='planned') act += '<button class="rm-ic" data-act="remove" data-id="'+id+'" title="Remove from roadmap (syllabus item is kept)">✕</button>';
-  return '<div class="rm-row">'+tag+'<span class="rm-nm">'+rmE(nm)+'</span><span class="rm-sub">'+rmE(t?t.sname:'')+' · '+Math.round((a.mins||0)/6)/10+'h'+((a.type==='study'&&t&&!rmKnown(a.key))?' (est.)':'')+'</span>'+chip+'<span class="rm-acts">'+act+'</span></div>';
-}
-function rmRender(){
-  const el = document.getElementById('rm-root'); if(!el) return;
-  const R = rmR(), S = R.settings, ex = rmExam(), weeks = rmWeeks(), tm = rmTM(), today = rmToday();
-  const sub = document.getElementById('rm-sub'); if(sub) sub.textContent = ex ? ((countdownData&&countdownData.name)||'Exam')+' · '+ex+(S.examEstimated?' (estimated)':'') : 'No exam date set';
-  if(!weeks.length){ el.innerHTML = '<div class="rm-card"><b>No roadmap yet.</b><p class="rm-sub" style="margin:6px 0 12px">Set a valid preparation start date and an exam date (they must be in that order) to generate the month/week structure.</p><button class="rm-btn pri" data-act="settings">⚙ Roadmap settings</button></div>'; return; }
-  const g = getStats(), s = rmStats(), cap = S.weeklyHrs*60, mk = rmToday().slice(0,7);
-  const curM = weeks.filter(w=>w.slice(0,7)===mk), cs = A=>A.filter(a=>progress[a.key]==='completed').length;
-  const mA = rmAll().filter(a=>curM.includes(a.week)), mSt = mA.filter(a=>a.type==='study'), mRv = mA.filter(a=>a.type==='revision'&&a.status!=='skipped');
-  const wA = rmAll().filter(a=>a.week===s.w0), wRv = wA.filter(a=>a.type==='revision'&&['due','overdue'].includes(rmRevState(a)));
-  const months = {}; weeks.forEach(w=>(months[w.slice(0,7)] = months[w.slice(0,7)]||[]).push(w));
-  const fl = rmUI.rf, free = new Set(rmAll().filter(a=>a.type==='study').map(a=>a.key));
-  const unsch = rmTopics().filter(t=>progress[t.key]!=='completed' && !free.has(t.key) && (!rmUI.q || (t.name+' '+t.sname).toLowerCase().includes(rmUI.q.toLowerCase())));
-  let h = '<div class="rm-bar"><button class="rm-btn" data-act="settings">⚙ Settings</button><button class="rm-btn" data-act="autoplan">⚡ Auto-plan new study</button><button class="rm-btn" data-act="genrev">🔁 Generate revisions</button><button class="rm-btn pri" data-act="export">⬆ Export for AI Planning</button><button class="rm-btn pri" data-act="import">⬇ Import Roadmap</button>'
-    + '<select class="rm-in" data-act="rf" aria-label="Revision filter">'+['all','upcoming','due','overdue','done','skipped'].map(x=>'<option value="'+x+'"'+(x===fl?' selected':'')+'>Revisions: '+x+'</option>').join('')+'</select></div>';
-  h += '<div class="rm-cards"><div class="rm-card"><div class="rm-k">Actual syllabus completion</div><div class="rm-v">'+g.pct+'%</div><div class="rm-sub">'+g.done+'/'+g.total+' topics (from tracker)</div></div>'
-    + '<div class="rm-card"><div class="rm-k">This month</div><div class="rm-v">'+cs(mSt)+'/'+mSt.length+'</div><div class="rm-sub">study topics done · revisions '+mRv.filter(a=>a.status==='done').length+'/'+mRv.length+'</div></div>'
-    + '<div class="rm-card"><div class="rm-k">This week</div><div class="rm-v">'+Math.round(rmWeekMins(s.w0)/6)/10+'h</div><div class="rm-sub">'+wRv.length+' revisions due/overdue</div></div>'
-    + '<div class="rm-card"><div class="rm-k">Planned vs actual</div><div class="rm-v rm-'+s.pace.split(' ')[0]+'">'+s.pace+'</div><div class="rm-sub">'+(s.planned?s.act+' of '+s.planned+' topics planned so far':'needs ≥3 planned topics')+' · revisions '+s.rvDone+'/'+s.rvPlanned+'</div></div></div>';
-  Object.keys(months).forEach(m=>{
-    const ws = months[m], A = rmAll().filter(a=>ws.includes(a.week)), st = A.filter(a=>a.type==='study'), rv = A.filter(a=>a.type==='revision'&&a.status!=='skipped');
-    const open = rmUI.om[m]===undefined ? m===mk : rmUI.om[m], lab = rmD(m+'-01').toLocaleDateString('en-IN',{month:'long',year:'numeric'});
-    const sd = cs(st), pct = st.length ? Math.round(sd/st.length*100) : 0, over = ws.filter(w=>rmWeekMins(w)>cap).length;
-    h += '<div class="rm-month"><button class="rm-mh" data-act="tm" data-id="'+m+'" aria-expanded="'+open+'"><b>'+(open?'▾ ':'▸ ')+lab+'</b><span class="rm-sub">'+ws.length+' wk · study '+sd+'/'+st.length+' ('+pct+'%) · revisions '+rv.filter(a=>a.status==='done').length+'/'+rv.length+' · '+Math.round(A.reduce((x,a)=>x+(a.status==='skipped'?0:a.mins||0),0)/6)/10+'h'+(over?' · <span class="rm-warn">⚠ '+over+' overloaded</span>':'')+'</span></button>';
-    if(open) ws.forEach((w,i)=>{
-      const WA = rmAll().filter(a=>a.week===w).filter(a=>a.type!=='revision' || fl==='all' || rmRevState(a)===fl), mins = rmWeekMins(w), wst = WA.filter(a=>a.type==='study');
-      const wo = rmUI.ow[w]===undefined ? w===s.w0 : rmUI.ow[w], warns = [];
-      if(mins>cap) warns.push('over capacity'); if(w>rmPlanEnd()&&wst.length) warns.push('past study deadline'); if(w>rmRevEnd()&&WA.some(a=>a.type==='revision')) warns.push('past revision cutoff');
-      if(rmAdd(w,6)<today && wst.some(a=>progress[a.key]!=='completed')) warns.push('unfinished');
-      h += '<div class="rm-week"><button class="rm-wh" data-act="tw" data-id="'+w+'" aria-expanded="'+wo+'">'+(wo?'▾ ':'▸ ')+rmD(w).toLocaleDateString('en-IN',{day:'numeric',month:'short'})+' – '+rmD(rmAdd(w,6)).toLocaleDateString('en-IN',{day:'numeric',month:'short'})+(w===s.w0?' · <b>this week</b>':'')
-        + '<span class="rm-sub"> · new '+Math.round(rmWeekMins(w,'study')/6)/10+'h · rev '+Math.round(rmWeekMins(w,'revision')/6)/10+'h · mock '+Math.round(rmWeekMins(w,'mock')/6)/10+'h / '+S.weeklyHrs+'h · '+cs(wst)+'/'+wst.length+' done</span>'+warns.map(x=>' <span class="rm-warn">⚠ '+x+'</span>').join('')+'</button>';
-      if(wo){ const gr = {}; WA.forEach(a=>{ const k = a.type==='mock'?'Mock tests':(tm[a.key]?tm[a.key].sname:'Unknown'); (gr[k]=gr[k]||[]).push(a); });
-        h += Object.keys(gr).map(k=>'<div class="rm-grp">'+rmE(k)+'</div>'+gr[k].map(a=>rmAsRow(a,tm)).join('')).join('') || '<div class="rm-sub" style="padding:6px 10px">Nothing scheduled.</div>'; }
-      h += '</div>';
-    });
-    h += '</div>';
-  });
-  h += '<div class="rm-card" style="margin-top:14px"><div class="rm-k">Unscheduled topics ('+unsch.length+')</div><div class="rm-bar" style="margin:8px 0"><input class="rm-in" data-act="q" placeholder="Search syllabus…" value="'+rmE(rmUI.q)+'" aria-label="Search unscheduled topics"/><select class="rm-in" data-act="tw2" aria-label="Target week">'
-    + weeks.map(w=>'<option value="'+w+'"'+((rmUI.tw||s.w0)===w?' selected':'')+'>Week of '+w+'</option>').join('')+'</select></div>'
-    + unsch.slice(0,40).map(t=>'<div class="rm-row"><span class="rm-nm">'+rmE(t.name)+'</span><span class="rm-sub">'+rmE(t.sname)+' · '+Math.round(rmMins(t.key)/6)/10+'h'+(rmKnown(t.key)?'':' (est.)')+'</span><span class="rm-acts"><button class="rm-ic" data-act="eff" data-key="'+rmE(t.key)+'" title="Edit effort / difficulty">⏱</button><button class="rm-btn" data-act="add" data-key="'+rmE(t.key)+'">Add</button></span></div>').join('')
-    + (unsch.length>40?'<div class="rm-sub" style="padding:6px">Showing 40 — search to narrow.</div>':'')+'</div>';
-  el.innerHTML = h;
-}
-
-// ── click / input delegation ──
-function rmHandle(e){
-  const b = e.target.closest('[data-act]'); if(!b) return; const a = b.dataset.act, id = b.dataset.id, key = b.dataset.key;
-  if(e.type==='change'||e.type==='input'){
-    if(a==='rf'){ rmUI.rf = b.value; rmRender(); } else if(a==='tw2'){ rmUI.tw = b.value; }
-    else if(a==='q'&&e.type==='input'){ rmUI.q = b.value; const p = b.selectionStart; rmRender(); const n = document.querySelector('[data-act=q]'); if(n){ n.focus(); n.setSelectionRange(p,p); } }
-    return;
-  }
-  if(b.tagName==='SELECT'||b.tagName==='INPUT') return;
-  ({tm:()=>{ rmUI.om[id] = !(rmUI.om[id]===undefined ? id===rmToday().slice(0,7) : rmUI.om[id]); rmRender(); },
-    tw:()=>{ rmUI.ow[id] = !(rmUI.ow[id]===undefined ? id===rmWS(rmToday()) : rmUI.ow[id]); rmRender(); },
-    add:()=>rmAssign(key, rmUI.tw||rmWS(rmToday())), eff:()=>rmEffort(key), anchor:()=>rmSetAnchor(key),
-    rvdone:()=>rmSetRev(id,'done'), rvskip:()=>rmSetRev(id,'skipped'), move:()=>rmMove(id), remove:()=>rmRemove(id), todo:()=>rmTodo(id),
-    settings:rmOpenSettings, autoplan:rmOpenAutoplan, genrev:rmOpenGenRev, export:rmOpenExport, import:rmOpenImport,
-    apply:rmApply, cancel:rmClose, saveset:rmSaveSettings, dlexport:rmDownloadExport, copyprompt:rmCopyPrompt, dltemplate:rmDownloadTemplate, validate:rmValidateUI, doimport:rmDoImport}[a]||(()=>{}))();
-}
-
-// ── modal helpers + settings ──
-function rmModal(h){ const m = document.getElementById('rm-modal'); m.innerHTML = '<div class="modal rm-mod" role="dialog" aria-modal="true">'+h+'</div>'; m.classList.add('open'); }
-function rmClose(){ document.getElementById('rm-modal').classList.remove('open'); rmPending = null; rmImp = null; }
-function rmOpenSettings(){
-  const S = rmR().settings, f = (id,l,v,t)=>'<label class="rm-lb">'+l+'<input class="rm-in" id="rs-'+id+'" type="'+(t||'text')+'" value="'+rmE(v)+'"/></label>';
-  rmModal('<h3>Roadmap settings</h3><div class="modal-sub">Dates are editable estimates. Changing them never deletes existing assignments.</div><div class="rm-form">'
-    + f('exam','Exam date',rmExam(),'date') + '<label class="rm-lb"><span><input type="checkbox" id="rs-est"'+(S.examEstimated?' checked':'')+'/> Date is an estimate</span></label>'
-    + f('start','Preparation start',S.startDate,'date') + '<label class="rm-lb">Week starts on<select class="rm-in" id="rs-ws">'+['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map((d,i)=>'<option value="'+i+'"'+(S.weekStart===i?' selected':'')+'>'+d+'</option>').join('')+'</select></label>'
-    + f('hrs','Weekly study hours',S.weeklyHrs,'number') + f('buf','Study deadline buffer (days before exam)',S.bufferDays,'number') + f('cut','Revision cutoff (days before exam)',S.revCutoffDays,'number')
-    + f('iv','Revision intervals (days, comma-separated)',S.revIntervals.join(',')) + f('rm','Revision session (minutes)',S.revMins,'number') + f('dm','Default topic effort (minutes)',S.defaultMins,'number')
-    + '</div><div class="rm-bar" style="justify-content:flex-end;margin-top:14px"><button class="btn-cancel" data-act="cancel">Cancel</button><button class="btn-save" data-act="saveset">Save</button></div>');
-}
-function rmSaveSettings(){
-  const v = id=>document.getElementById('rs-'+id).value, S = rmR().settings, n = (x,lo,hi)=>{ const k = Number(x); return isFinite(k)&&k>=lo&&k<=hi ? k : null; };
-  const iv = v('iv').split(',').map(x=>parseInt(x,10)).filter(x=>x>0), vals = {weeklyHrs:n(v('hrs'),1,120), bufferDays:n(v('buf'),0,365), revCutoffDays:n(v('cut'),0,365), revMins:n(v('rm'),5,600), defaultMins:n(v('dm'),5,6000)};
-  if(v('exam') && !rmValidDate(v('exam')) || !rmValidDate(v('start')) || Object.values(vals).includes(null)){ showToast('❌ Check the values.'); return; }
-  if(v('exam') && v('exam')<=v('start')){ showToast('❌ Exam date must be after the start date.'); return; }
-  Object.assign(S, vals, {examDate:v('exam'), examEstimated:document.getElementById('rs-est').checked, startDate:v('start'), weekStart:+v('ws'), revIntervals:iv.length?iv:[1,7,21,45]});
-  rmClose(); rmSave();
-}
-
-// ── previews for local planners ──
-function rmSummaryByMonth(add){ const m = {}; add.forEach(a=>{ const k = a.week.slice(0,7); m[k] = (m[k]||0)+(a.mins||0); }); return Object.keys(m).sort().map(k=>k+': '+Math.round(m[k]/6)/10+'h').join(' · ')||'—'; }
-function rmOpenAutoplan(){
-  const p = rmPlanStudy(); rmPending = {add:p.add};
-  rmModal('<h3>Draft: new-study plan</h3><div class="modal-sub">Deterministic: unscheduled, not-completed topics are placed in syllabus order into the earliest week with free capacity (weekly limit, study deadline). Existing/manual assignments are untouched.</div>'
-    + '<p>'+p.add.length+' topics will be scheduled. By month: '+rmSummaryByMonth(p.add)+'</p>'
-    + (p.left.length?'<p class="rm-warn">⚠ Capacity shortfall: '+p.left.length+' topics (~'+Math.round(p.short/6)/10+'h) do not fit before the study deadline. Raise weekly hours, move the deadline, or trim scope.</p>':'')
-    + (p.add.some(a=>!rmKnown(a.key))?'<p class="rm-sub">Topics without an effort estimate use the default ('+rmR().settings.defaultMins+' min) — a provisional value, not a measurement.</p>':'')
-    + '<div class="rm-bar" style="justify-content:flex-end"><button class="btn-cancel" data-act="cancel">Cancel</button><button class="btn-save" data-act="apply"'+(p.add.length?'':' disabled')+'>Apply draft</button></div>');
-}
-function rmOpenGenRev(){
-  const p = rmPlanRevisions(); rmPending = {add:p.add};
-  rmModal('<h3>Proposed revisions</h3><div class="modal-sub">For completed topics, at your configured intervals, up to the revision cutoff. Existing revision assignments (any status) are never duplicated or overwritten.</div>'
-    + '<p>'+p.add.length+' revision sessions. By month: '+rmSummaryByMonth(p.add)+'</p>'
-    + (p.prov?'<p class="rm-warn">⚠ '+p.prov+' topics have no recorded completion date; their intervals are anchored to <b>today</b> (provisional). Set a real date with 📌 on any revision row to recalculate.</p>':'')
-    + (p.add.some(a=>a.due<rmToday())?'<p class="rm-sub">Some intervals already passed — they are scheduled into the earliest available week and shown as overdue.</p>':'')
-    + (p.short.length?'<p class="rm-warn">⚠ '+p.short.length+' sessions have no free capacity before the cutoff and were not scheduled.</p>':'')
-    + '<div class="rm-bar" style="justify-content:flex-end"><button class="btn-cancel" data-act="cancel">Cancel</button><button class="btn-save" data-act="apply"'+(p.add.length?'':' disabled')+'>Apply</button></div>');
-}
-function rmApply(){
-  if(!rmPending) return; const R = rmR(); let n = 0;
-  rmPending.add.forEach(a=>{ if(!R.assigns[a.id]){ R.assigns[a.id] = a; n++; } });
-  rmClose(); rmSave(); showToast('✅ '+n+' assignments added.');
-}
-
-// ── AI export / prompt / template ──
-function rmExportObj(inclCompleted){
-  const R = rmR(), S = R.settings, ex = rmExam();
-  return {format:RM_FORMAT, schemaVersion:RM_SCHEMA, exportedAt:new Date().toISOString(),
-    exam:{id:'sscgl', name:(countdownData&&countdownData.name)||'', date:ex, dateIsEstimate:!!S.examEstimated},
-    planning:{today:rmToday(), preparationStart:S.startDate, weekStartDay:S.weekStart, weekStartDates:rmWeeks(), weeklyStudyMinutes:S.weeklyHrs*60, studyDeadline:ex?rmPlanEnd():null,
-      revision:{autoGenerate:true, intervalsDays:S.revIntervals, defaultMinutes:S.revMins, cutoffDate:ex?rmRevEnd():null}, defaultTopicMinutes:S.defaultMins},
-    subjects:getAllSubjects().map(s=>({subjectId:s.id, name:s.name, topics:s.sections.flatMap(sec=>sec.topics.map(n=>{ const key = topicKey(s.id,n), st = progress[key]||'not-started', e = R.effort[rmK(key)]||{}, an = rmAnchor(key);
-      return st==='completed'&&!inclCompleted ? null : {topicId:key, topicRef:rmK(key), name:n, section:sec.label, status:st, percent:topicPct[key]||0, effortMinutes:rmMins(key), effortIsKnown:rmKnown(key), difficulty:e.diff||null,
-        completedDate:st==='completed'?an.d:null, completedDateIsReliable:st==='completed'?!an.prov:null, revisionsLogged:revisions[key]||0}; }).filter(Boolean))})),
-    existingAssignments:rmAll().map(a=>({assignmentId:a.id, activityType:a.type, topicId:a.key||null, week:a.week, estimatedMinutes:a.mins||0, revisionRound:a.round||null, status:a.status, title:a.title||null})),
-    outputFormat:{note:'Return JSON using the template. Never change topicId values.', template:rmTemplate()}};
-}
-function rmTemplate(){
-  const t = rmTopics().find(x=>true), key = t?t.key:'subject::Topic', ref = rmK(key), w = rmWeeks()[1]||rmWeeks()[0]||rmToday();
-  return {format:RM_FORMAT, schemaVersion:RM_SCHEMA,
-    assignments:[{assignmentId:'st:'+ref, activityType:'study', topicId:key, week:w, estimatedMinutes:180},
-      {assignmentId:'rv:'+ref+':1', activityType:'revision', topicId:key, week:rmAdd(w,7), estimatedMinutes:30, revisionRound:1},
-      {assignmentId:'mock:1', activityType:'mock', title:'Full-length mock 1', week:rmAdd(w,14), estimatedMinutes:180}],
-    unscheduled:[{topicId:key, reason:'example reason'}], warnings:['example: capacity shortage in March']};
-}
-function rmPromptText(){
-  return 'You are planning an exam-preparation roadmap. I attach a JSON export from my progress tracker. Produce a roadmap as ONE valid JSON object, matching "outputFormat.template" exactly (format "'+RM_FORMAT+'", schemaVersion '+RM_SCHEMA+').\n\nRules:\n'
-  +'1. Use topicId values exactly as supplied; never invent, rename or merge topics. Schedule only topics present in the export.\n'
-  +'2. Each assignment has a unique assignmentId (only letters, digits, : _ - %). New-study id = "st:"+topicRef. Revision id = "rv:"+topicRef+":"+round. Keep existing assignmentIds from existingAssignments unchanged.\n'
-  +'3. activityType is "study", "revision" or "mock". "week" must be one of planning.weekStartDates (YYYY-MM-DD).\n'
-  +'4. Study assignments must be on or before planning.studyDeadline. Revisions must be on or before planning.revision.cutoffDate.\n'
-  +'5. Revisions are separate activities that reference a topicId already marked completed; they must NEVER change a topic\'s completion. Use completedDate as the anchor and revision.intervalsDays for spacing; if completedDateIsReliable is false, say so in "warnings". Do not duplicate existing revisions.\n'
-  +'6. Keep each week\'s total estimatedMinutes within planning.weeklyStudyMinutes, spreading hard topics across weeks; respect effortMinutes, difficulty and percent already done. Where effortIsKnown is false, treat the estimate as uncertain and say so.\n'
-  +'7. List any topic you could not schedule in "unscheduled" with a reason, and report capacity shortages or an infeasible deadline in "warnings".\n'
-  +'8. Do not include status, completion or progress fields. Return only the JSON.';
-}
-function rmOpenExport(){
-  rmModal('<h3>Export for AI Planning</h3><div class="modal-sub">Nothing is sent anywhere automatically. You download a file and give it to an AI assistant yourself.</div>'
-    + '<p class="rm-sub" style="margin-bottom:8px"><b>Included:</b> exam name/date, planning settings, subjects &amp; topics (IDs, status, % done, effort, difficulty), completion dates (marked reliable or not), revision settings, and your current roadmap assignments. <b>Not included:</b> notes, journal, passphrase, profile data, to-dos.</p>'
-    + '<label class="rm-lb"><span><input type="checkbox" id="rx-incl" checked/> Include completed topics (needed for revision planning)</span></label>'
-    + '<div class="rm-bar" style="margin-top:12px"><button class="rm-btn pri" data-act="dlexport">⬇ Download JSON</button><button class="rm-btn" data-act="copyprompt">📋 Copy AI prompt</button><button class="rm-btn" data-act="dltemplate">📄 Download template</button><button class="btn-cancel" data-act="cancel">Close</button></div>');
-}
-function rmDl(name, obj){ const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(obj,null,2)],{type:'application/json'})); a.download = name; a.click(); URL.revokeObjectURL(a.href); }
-function rmDownloadExport(){ rmDl('roadmap_export_for_ai.json', rmExportObj(document.getElementById('rx-incl').checked)); }
-function rmDownloadTemplate(){ rmDl('roadmap_import_template.json', rmTemplate()); }
-function rmCopyPrompt(){ (navigator.clipboard?navigator.clipboard.writeText(rmPromptText()):Promise.reject()).then(()=>showToast('📋 Prompt copied.')).catch(()=>{ prompt('Copy this prompt:', rmPromptText()); }); }
-
-// ── import: validate → preview → apply (roadmap data only) ──
-function rmValidate(text){
-  const out = {errors:[], warnings:[], ok:[], unsched:0, fatal:null};
-  let o; try{ o = JSON.parse(text); }catch(e){ out.fatal = 'Not valid JSON: '+e.message; return out; }
-  if(!o || typeof o!=='object' || o.format!==RM_FORMAT){ out.fatal = 'Unrecognised file: "format" must be "'+RM_FORMAT+'".'; return out; }
-  if(o.schemaVersion!==RM_SCHEMA){ out.fatal = 'Unsupported schemaVersion '+JSON.stringify(o.schemaVersion)+' (supported: '+RM_SCHEMA+').'; return out; }
-  if(!Array.isArray(o.assignments)){ out.fatal = '"assignments" must be an array.'; return out; }
-  const R = rmR(), tm = rmTM(), weeks = new Set(rmWeeks()), seen = new Set(), cut = rmExam()?rmRevEnd():'', pend = rmExam()?rmPlanEnd():'';
-  out.unsched = Array.isArray(o.unscheduled)?o.unscheduled.length:0; out.fileWarnings = Array.isArray(o.warnings)?o.warnings.slice(0,10).map(String):[];
-  o.assignments.forEach((x,i)=>{
-    const bad = m=>out.errors.push('#'+(i+1)+(x&&x.assignmentId?' ('+x.assignmentId+')':'')+': '+m);
-    if(!x||typeof x!=='object') return bad('not an object');
-    if(typeof x.assignmentId!=='string'||!/^[\w:%\-]{1,120}$/.test(x.assignmentId)) return bad('missing/unsafe assignmentId');
-    if(seen.has(x.assignmentId)) return bad('duplicate assignmentId in file'); seen.add(x.assignmentId);
-    if(!RM_TYPES.includes(x.activityType)) return bad('unsupported activityType '+JSON.stringify(x.activityType));
-    if(!rmValidDate(x.week)) return bad('invalid week date'); const w = rmWS(x.week);
-    if(!weeks.has(w)) return bad('week outside roadmap range');
-    if(x.activityType!=='mock' && !tm[x.topicId]) return bad('unknown topicId '+JSON.stringify(x.topicId));
-    if(x.activityType==='study' && w>pend) return bad('study scheduled after the study deadline');
-    if(x.activityType==='revision' && w>cut) return bad('revision scheduled after the revision cutoff');
-    if(x.activityType==='revision' && !(Number.isInteger(x.revisionRound)&&x.revisionRound>=1)) return bad('revisionRound must be a positive integer');
-    if('topicStatus' in x||'progress' in x||'completed' in x||'status' in x) out.warnings.push('#'+(i+1)+': status/progress fields ignored (imports never change progress)');
-    let mins = x.estimatedMinutes; if(!(typeof mins==='number'&&mins>=0&&mins<=10080)){ mins = x.activityType==='revision'?R.settings.revMins:R.settings.defaultMins; out.warnings.push('#'+(i+1)+': missing/invalid estimatedMinutes — default used'); }
-    if(x.activityType==='revision' && progress[x.topicId]!=='completed') out.warnings.push('#'+(i+1)+': revision for a topic not yet completed');
-    if(x.activityType==='study' && progress[x.topicId]==='completed') out.warnings.push('#'+(i+1)+': study scheduled for an already-completed topic');
-    const rec = {id:x.assignmentId, type:x.activityType, week:w, mins, status:'planned'};
-    if(x.activityType!=='mock') rec.key = x.topicId; else rec.title = String(x.title||'Mock test').slice(0,80);
-    if(x.activityType==='revision') rec.round = x.revisionRound;
-    const ex = R.assigns[rec.id];
-    rec.kind = !ex ? 'new' : (ex.status!=='planned' ? 'protected' : (ex.week===rec.week&&ex.type===rec.type&&ex.key===rec.key ? 'same' : 'changed'));
-    if(rec.type==='study' && rec.kind==='new' && rmAll().some(a=>a.type==='study'&&a.key===rec.key)) rec.kind = 'conflict';
-    out.ok.push(rec);
-  });
-  return out;
-}
-function rmOpenImport(){
-  rmImp = null;
-  rmModal('<h3>Import Roadmap</h3><div class="modal-sub">Pick the JSON file from your AI assistant, or paste it. Nothing is saved until you approve the preview.</div><input type="file" id="ri-file" accept=".json,application/json" class="rm-in"/><textarea id="ri-text" class="rm-in" style="width:100%;min-height:110px;margin-top:8px" placeholder="…or paste JSON here"></textarea>'
-    + '<div class="rm-bar" style="justify-content:flex-end;margin-top:10px"><button class="btn-cancel" data-act="cancel">Cancel</button><button class="btn-save" data-act="validate">Validate &amp; preview</button></div>');
-  document.getElementById('ri-file').addEventListener('change', ev=>{ const f = ev.target.files[0]; if(!f) return; if(f.size>5e6){ showToast('❌ File too large.'); return; } const r = new FileReader(); r.onload = ()=>{ document.getElementById('ri-text').value = r.result; }; r.readAsText(f); });
-}
-function rmValidateUI(){
-  const v = rmValidate(document.getElementById('ri-text').value), c = k=>v.ok.filter(r=>r.kind===k).length;
-  if(v.fatal){ showToast('❌ '+v.fatal); document.getElementById('ri-text').insertAdjacentHTML('beforebegin','<p class="rm-warn" id="ri-err">'+rmE(v.fatal)+'</p>'); return; }
-  rmImp = v; const R = rmR(), cap = R.settings.weeklyHrs*60, load = {};
-  rmAll().forEach(a=>{ if(a.status!=='skipped') load[a.week] = (load[a.week]||0)+(a.mins||0); });
-  v.ok.filter(r=>r.kind==='new').forEach(r=>load[r.week] = (load[r.week]||0)+r.mins);
-  const over = Object.keys(load).filter(w=>load[w]>cap).sort(), newOnes = v.ok.filter(r=>r.kind==='new'), by = t=>newOnes.filter(r=>r.type===t);
-  rmModal('<h3>Import preview</h3><div class="modal-sub">No data has been changed yet.</div>'
-    + '<p><b>'+c('new')+'</b> new · <b>'+c('changed')+'</b> would move · <b>'+c('same')+'</b> unchanged · <b>'+c('conflict')+'</b> conflicting study · <b>'+c('protected')+'</b> protected (done/skipped) · <b class="'+(v.errors.length?'rm-warn':'')+'">'+v.errors.length+'</b> invalid · '+v.unsched+' unscheduled by the AI</p>'
-    + '<p class="rm-sub">New workload by month — study: '+rmSummaryByMonth(by('study'))+' | revision: '+rmSummaryByMonth(by('revision'))+' | mock: '+rmSummaryByMonth(by('mock'))+'</p>'
-    + (over.length?'<p class="rm-warn">⚠ '+over.length+' weeks exceed '+R.settings.weeklyHrs+'h: '+over.slice(0,6).join(', ')+(over.length>6?'…':'')+'</p>':'')
-    + (v.errors.length?'<details open><summary class="rm-warn">Invalid entries (skipped)</summary><div class="rm-sub">'+v.errors.slice(0,15).map(rmE).join('<br>')+(v.errors.length>15?'<br>…':'')+'</div></details>':'')
-    + (v.warnings.length?'<details><summary>Warnings ('+v.warnings.length+')</summary><div class="rm-sub">'+v.warnings.slice(0,15).map(rmE).join('<br>')+'</div></details>':'')
-    + (v.fileWarnings.length?'<details><summary>AI notes</summary><div class="rm-sub">'+v.fileWarnings.map(rmE).join('<br>')+'</div></details>':'')
-    + '<label class="rm-lb" style="margin-top:10px">Import mode<select class="rm-in" id="ri-mode"><option value="merge">Merge — add new, keep my existing/conflicting assignments</option><option value="replace">Replace future planned assignments (done/skipped kept)</option></select></label>'
-    + '<div class="rm-bar" style="justify-content:flex-end;margin-top:12px"><button class="btn-cancel" data-act="cancel">Cancel</button><button class="btn-save" data-act="doimport"'+(v.ok.length?'':' disabled')+'>Approve &amp; import</button></div>');
-}
-function rmDoImport(){
-  if(!rmImp) return; const R = rmR(), mode = document.getElementById('ri-mode').value, snap = JSON.stringify(R.assigns);
-  try{
-    const w0 = rmWS(rmToday()); let add = 0, mv = 0;
-    if(mode==='replace') Object.keys(R.assigns).forEach(id=>{ const a = R.assigns[id]; if(a.status==='planned' && a.week>=w0) delete R.assigns[id]; });
-    rmImp.ok.forEach(r=>{
-      const ex = R.assigns[r.id]; if(ex && ex.status!=='planned') return;     // history protected
-      if(r.kind==='conflict' && mode==='merge') return;
-      if(ex && mode==='merge' && r.kind!=='same') return;                     // never silently override an existing assignment in merge mode
-      const {kind, ...rec} = r; if(!ex) add++; else mv++; R.assigns[r.id] = Object.assign(ex||{}, rec);
-    });
-    rmClose(); rmSave(); showToast('✅ Imported: '+add+' added, '+mv+' updated.');
-  }catch(e){ R.assigns = JSON.parse(snap); showToast('❌ Import failed — roadmap unchanged.'); }
-}
-
-document.addEventListener('DOMContentLoaded', ()=>{ ['rm-root','rm-modal'].forEach(id=>{ const n = document.getElementById(id); if(n){ n.addEventListener('click', rmHandle); n.addEventListener('change', rmHandle); n.addEventListener('input', rmHandle); } }); });
-
-// ═══════════════════════════════════════════
 //  FIREBASE INIT
 // ═══════════════════════════════════════════
 const firebaseConfig = {
@@ -3357,7 +2958,7 @@ function _profileSnapshot() {
     hiddenSubjects, hiddenTopics,
     pomSettings: pomSettings || pomDefaultSettings(),
     pomSessions: pomSessions || [],
-    roadmap: rmR()
+    roadmap: rmForSave()
   };
 }
 
@@ -3380,8 +2981,8 @@ function _applyProfile(d) {
   if(d.countdownData) countdownData = d.countdownData;
   pomSettings = Object.assign(pomDefaultSettings(), d.pomSettings || {});
   pomSessions = d.pomSessions || [];
+  roadmap = rmNormalize(d.roadmap);
   pomPruneOldSessions();
-  rmLoad(d);
 }
 
 function _pushAll() {
@@ -3573,8 +3174,8 @@ function showView(view, btn, _fromPopstate) {
   else if(view==='notes')      { renderNotes(); updateNotesNavBadge(); }
   else if(view==='mock-tests') { renderMockTests(); }
   else if(view==='pomodoro')   { pomRenderAll(); }
-  else if(view==='todo')       { todoRenderAll(); }
   else if(view==='roadmap')    { rmRender(); }
+  else if(view==='todo')       { todoRenderAll(); }
   else {
     currentSubjectFilter = view==='all' ? 'all' : view;
     updateViewHeader(); renderTopics();
@@ -3626,7 +3227,6 @@ function renderDashboard(){
   renderQuoteCard();
   renderCountdownCard();
   pomRenderWidget();
-  rmRenderWidget();
   const g = getStats();
   const totalNotes = Object.keys(notes).filter(k => notes[k] && notes[k].trim()).length;
   const totalRevs  = Object.values(revisions).reduce((a,b)=>a+b, 0);
@@ -4039,7 +3639,6 @@ function cycleStatus(key, btn){
   const idx = STATUS_CYCLE.indexOf(cur);
   const next = STATUS_CYCLE[(idx+1)%STATUS_CYCLE.length];
   progress[key] = next;
-  rmNoteStatus(key,next);
 
   // Sync pct with status cycle
   if(next === 'completed') topicPct[key] = 100;
@@ -4457,7 +4056,6 @@ function drawerCycleStatus(key, rowEl, currentDrawerStatus) {
   const idx = STATUS_CYCLE.indexOf(cur);
   const next = STATUS_CYCLE[(idx+1) % STATUS_CYCLE.length];
   progress[key] = next;
-  rmNoteStatus(key,next);
   saveData();
   updateSidebar();
   updateSubjectHeader(key.split('::')[0]);
@@ -4809,7 +4407,7 @@ function exportData(){
     progress, notes, revisions, revisionDates, topicPct,
     customSyllabus, mockTests, journal:journalNotes,
     notesHash:notesHash||null, pinnedSubjects, pinnedTopics,
-    quoteData, countdownData, hiddenSubjects, hiddenTopics, roadmap: rmR()
+    quoteData, countdownData, hiddenSubjects, hiddenTopics, roadmap
   };
   const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const url = URL.createObjectURL(blob);
@@ -4838,7 +4436,7 @@ function importData(e){
       if(d.countdownData)  countdownData  = d.countdownData;
       if(d.hiddenSubjects) hiddenSubjects = d.hiddenSubjects;
       if(d.hiddenTopics)   hiddenTopics   = d.hiddenTopics;
-      if(d.roadmap)        rmLoad(d);
+      if(d.roadmap)        roadmap        = rmNormalize(d.roadmap);
       notesHash     = d.notesHash || null;
       notesUnlocked = false;
       saveData();
@@ -5267,7 +4865,6 @@ function _commitPct(val) {
   else if(val > 0)     newStatus = 'in-progress';
   else                 newStatus = 'not-started';
   progress[key] = newStatus;
-  rmNoteStatus(key,newStatus);
   saveData();
 
   // Update DOM in topic row
@@ -5705,7 +5302,6 @@ function launchApp() {
   document.getElementById('view-mock-tests').style.display = 'none';
   document.getElementById('view-pomodoro').style.display = 'none';
   document.getElementById('view-todo').style.display = 'none';
-  document.getElementById('view-roadmap').style.display = 'none';
   const unEl = document.getElementById('sidebar-username');
   if(unEl && userPassphrase) unEl.textContent = userPassphrase;
   _setupModalListeners();
@@ -5732,7 +5328,7 @@ function signOut() {
   progress={}; notes={}; revisions={}; topicPct={}; revisionDates={}; customSyllabus=[]; mockTests=[]; journalNotes=[]; notesHash=null;
   pinnedSubjects=[]; pinnedTopics={}; hiddenSubjects=[]; hiddenTopics={};
   pomDetachLive();
-  pomSettings=null; pomSessions=[]; pomLive=null; roadmap=null;
+  pomSettings=null; pomSessions=[]; pomLive=null;
   todoDetach();
   todos={}; todoMeta=null;
   clearTimeout(_saveTimer);
@@ -5773,7 +5369,7 @@ window.addEventListener('popstate', function(e) {
     showView(state.view, null, true);
   } else if(hash) {
     // Fallback hash-based routing
-    const validViews = ['dashboard','all','notes','mock-tests','pomodoro','todo','roadmap'];
+    const validViews = ['dashboard','all','notes','mock-tests','pomodoro','todo'];
     if(validViews.includes(hash)) showView(hash, null, true);
     else showView('all', null, true); // subject views
   } else {
@@ -6709,7 +6305,6 @@ function todoToggleComplete(id) {
     todoWriteTask(t);
     todoPlayCompleteSound();
     todoRegisterCompletion(t);
-    try{ rmOnTodoDone(t); }catch(e){ console.warn(e); }
     if(t.repeat && t.repeat !== 'none') {
       const nextDate = todoNextRepeatDate(t.date, t.repeat);
       if(nextDate) todoCreate({
@@ -7178,6 +6773,250 @@ document.addEventListener('visibilitychange', () => {
     setTimeout(()=>document.getElementById('login-pass').focus(), 80);
   }
 })();
+
+// ═══════════════════════════════════════════
+//  SYLLABUS ROADMAP
+//  Plans live in `roadmap` (own key in the profile snapshot). Canonical
+//  progress (progress/topicPct) is never written by plans, imports or revisions.
+//  Topic id = existing topicKey(subjectId, name). Study-assignment "done" is
+//  DERIVED from canonical status; revision/mock status is stored per assignment.
+// ═══════════════════════════════════════════
+var roadmap = null, RM = {open:{}, q:'', U:[], prop:null};
+const rmE = s => String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const rmIso = d => { d=d||new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
+const rmD = s => new Date(s+'T00:00:00');
+const rmAdd = (s,n) => { const d=rmD(s); d.setDate(d.getDate()+n); return rmIso(d); };
+const rmOk = s => /^\d{4}-\d{2}-\d{2}$/.test(s||'') && rmIso(rmD(s))===s;
+const rmWk = s => { const d=rmD(s); d.setDate(d.getDate()-((d.getDay()-roadmap.settings.weekStart+7)%7)); return rmIso(d); };
+const rmHash = s => { let h=5381; for(const c of s) h=((h<<5)+h+c.charCodeAt(0))>>>0; return h.toString(36)+s.length; };
+const rmFmt = s => rmD(s).toLocaleDateString(undefined,{day:'numeric',month:'short'});
+function rmDef(){ return {v:1, settings:{examName:(countdownData&&countdownData.name)||'SSC CGL', examDate:(countdownData&&countdownData.date)||'2027-09-01', examEstimated:true,
+  startDate:rmIso(), weekStart:1, weeklyHours:30, defaultMin:60, revIntervals:[1,7,21,45], revMin:20, revCutoffDays:14, bufferDays:21, legacyAnchor:'',
+  diffW:{Easy:0.75,Moderate:1,Hard:1.5}}, assignments:{}, anchors:{}, meta:{}, known:{}, initAt:null}; }
+function rmNormalize(r){ const d=rmDef(); r=(r&&typeof r==='object')?r:{};
+  const o={v:1,settings:Object.assign(d.settings,r.settings||{}),assignments:r.assignments||{},anchors:r.anchors||{},meta:r.meta||{},known:r.known||{},initAt:r.initAt||null};
+  o.settings.revIntervals=Object.values(o.settings.revIntervals||[]).map(Number).filter(n=>n>=0);
+  if(!o.settings.revIntervals.length) o.settings.revIntervals=[1,7,21,45];
+  return o; }
+roadmap = rmNormalize(null);
+function rmForSave(){ return JSON.parse(JSON.stringify(roadmap)); }
+function rmTopics(){ const seen=new Set(), out=[];
+  getAllSubjects().forEach(s=>s.sections.forEach(sec=>sec.topics.forEach(n=>{ const id=topicKey(s.id,n); if(seen.has(id)) return; seen.add(id); out.push({id,sid:s.id,subj:s.name,sec:sec.label,name:n}); })));
+  return out; }
+const rmMap = () => new Map(rmTopics().map(t=>[t.id,t]));
+const rmMeta = id => roadmap.meta[id]||{};
+const rmMin = id => { const m=rmMeta(id), s=roadmap.settings; return Math.round(m.minutes||s.defaultMin*(s.diffW[m.difficulty]||1)); };
+function rmSt(a){ if(a.type==='study'){ if(progress[a.topicId]==='completed') return 'done'; return a.status==='skipped'?'skipped':'planned'; } return a.status||'planned'; }
+// Revision anchor: user/observed dates are stored; earlier completions have NO stored date, so a provisional user-chosen date is used.
+function rmAnchor(id){ const a=roadmap.anchors[id]; if(a&&rmOk(a.date)) return a;
+  const L=roadmap.settings.legacyAnchor; return (progress[id]==='completed'&&rmOk(L))?{date:L,source:'provisional'}:null; }
+function rmObserve(){ const r=roadmap, first=!r.initAt; let ch=false;
+  rmTopics().forEach(t=>{ if(progress[t.id]==='completed'&&!r.known[t.id]){ r.known[t.id]=1; ch=true; if(!first) r.anchors[t.id]={date:rmIso(),source:'observed'}; } });
+  if(first){ r.initAt=new Date().toISOString(); ch=true; } if(ch) saveData(); }
+function rmWeeks(){ const s=roadmap.settings, set=new Set(); let w=rmWk(s.startDate||rmIso()); const end=s.examDate||rmAdd(w,364);
+  for(;w<=end;w=rmAdd(w,7)) set.add(w); Object.values(roadmap.assignments).forEach(a=>set.add(a.week)); return [...set].sort(); }
+const rmMonthOf = w => (w<roadmap.settings.startDate?roadmap.settings.startDate:w).slice(0,7);
+function rmSum(l){ const r={sm:0,rm:0,mm:0,st:0,sd:0,rt:0,rd:0,over:0}, a=new Set(), b=new Set(), today=rmIso();
+  l.forEach(x=>{ const s=rmSt(x); if(s==='skipped') return;
+    if(x.type==='study'){ r.sm+=x.minutes; a.add(x.topicId); if(s==='done') b.add(x.topicId); }
+    else if(x.type==='revision'){ r.rm+=x.minutes; r.rt++; if(s==='done') r.rd++; } else r.mm+=x.minutes;
+    if(s!=='done'&&rmAdd(x.week,6)<today) r.over++; });
+  r.st=a.size; r.sd=b.size; return r; }
+function rmPlanStatus(){ const cw=rmWk(rmIso()), by=new Set(), dn=new Set();
+  Object.values(roadmap.assignments).forEach(a=>{ if(a.type==='study'&&a.week<=cw&&rmSt(a)!=='skipped'){ by.add(a.topicId); if(progress[a.topicId]==='completed') dn.add(a.topicId); } });
+  if(!by.size) return {l:'Insufficient data',c:'var(--muted2)',d:'No study topics planned up to this week'};
+  const r=dn.size/by.size, d=dn.size+' of '+by.size+' planned topics done';
+  return r>=.9?{l:'On track',c:'var(--green)',d}:r>=.6?{l:'At risk',c:'var(--yellow)',d}:{l:'Behind',c:'var(--red)',d}; }
+function rmRenderWidget(){ const s=document.getElementById('rm-widget-status'), b=document.getElementById('rm-widget-sub'); if(!s||!b) return;
+  const all=Object.values(roadmap.assignments); if(!all.length){ s.textContent='Not planned'; b.textContent='Plan months & weeks until your exam'; return; }
+  const w=rmSum(all.filter(a=>a.week===rmWk(rmIso()))), o=rmSum(all).over;
+  s.textContent=o?o+' overdue':'On plan'; b.textContent='This week: '+w.sd+'/'+w.st+' topics · '+w.rd+'/'+w.rt+' revisions'; }
+{ const _rd=renderDashboard; renderDashboard=function(){ _rd.apply(this,arguments); try{ rmObserve(); rmRenderWidget(); }catch(e){ console.warn(e); } }; }
+
+function rmSave(){ saveData(); rmRender(); }
+function rmModal(h){ document.getElementById('rm-modal').innerHTML=h; document.getElementById('rm-overlay').classList.add('open'); }
+function rmClose(){ document.getElementById('rm-overlay').classList.remove('open'); RM.prop=null; }
+function rmTog(k){ RM.open[k]=!RM.open[k]; rmRender(); }
+function rmCapWarn(w){ const c=roadmap.settings.weeklyHours*60, s=rmSum(Object.values(roadmap.assignments).filter(a=>a.week===w)); if(s.sm+s.rm+s.mm>c) showToast('⚠ Week of '+rmFmt(w)+' now exceeds your weekly limit'); }
+
+function rmRender(){ const root=document.getElementById('rm-root'); if(!root) return; rmObserve();
+  const S=roadmap.settings, all=Object.values(roadmap.assignments), M=rmMap(), today=rmIso(), cw=rmWk(today), cm=rmMonthOf(cw), cap=S.weeklyHours*60;
+  const weeks=rmWeeks(); RM.wopts='<option value="">Move to…</option>'+weeks.map(w=>`<option value="${w}">${rmFmt(w)} – ${rmFmt(rmAdd(w,6))}</option>`).join('');
+  const st=getStats(), ps=rmPlanStatus(), mS=rmSum(all.filter(a=>rmMonthOf(a.week)===cm)), wS=rmSum(all.filter(a=>a.week===cw));
+  const days=S.examDate?Math.ceil((rmD(S.examDate)-rmD(today))/864e5):null;
+  const sched=new Set(all.filter(a=>a.type==='study').map(a=>a.topicId));
+  let h=`<div class="rm-head"><div><b>${rmE(S.examName)}</b> · ${S.examDate?rmE(S.examDate)+(S.examEstimated?' <span class="rm-warn">(estimate)</span>':''):'<span class="rm-warn">no exam date</span>'}${days!=null?' · '+(days>=0?days+' days left':'date passed'):''}</div><button class="rm-btn" onclick="rmSettings()">⚙ Settings</button></div>
+  <div class="rm-bar"><button class="rm-btn pri" onclick="rmAutoDraft()">⚡ Auto-draft study plan</button><button class="rm-btn pri" onclick="rmGenRevisions()">🔁 Generate revisions</button><button class="rm-btn" onclick="rmCatchUp()">↪ Move overdue to this week</button><button class="rm-btn" onclick="rmExportOpen()">⬆ Export for AI Planning</button><button class="rm-btn" onclick="rmImportOpen()">⬇ Import Roadmap</button></div>
+  <div class="rm-cards">
+   <div class="rm-card"><small>Actual syllabus completion</small><b>${st.pct}%</b><small>${st.done} of ${st.total} topics completed</small></div>
+   <div class="rm-card"><small>This month (${rmE(cm)})</small><b>${mS.sd}/${mS.st}</b><small>topics · revisions ${mS.rd}/${mS.rt}</small></div>
+   <div class="rm-card"><small>This week</small><b>${wS.sd}/${wS.st}</b><small>topics · revisions ${wS.rd}/${wS.rt} · ${Math.round((wS.sm+wS.rm+wS.mm)/60*10)/10}h of ${S.weeklyHours}h</small></div>
+   <div class="rm-card"><small>Planned vs actual</small><b style="color:${ps.c}">${ps.l}</b><small>${rmE(ps.d)}</small></div></div>`;
+  if(!all.length) h+=`<div class="rm-card rm-note" style="margin-bottom:12px">No roadmap yet. Add topics from <b>Unscheduled Topics</b> below, run <b>Auto-draft</b>, or <b>Import Roadmap</b>. Weeks belong to the month in which they start.</div>`;
+  const months={}; weeks.forEach(w=>{ (months[rmMonthOf(w)]=months[rmMonthOf(w)]||[]).push(w); });
+  Object.keys(months).sort().forEach(mk=>{ const ws=months[mk], list=all.filter(a=>rmMonthOf(a.week)===mk), s=rmSum(list), tot=s.sm+s.rm+s.mm, over=ws.some(w=>{ const x=rmSum(all.filter(a=>a.week===w)); return x.sm+x.rm+x.mm>cap; });
+    const open=RM.open['m'+mk]!==undefined?RM.open['m'+mk]:mk===cm, pct=s.st?Math.round(s.sd/s.st*100):0;
+    h+=`<div class="rm-month"><button class="rm-mh" aria-expanded="${open}" onclick="rmTog('m${mk}')"><span><b>${rmD(mk+'-01').toLocaleDateString(undefined,{month:'long',year:'numeric'})}</b> <small>${ws.length} weeks</small></span>
+      <span><small>📘 ${s.sd}/${s.st} topics (${pct}%) · 🔁 ${s.rd}/${s.rt} · ${Math.round(tot/6)/10}h (learn ${Math.round(s.sm/6)/10}h, revise ${Math.round(s.rm/6)/10}h)</small>${s.over?` <span class="rm-err">● ${s.over} overdue</span>`:''}${over?' <span class="rm-warn">⚠ overloaded week</span>':''} ${open?'▾':'▸'}</span><span class="rm-bar-p"><i style="width:${pct}%"></i></span></button>`;
+    if(open) ws.forEach(w=>{ const wl=all.filter(a=>a.week===w), x=rmSum(wl), t=x.sm+x.rm+x.mm, wo=RM.open['w'+w]!==undefined?RM.open['w'+w]:w===cw;
+      h+=`<div class="rm-week"><button class="rm-mh" aria-expanded="${wo}" onclick="rmTog('w${w}')"><span><b>${rmFmt(w)} – ${rmFmt(rmAdd(w,6))}</b>${w===cw?' <small class="rm-ok">this week</small>':''}</span><span><small>📘 ${x.sd}/${x.st} · 🔁 ${x.rd}/${x.rt} · ${Math.round(t/6)/10}h / ${S.weeklyHours}h</small>${x.over?` <span class="rm-err">● ${x.over} overdue</span>`:''}${t>cap?' <span class="rm-warn">⚠ over limit</span>':''} ${wo?'▾':'▸'}</span></button>`;
+      if(wo){ if(!wl.length) h+='<div class="rm-row rm-note">Nothing planned.</div>';
+        const g={}; wl.forEach(a=>{ const k=a.type==='mock'?'Mock tests':(M.get(a.topicId)||{}).subj||'Unknown subject'; (g[k]=g[k]||[]).push(a); });
+        Object.keys(g).forEach(k=>{ h+=`<div class="rm-sub">${rmE(k)}</div>`; g[k].sort((a,b)=>a.type.localeCompare(b.type)).forEach(a=>{ h+=rmRow(a,M); }); }); }
+      h+='</div>'; });
+    h+='</div>'; });
+  const q=RM.q.toLowerCase(); RM.U=rmTopics().filter(t=>progress[t.id]!=='completed'&&!sched.has(t.id)&&(!q||(t.name+' '+t.subj+' '+t.sec).toLowerCase().includes(q)));
+  const lv=['','Easy','Moderate','Hard'], pr=['','Low','Medium','High'], opt=(a,v)=>a.map(x=>`<option ${x===v?'selected':''} value="${x}">${x||'—'}</option>`).join('');
+  h+=`<div class="rm-sec"><h3 style="margin-bottom:8px">Unscheduled Topics <small class="rm-note">(${RM.U.length} not completed &amp; not assigned)</small></h3>
+   <input type="search" placeholder="Search topics…" aria-label="Search unscheduled topics" value="${rmE(RM.q)}" oninput="RM.q=this.value;rmRender();this.focus()" style="width:100%;max-width:360px;margin-bottom:8px"/>`;
+  RM.U.slice(0,40).forEach((t,i)=>{ const m=rmMeta(t.id); h+=`<div class="rm-row"><span class="rm-t">${rmE(t.name)}<small>${rmE(t.subj)} · ${rmE(t.sec)}</small></span>
+    <select aria-label="Difficulty" onchange="rmSetMeta(${i},'difficulty',this.value)">${opt(lv,m.difficulty||'')}</select><select aria-label="Priority" onchange="rmSetMeta(${i},'priority',this.value)">${opt(pr,m.priority||'')}</select>
+    <select aria-label="Add to week" onchange="rmSched(${i},this.value)">${RM.wopts.replace('Move to…','Add to week…')}</select></div>`; });
+  if(RM.U.length>40) h+=`<div class="rm-note" style="padding:8px 12px">Showing 40 of ${RM.U.length} — search to narrow.</div>`;
+  root.innerHTML=h+'</div>'; rmRenderWidget(); }
+
+function rmRow(a,M){ const t=M.get(a.topicId), s=rmSt(a), od=s!=='done'&&s!=='skipped'&&rmAdd(a.week,6)<rmIso(), lab={study:'📘 Learn',revision:'🔁 Revise',mock:'📝 Mock'}[a.type], id=rmE(a.id);
+  const nm=a.type==='mock'?(a.title||'Mock test'):(t?t.name:'(topic no longer in syllabus)');
+  let b=''; if(a.type==='study'){ if(s==='planned') b+=`<button class="rm-btn" title="Marks the topic Completed in your tracker" onclick="rmDone('${id}')">✓ Complete topic</button>`; }
+  else if(s==='planned') b+=`<button class="rm-btn" onclick="rmDone('${id}')">✓ Done</button>`; else b+=`<button class="rm-btn" onclick="rmReset('${id}')">↩ Reopen</button>`;
+  if(s==='planned') b+=`<button class="rm-btn" onclick="rmSkip('${id}')">Skip</button>`;
+  if(a.type!=='mock'&&s!=='done') b+=`<button class="rm-btn" onclick="rmTodo('${id}')">＋ To-Do</button>`;
+  return `<div class="rm-row ${s}"><span class="rm-badge ${a.type}">${lab}</span><span class="rm-t">${rmE(nm)}${a.type==='revision'?' · R'+rmE(a.round||'?')+(a.prov?' <span class="rm-warn">est.</span>':''):''}<small>${a.minutes}m${od?' · <span class="rm-err">overdue</span>':''}${s==='skipped'?' · skipped':''}</small></span>${b}
+   <select aria-label="Move" onchange="rmMove('${id}',this.value)">${RM.wopts}</select><button class="rm-btn" aria-label="Remove assignment" onclick="rmRemove('${id}')">✕</button></div>`; }
+
+function rmSetMeta(i,k,v){ const t=RM.U[i]; if(!t) return; (roadmap.meta[t.id]=roadmap.meta[t.id]||{})[k]=v||null; saveData(); }
+function rmSched(i,w){ const t=RM.U[i]; if(!t||!w) return; const id='as_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+  roadmap.assignments[id]={id,type:'study',topicId:t.id,week:w,minutes:rmMin(t.id),status:'planned',manual:true}; rmSave(); rmCapWarn(w); }
+function rmMove(id,w){ const a=roadmap.assignments[id]; if(!a||!w) return; a.week=w; a.manual=true; rmSave(); rmCapWarn(w); }
+function rmRemove(id){ const a=roadmap.assignments[id]; if(!a) return; if(rmSt(a)==='done'&&a.type!=='study'&&!confirm('Remove a completed revision/mock from your history?')) return;
+  delete roadmap.assignments[id]; rmSave(); showToast('Assignment removed (syllabus untouched)'); }
+function rmSkip(id){ const a=roadmap.assignments[id]; if(a){ a.status='skipped'; rmSave(); } }
+function rmReset(id){ const a=roadmap.assignments[id]; if(a){ a.status='planned'; a.doneAt=null; rmSave(); } }
+function rmDone(id){ const a=roadmap.assignments[id]; if(!a) return;
+  if(a.type==='study'){ // established workflow: same effect as the Progress Tracker's Completed status
+    if(!confirm('Mark "'+(rmMap().get(a.topicId)||{}).name+'" as Completed in your Progress Tracker?')) return;
+    progress[a.topicId]='completed'; topicPct[a.topicId]=100; roadmap.known[a.topicId]=1; roadmap.anchors[a.topicId]={date:rmIso(),source:'user'};
+    saveData(); updateSidebar(); renderTopics(); }
+  else { a.status='done'; a.doneAt=new Date().toISOString();
+    if(a.type==='revision'&&!a.legacyLogged&&progress[a.topicId]){ revisions[a.topicId]=(revisions[a.topicId]||0)+1; revisionDates[a.topicId]=a.doneAt; a.legacyLogged=true; } } // existing 🔁 counter only; never progress/topicPct
+  rmSave(); }
+function rmTodo(id){ const a=roadmap.assignments[id]; if(!a) return; if(Object.values(todos||{}).some(t=>t.roadmapId===id)) return showToast('Already in your To-Do list');
+  const t=rmMap().get(a.topicId), today=rmIso(); const d=a.week>today?a.week:today;
+  todoCreate({text:(a.type==='revision'?'🔁 Revise: ':'📘 Study: ')+(t?t.name:''), date:d, roadmapId:id, topicId:a.topicId}); showToast('✅ Added to To-Do for '+d); }
+function rmCatchUp(){ const cw=rmWk(rmIso()), l=Object.values(roadmap.assignments).filter(a=>rmSt(a)==='planned'&&rmAdd(a.week,6)<rmIso());
+  if(!l.length) return showToast('Nothing overdue 🎉'); if(!confirm('Move '+l.length+' overdue assignment(s) into this week? Revision spacing for them will change.')) return;
+  l.forEach(a=>{ a.week=cw; a.manual=true; }); rmSave(); rmCapWarn(cw); }
+
+function rmSettings(){ const S=roadmap.settings, f=(id,l,v,t,x)=>`<label class="rm-f"><span>${l}</span><input id="rs-${id}" type="${t||'text'}" value="${rmE(v)}" ${x||''}/></label>`;
+  rmModal(`<h3>Roadmap Settings</h3><div class="rm-grid">${f('name','Exam name',S.examName)}${f('exam','Exam date',S.examDate,'date')}
+   <label class="rm-f"><span>&nbsp;</span><span><input id="rs-est" type="checkbox" ${S.examEstimated?'checked':''}/> Exam date is only an estimate</span></label>${f('start','Preparation start',S.startDate,'date')}
+   <label class="rm-f"><span>Week starts on</span><select id="rs-ws">${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'].map((d,i)=>`<option value="${i}" ${i==S.weekStart?'selected':''}>${d}</option>`).join('')}</select></label>
+   ${f('wh','Weekly study hours',S.weeklyHours,'number','min="1"')}${f('dm','Default minutes per topic',S.defaultMin,'number','min="5"')}${f('ri','Revision intervals (days, comma-separated)',S.revIntervals.join(', '))}
+   ${f('rmn','Minutes per revision',S.revMin,'number','min="5"')}${f('rc','Revision cutoff (days before exam)',S.revCutoffDays,'number','min="0"')}${f('bd','New-learning buffer (days before exam)',S.bufferDays,'number','min="0"')}
+   ${f('la','Provisional completion date for topics finished before the roadmap existed',S.legacyAnchor,'date')}</div>
+   <p class="rm-note" style="margin-top:8px">Your tracker doesn't store when a topic was completed, so revisions for earlier topics use the provisional date above (marked “est.”). Topics you complete from now on get an observed date.</p>
+   <div class="profile-modal-footer"><button class="btn-cancel" onclick="rmClose()">Cancel</button><button class="btn-save" onclick="rmSaveSettings()">Save</button></div>`); }
+function rmSaveSettings(){ const v=id=>document.getElementById('rs-'+id).value, n=id=>Number(v(id)), S=roadmap.settings;
+  const iv=v('ri').split(',').map(x=>Number(x.trim())).filter(x=>x>=0&&isFinite(x)&&x!=='');
+  if(v('exam')&&!rmOk(v('exam'))||!rmOk(v('start'))) return showToast('❌ Enter valid dates');
+  if(v('exam')&&v('exam')<=v('start')) return showToast('❌ Exam date must be after the start date');
+  if(!iv.length||!(n('wh')>0)||!(n('dm')>=5)||!(n('rmn')>=5)) return showToast('❌ Check the numeric fields');
+  Object.assign(S,{examName:v('name').trim()||'Exam',examDate:v('exam'),examEstimated:document.getElementById('rs-est').checked,startDate:v('start'),weekStart:+v('ws'),weeklyHours:n('wh'),defaultMin:n('dm'),revIntervals:iv,revMin:n('rmn'),revCutoffDays:Math.max(0,n('rc')),bufferDays:Math.max(0,n('bd')),legacyAnchor:v('la')});
+  rmClose(); rmSave(); showToast('Roadmap settings saved'); }
+
+// ── shared draft → preview → confirm pipeline (auto-draft, revisions, AI import) ──
+function rmLoad(){ const l={}; Object.values(roadmap.assignments).forEach(a=>{ if(rmSt(a)!=='skipped') l[a.week]=(l[a.week]||0)+a.minutes; }); return l; }
+function rmAutoDraft(){ const S=roadmap.settings; if(!S.examDate) return showToast('Set an exam date in Settings first');
+  const cw=rmWk(rmIso()), stop=rmAdd(S.examDate,-S.bufferDays), cap=S.weeklyHours*60, load=rmLoad(), iss=[], hard={}, left=[], prop=[];
+  const weeks=rmWeeks().filter(w=>w>=cw&&w<=stop); if(!weeks.length) return showToast('❌ No weeks left before the study deadline ('+stop+')');
+  const sched=new Set(Object.values(roadmap.assignments).filter(a=>a.type==='study').map(a=>a.topicId)), po={High:0,Medium:1,Low:2};
+  rmTopics().filter(t=>progress[t.id]!=='completed'&&!sched.has(t.id)).map((t,i)=>({t,i,p:po[rmMeta(t.id).priority]!=null?po[rmMeta(t.id).priority]:1})).sort((a,b)=>a.p-b.p||a.i-b.i).forEach(({t})=>{
+    const m=rmMin(t.id), hd=rmMeta(t.id).difficulty==='Hard', w=weeks.find(w=>(load[w]||0)+m<=cap&&!(hd&&(hard[w]||0)>=2));
+    if(!w){ left.push([t,m]); return; } load[w]=(load[w]||0)+m; if(hd) hard[w]=(hard[w]||0)+1;
+    prop.push({id:'st_'+rmHash(t.id),type:'study',topicId:t.id,week:w,minutes:m,status:'planned',manual:false}); });
+  if(left.length){ const x=left.reduce((s,p)=>s+p[1],0); iss.push({l:'err',m:`Capacity shortfall: ${left.length} topic(s) don't fit before ${stop}. About ${Math.ceil(x/60)} more hours are needed — raise weekly hours, move the buffer, or drop topics.`}); left.slice(0,15).forEach(p=>iss.push({l:'warn',m:'Unscheduled: '+p[0].name})); }
+  rmPreview('Auto-draft (deterministic: priority → syllabus order, first week with room, max 2 Hard topics/week)',prop,iss,[]); }
+function rmGenRevisions(){ const S=roadmap.settings; if(!S.examDate) return showToast('Set an exam date in Settings first');
+  const cut=rmAdd(S.examDate,-S.revCutoffDays), cw=rmWk(rmIso()), cap=S.weeklyHours*60, load=rmLoad(), items=[], noA=[], iss=[], prop=[]; let late=0;
+  rmTopics().filter(t=>progress[t.id]==='completed').forEach(t=>{ const an=rmAnchor(t.id); if(!an){ noA.push(t.name); return; }
+    S.revIntervals.forEach((d,i)=>{ const id='rv_'+rmHash(t.id)+'_'+(i+1); if(roadmap.assignments[id]) return; const dt=rmAdd(an.date,d); if(dt>cut){ late++; return; }
+      items.push({id,t,dt,round:i+1,prov:an.source==='provisional'}); }); });
+  items.sort((a,b)=>a.dt.localeCompare(b.dt)).forEach(it=>{ let w=rmWk(it.dt); const m=S.revMin;
+    if(w>=cw) while((load[w]||0)+m>cap&&rmAdd(w,7)<=cut) w=rmAdd(w,7);
+    load[w]=(load[w]||0)+m; prop.push({id:it.id,type:'revision',topicId:it.t.id,week:w,date:it.dt,minutes:m,round:it.round,prov:it.prov,status:'planned',manual:false}); });
+  if(noA.length) iss.push({l:'warn',m:`${noA.length} completed topic(s) have no completion date — set a provisional date in Settings to include them.`});
+  if(late) iss.push({l:'warn',m:`${late} revision round(s) fall after the revision cutoff (${cut}) and were not scheduled.`});
+  const od=prop.filter(p=>p.week<cw).length; if(od) iss.push({l:'warn',m:`${od} revision(s) are already due/overdue; they stay in their original week until you move them.`});
+  const cap2=Object.keys(load).filter(w=>load[w]>cap).length; if(cap2) iss.push({l:'warn',m:cap2+' week(s) exceed the weekly limit even after spreading revisions.'});
+  rmPreview('Revision sessions for completed topics (existing revisions are kept)',prop,iss,[]); }
+
+function rmPreview(title,prop,iss,extra){ RM.prop={proposed:prop}; const cur=roadmap.assignments, S=roadmap.settings, cw=rmWk(rmIso()), cap=S.weeklyHours*60;
+  const nw=prop.filter(p=>!cur[p.id]), mv=prop.filter(p=>cur[p.id]&&cur[p.id].week!==p.week), same=prop.length-nw.length-mv.length, load={};
+  Object.values(cur).forEach(a=>{ if(rmSt(a)==='skipped') return; (load[a.week]=load[a.week]||{s:0,r:0,m:0})[a.type==='study'?'s':a.type==='revision'?'r':'m']+=a.minutes; });
+  nw.forEach(p=>{ (load[p.week]=load[p.week]||{s:0,r:0,m:0})[p.type==='study'?'s':p.type==='revision'?'r':'m']+=p.minutes; });
+  const over=Object.keys(load).filter(w=>load[w].s+load[w].r+load[w].m>cap); over.slice(0,10).forEach(w=>iss.push({l:'warn',m:'Week of '+w+' would exceed weekly limit ('+Math.round((load[w].s+load[w].r+load[w].m)/6)/10+'h)'}));
+  const ws=Object.keys(load).sort(), li=l=>iss.filter(i=>i.l===l).slice(0,40).map(i=>`<li class="rm-${i.l==='err'?'err':'warn'}">${rmE(i.m)}</li>`).join('');
+  rmModal(`<h3>Preview</h3><p class="rm-note">${rmE(title)}</p><p><b>${nw.length}</b> new · <b>${mv.length}</b> would move · <b>${same}</b> unchanged · ${iss.filter(i=>i.l==='err').length} rejected · nothing is saved until you approve. Completed topics and history are never changed.</p>
+   ${iss.length?`<ul>${li('err')}${li('warn')}</ul>`:''}${(extra||[]).length?`<p class="rm-note">AI notes: ${(extra||[]).map(rmE).join(' · ')}</p>`:''}
+   <div style="max-height:220px;overflow:auto"><table style="width:100%;font-size:12px;border-collapse:collapse"><tr style="text-align:left"><th>Week</th><th>Learn</th><th>Revise</th><th>Mock</th></tr>${ws.map(w=>`<tr style="border-top:1px solid var(--border)"><td>${rmFmt(w)}${w===cw?' (now)':''}</td><td>${Math.round(load[w].s/6)/10}h</td><td>${Math.round(load[w].r/6)/10}h</td><td>${Math.round(load[w].m/6)/10}h</td></tr>`).join('')}</table></div>
+   <div class="profile-modal-footer" style="flex-wrap:wrap"><button class="btn-cancel" onclick="rmClose()">Cancel</button>
+   <button class="btn-save" ${prop.length?'':'disabled'} onclick="rmApply('merge')" title="Adds only assignments whose id is new; your existing ones are untouched">Merge (add new only)</button>
+   <button class="btn-save" ${prop.length?'':'disabled'} onclick="if(confirm('Replace all planned (not done/skipped) assignments from this week onward?'))rmApply('replace')">Replace future plan</button></div>`); }
+function rmApply(mode){ const P=RM.prop; if(!P) return; const cw=rmWk(rmIso()), next=Object.assign({},roadmap.assignments);
+  if(mode==='replace') Object.keys(next).forEach(k=>{ const a=next[k]; if(a.week>=cw&&rmSt(a)==='planned') delete next[k]; });
+  P.proposed.forEach(p=>{ if(!next[p.id]) next[p.id]=p; }); roadmap.assignments=next; rmClose(); rmSave(); showToast('✅ Roadmap updated'); }
+
+// ── AI export / import (schema "syllabus-roadmap", version 1) ──
+function rmTemplate(){ const t=rmTopics()[0]||{id:'subjectId::Topic name'}, d=rmIso();
+  return {format:'syllabus-roadmap',schemaVersion:1,assignments:[{id:'ai_study_001',activityType:'study',topicId:t.id,date:d,minutes:60},{id:'ai_rev_001',activityType:'revision',topicId:t.id,date:rmAdd(d,7),minutes:20,round:1},{id:'ai_mock_001',activityType:'mock',date:rmAdd(d,14),minutes:180,title:'Full-length mock'}],unscheduled:[{topicId:t.id,reason:'why it was not scheduled'}],warnings:['capacity or data problems']}; }
+function rmBuildExport(incl){ const S=roadmap.settings, M=rmMap();
+  return {format:'syllabus-roadmap-export',schemaVersion:1,generatedAt:new Date().toISOString(),
+   exam:{name:S.examName,date:S.examDate||null,dateIsEstimate:!!S.examEstimated},preparationStart:S.startDate,weekStartDay:S.weekStart,weeklyHours:S.weeklyHours,newLearningDeadline:S.examDate?rmAdd(S.examDate,-S.bufferDays):null,
+   revisionPrefs:{intervalsDays:S.revIntervals,minutesPerRevision:S.revMin,cutoffDate:S.examDate?rmAdd(S.examDate,-S.revCutoffDays):null,autoGenerate:true},
+   subjects:getAllSubjects().map(s=>({subjectId:s.id,name:s.name})),
+   topics:rmTopics().filter(t=>incl||progress[t.id]!=='completed').map(t=>{ const m=rmMeta(t.id), an=rmAnchor(t.id); return {topicId:t.id,subjectId:t.sid,section:t.sec,name:t.name,status:progress[t.id]||'not-started',percent:topicPct[t.id]||0,difficulty:m.difficulty||null,priority:m.priority||null,estMinutes:rmMin(t.id),estimateIsDefault:!m.minutes&&!m.difficulty,completionAnchorDate:an?an.date:null,completionAnchorSource:an?an.source:null,legacyRevisionCount:revisions[t.id]||0,lastLegacyRevision:revisionDates[t.id]||null,prerequisites:[]}; }),
+   existingAssignments:Object.values(roadmap.assignments).map(a=>({id:a.id,activityType:a.type,topicId:a.topicId||null,weekStart:a.week,minutes:a.minutes,round:a.round||null,status:rmSt(a)})),
+   responseTemplate:rmTemplate()}; }
+function rmPrompt(){ const S=roadmap.settings; return `You are a study-planning assistant. I attach a JSON export (format "syllabus-roadmap-export") of my ${S.examName} preparation. Build a month/week roadmap and reply with ONLY valid JSON in the "responseTemplate" format (format "syllabus-roadmap", schemaVersion 1; fields: id, activityType, topicId, date YYYY-MM-DD, minutes, round).
+Rules:
+1. Use topicId values exactly as supplied. Never invent, rename or merge topics; schedule only topics listed in "topics".
+2. Spread new learning (activityType "study") from today/preparationStart until newLearningDeadline. Respect weekStartDay, weeklyHours, each topic's estMinutes, difficulty and priority; keep hard topics in different weeks. Split a topic across weeks only by giving it several entries with the same topicId.
+3. For topics with status "completed", schedule spaced revisions (activityType "revision") from completionAnchorDate using revisionPrefs.intervalsDays, none after revisionPrefs.cutoffDate. If completionAnchorDate is null, do not guess — list the topic in "warnings".
+4. A revision is a separate activity referencing the existing topicId. Give every entry a unique, stable "id" (letters, digits, _ or -). Never mark anything completed and never create new syllabus items.
+5. Keep existingAssignments unless you explain a change. Include mock tests ("mock") only if I asked for them.
+6. List topics you could not schedule in "unscheduled" with reasons; report capacity shortages or an infeasible deadline in "warnings"; say which numbers are estimates (estimateIsDefault=true).`; }
+function rmDl(name,obj){ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(obj,null,2)],{type:'application/json'})); a.download=name; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); }
+function rmExportOpen(){ rmModal(`<h3>Export for AI Planning</h3><p class="rm-note">Nothing is sent anywhere. You download a file and give it to an AI assistant yourself.</p>
+  <ul><li>Included: exam name/date, preparation start, week start, weekly hours, revision preferences, subjects, topics with ids/status/percent/difficulty/priority/effort, completion anchor dates (with source), existing roadmap assignments.</li><li>Not included: passphrase, notes, journal, mock scores, to-do items, tokens or credentials.</li></ul>
+  <label><input type="checkbox" id="rx-inc" checked/> Include completed topics (needed for the AI to plan their revisions)</label>
+  <div class="profile-modal-footer" style="flex-wrap:wrap"><button class="btn-cancel" onclick="rmClose()">Close</button><button class="btn-save" onclick="rmDl('roadmap_export.json',rmBuildExport(document.getElementById('rx-inc').checked))">Download JSON</button>
+  <button class="btn-save" onclick="navigator.clipboard.writeText(rmPrompt()).then(()=>showToast('📋 Prompt copied'),()=>showToast('Copy failed'))">Copy AI prompt</button><button class="btn-save" onclick="rmDl('roadmap_template.json',rmTemplate())">Download template</button></div>`); }
+function rmImportOpen(){ rmModal(`<h3>Import Roadmap</h3><p class="rm-note">Paste or choose the JSON the AI returned. It is validated and previewed first; imported text is never executed.</p>
+  <input type="file" accept=".json,application/json" onchange="const f=this.files[0];if(f){const r=new FileReader();r.onload=e=>document.getElementById('rm-paste').value=e.target.result;r.readAsText(f);}"/>
+  <textarea id="rm-paste" placeholder='{"format":"syllabus-roadmap","schemaVersion":1,"assignments":[…]}'></textarea><div id="rm-ierr" class="rm-err"></div>
+  <div class="profile-modal-footer"><button class="btn-cancel" onclick="rmClose()">Cancel</button><button class="btn-save" onclick="rmImportRun()">Validate &amp; preview</button></div>`); }
+function rmValidate(txt){ let j; try{ j=JSON.parse(txt); }catch(e){ return {fatal:'Not valid JSON: '+e.message}; }
+  if(!j||typeof j!=='object'||j.format!=='syllabus-roadmap') return {fatal:'Unsupported file: "format" must be "syllabus-roadmap".'};
+  if(j.schemaVersion!==1) return {fatal:'Unsupported schemaVersion '+String(j.schemaVersion)+' (supported: 1).'};
+  if(!Array.isArray(j.assignments)) return {fatal:'"assignments" must be an array.'};
+  const S=roadmap.settings, M=rmMap(), ids=new Set(), prop=[], iss=[], stop=S.examDate?rmAdd(S.examDate,-S.bufferDays):null, rc=S.examDate?rmAdd(S.examDate,-S.revCutoffDays):null, today=rmIso();
+  j.assignments.forEach((x,i)=>{ const p='#'+(i+1)+' ', bad=m=>iss.push({l:'err',m:p+m});
+    if(!x||typeof x!=='object') return bad('is not an object');
+    if(!/^[\w-]{1,60}$/.test(x.id||'')) return bad('has a missing or invalid id');
+    if(ids.has(x.id)) return bad('duplicate id '+x.id); ids.add(x.id);
+    if(!['study','revision','mock'].includes(x.activityType)) return bad('unsupported activityType');
+    if(x.completed||x.markCompleted||x.newTopic||x.createTopic) return bad('tries to change completion or create a topic — rejected');
+    if(!rmOk(x.date)) return bad('has an invalid date');
+    const ty=x.activityType; if(ty!=='mock'){ if(!M.has(x.topicId)) return bad('references an unknown topicId'); if(ty==='study'&&progress[x.topicId]==='completed'){ iss.push({l:'warn',m:p+'schedules new study for an already-completed topic — skipped'}); return; } }
+    if(ty==='study'&&stop&&x.date>stop) return bad('is after the new-learning deadline ('+stop+')');
+    if(ty==='revision'&&rc&&x.date>rc) return bad('is after the revision cutoff ('+rc+')');
+    if(x.date<today) iss.push({l:'warn',m:p+'is dated in the past'});
+    let mn=Number(x.minutes); if(!(mn>=5&&mn<=720)){ if(x.minutes!=null) iss.push({l:'warn',m:p+'invalid minutes — default used'}); mn=ty==='revision'?S.revMin:ty==='mock'?180:rmMin(x.topicId); }
+    prop.push({id:x.id,type:ty,topicId:ty==='mock'?null:x.topicId,week:rmWk(x.date),date:x.date,minutes:Math.round(mn),round:ty==='revision'?(parseInt(x.round)||null):null,title:ty==='mock'?String(x.title||'Mock test').slice(0,80):null,status:'planned',manual:false}); });
+  const extra=[].concat((j.unscheduled||[]).slice(0,10).map(u=>'Unscheduled '+String(u&&u.topicId).slice(0,60)+': '+String(u&&u.reason).slice(0,100)),(j.warnings||[]).slice(0,10).map(w=>String(w).slice(0,160)));
+  return {prop,iss,extra}; }
+function rmImportRun(){ const v=rmValidate(document.getElementById('rm-paste').value);
+  if(v.fatal){ document.getElementById('rm-ierr').textContent='❌ '+v.fatal; return; } rmPreview('AI-generated roadmap import',v.prop,v.iss,v.extra); }
 </script>
 </body>
 </html>
