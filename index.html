@@ -7267,7 +7267,7 @@ function renderRoadmap() {
   if(!document.getElementById('roadmap-summary')) return;
   roadmapEnsureData();
   const c=roadmapConfig(), today=roadmapToday(), thisWeek=roadmapWeekStart(today,c.weekStartsOn), thisMonth=roadmapMonthKey(today);
-  const stats=getStats(), items=roadmapSyllabusItems(true), assignments=roadmapData.assignments;
+  const items=roadmapSyllabusItems(true), assignments=roadmapData.assignments;
   const studyAssignments=assignments.filter(a=>a.activityType==='study'), revisionItems=roadmapRevisionItems();
   const plannedTopics=new Set(roadmapGetActiveTopicAssignments().map(a=>a.topicId));
   const unscheduled=roadmapGetUnscheduledTopics();
@@ -7283,7 +7283,6 @@ function renderRoadmap() {
   const deadlineText=c.examDateIsEstimated?'Estimated exam window':'Configured exam window';
   document.getElementById('roadmap-deadline-line').textContent=`${c.examName||'SSC CGL'} · ${deadlineText}: ${roadmapFormatDate(c.examStartDate)} – ${roadmapFormatDate(c.examEndDate)}. Existing syllabus IDs and canonical completion remain authoritative.`;
   document.getElementById('roadmap-summary').innerHTML=`
-    <div class="roadmap-stat"><div class="roadmap-stat-label">Actual syllabus</div><div class="roadmap-stat-value" style="color:var(--green)">${stats.pct}%</div><div class="roadmap-stat-sub">${stats.done} of ${stats.total} canonical topics complete</div></div>
     <div class="roadmap-stat"><div class="roadmap-stat-label">Roadmap coverage</div><div class="roadmap-stat-value" style="color:#67d7f2">${coverage}%</div><div class="roadmap-stat-sub">${new Set(studyAssignments.map(a=>a.topicId)).size} unique topics assigned at least once</div></div>
     <div class="roadmap-stat"><div class="roadmap-stat-label">Planned vs actual</div><div class="roadmap-stat-value" style="font-size:17px;color:${planStatusColor}">${dueTopicIds.size?`${dueDoneCount}/${dueTopicIds.size} due`:'Not due yet'}</div><div class="roadmap-stat-sub">${!dueTopicIds.size?'No cumulative study targets due yet':dueDoneCount>=dueTopicIds.size?'On track against assigned targets':`${dueTopicIds.size-dueDoneCount} assigned topic(s) not yet complete`}</div></div>
     <div class="roadmap-stat"><div class="roadmap-stat-label">Current month</div><div class="roadmap-stat-value" style="font-size:17px">${roadmapMonthTitle(thisMonth)}</div><div class="roadmap-stat-sub">${currentMonthAssignments.length} activities · ${Math.round(currentMonthAssignments.reduce((n,a)=>n+roadmapDurationMinutes(a),0)/60*10)/10} estimated hours</div></div>
@@ -7392,11 +7391,11 @@ function roadmapRenderActivity(a) {
   let actions='';
   if(type==='revision') {
     if(!['completed','skipped'].includes(a.status)) actions+=`<button class="roadmap-btn small" onclick="roadmapSetRevisionStatus(${roadmapOnclickArg(a.assignmentId)},'completed')">✓ Revised</button><button class="roadmap-btn small" onclick="roadmapSetRevisionStatus(${roadmapOnclickArg(a.assignmentId)},'skipped')">Skip</button>`;
-    if(!['completed','skipped'].includes(a.status)) actions+=`<button class="roadmap-btn small" onclick="roadmapMoveOrder(${roadmapOnclickArg(a.assignmentId)},-1)" title="Move earlier in day">↑</button><button class="roadmap-btn small" onclick="roadmapMoveOrder(${roadmapOnclickArg(a.assignmentId)},1)" title="Move later in day">↓</button><button class="roadmap-btn small" onclick="roadmapOpenAssignment(${roadmapOnclickArg(a.assignmentId)})">Move / edit</button>`;
+    if(!['completed','skipped'].includes(a.status)) actions+=`<button class="roadmap-btn small" onclick="roadmapOpenAssignment(${roadmapOnclickArg(a.assignmentId)})">Move / edit</button>`;
     actions+=`<button class="roadmap-btn small" onclick="roadmapCreateTodo(${roadmapOnclickArg(a.assignmentId)})">To-Do</button>`;
   } else if(type==='study') {
     if(!canonicalDone) actions+=`<button class="roadmap-btn small" onclick="roadmapMarkCanonicalCompleted(${roadmapOnclickArg(a.topicId)})">Mark topic complete</button>`;
-    actions+=`<button class="roadmap-btn small primary" onclick="roadmapContinueNextWeek(${roadmapOnclickArg(a.assignmentId)})">＋ Continue next week</button><button class="roadmap-btn small" onclick="roadmapMoveOrder(${roadmapOnclickArg(a.assignmentId)},-1)" title="Move earlier in day">↑</button><button class="roadmap-btn small" onclick="roadmapMoveOrder(${roadmapOnclickArg(a.assignmentId)},1)" title="Move later in day">↓</button><button class="roadmap-btn small" onclick="roadmapOpenAssignment(${roadmapOnclickArg(a.assignmentId)})">Move / edit</button><button class="roadmap-btn small" onclick="roadmapCreateTodo(${roadmapOnclickArg(a.assignmentId)})">To-Do</button>`;
+    actions+=`<button class="roadmap-btn small primary" onclick="roadmapContinueNextWeek(${roadmapOnclickArg(a.assignmentId)})">＋ Continue next week</button><button class="roadmap-btn small" onclick="roadmapOpenAssignment(${roadmapOnclickArg(a.assignmentId)})">Move / edit</button><button class="roadmap-btn small" onclick="roadmapCreateTodo(${roadmapOnclickArg(a.assignmentId)})">To-Do</button>`;
     if(!['completed','skipped'].includes(a.status)) actions+=`<button class="roadmap-btn small warn" onclick="roadmapRemoveAssignment(${roadmapOnclickArg(a.assignmentId)})">Remove</button>`;
   } else {
     if(!['completed','skipped'].includes(a.status)) actions+=`<button class="roadmap-btn small" onclick="roadmapSetGenericActivityStatus(${roadmapOnclickArg(a.assignmentId)},'completed')">Complete</button><button class="roadmap-btn small" onclick="roadmapSetGenericActivityStatus(${roadmapOnclickArg(a.assignmentId)},'skipped')">Skip</button><button class="roadmap-btn small" onclick="roadmapOpenAssignment(${roadmapOnclickArg(a.assignmentId)})">Edit</button>`;
@@ -7975,15 +7974,6 @@ function roadmapBuildTopicMetadataExport(t) {
   return {subjectId:t.subjectId,subjectName:t.subjectName,topicId:t.topicId,topicName:t.topicName,status:t.status,completedAt:t.completedAt,completionDateSource:t.completionDateSource,revisionAnchorDate:t.revisionAnchorDate,difficulty:t.difficulty||null,priority:t.priority||'medium',prerequisiteTopicIds:t.prerequisiteTopicIds||[]};
 }
 
-function roadmapMoveOrder(assignmentId,delta) {
-  const a=roadmapData.assignments.find(x=>x.assignmentId===assignmentId);if(!a||!roadmapIsISODate(a.plannedDate))return;
-  const peers=roadmapData.assignments.filter(x=>x.weekStart===a.weekStart&&x.plannedDate===a.plannedDate&&x.status!=='completed'&&x.status!=='skipped');
-  if(peers.length<2){showToast('Add another activity on the same date to change the order.');return;}
-  const allIndex=new Map(roadmapData.assignments.map((x,i)=>[x.assignmentId,i]));
-  peers.sort((x,y)=>(Number(x.sortOrder)||allIndex.get(x.assignmentId))-(Number(y.sortOrder)||allIndex.get(y.assignmentId)));
-  const i=peers.findIndex(x=>x.assignmentId===assignmentId),j=Math.max(0,Math.min(peers.length-1,i+delta));if(i<0||i===j)return;
-  [peers[i],peers[j]]=[peers[j],peers[i]];peers.forEach((x,n)=>{x.sortOrder=n;});saveData();renderRoadmap();
-}
 function roadmapRenderSavedDrafts() {
   const host=document.getElementById('roadmap-saved-drafts');if(!host)return;
   const drafts=roadmapEnsureData().drafts||[];
