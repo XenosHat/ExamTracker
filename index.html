@@ -2872,7 +2872,15 @@ body{
       </div>
       <div class="roadmap-note" id="rm-revision-plan-preview"></div>
     </div>
-    <div class="roadmap-modal-foot"><button class="roadmap-btn" onclick="roadmapCloseModal('roadmap-revision-plan-overlay')">Not now</button><button class="roadmap-btn primary" onclick="roadmapSaveRevisionPlan()">Confirm revision plan</button></div>
+    <div class="roadmap-modal-foot" style="display:flex;flex-direction:column;align-items:stretch;gap:12px;">
+      <div style="display:flex;justify-content:flex-start;">
+        <button type="button" id="rm-revision-plan-mark-topic-complete" class="roadmap-btn" onclick="roadmapMarkCanonicalCompletedFromRevisionPlan()" title="Mark the canonical syllabus topic Completed in Progress Tracker. This does not mark any additional study session done.">✓ Complete syllabus topic</button>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;">
+        <button class="roadmap-btn" onclick="roadmapCloseModal('roadmap-revision-plan-overlay')">Not now</button>
+        <button class="roadmap-btn primary" onclick="roadmapSaveRevisionPlan()">Confirm revision plan</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -7434,7 +7442,6 @@ function roadmapRenderActivity(a) {
   const label=type==='study'?`${topic?.topicName||'[Unknown topic]'}${parts.length>1?` · Part ${partNumber} of ${parts.length}`:''}`:type==='revision'?`Revision ${a.round||''} · ${topic?.topicName||'[Unknown topic]'}`:type==='mock-test'?(a.title||'Mock test'):(a.title||'Activity');
   const subject=topic?.subjectName||a.subjectName||(type==='mock-test'?'Exam practice':'Unknown subject');
   const typeClass=type==='revision'?'revision':type==='mock-test'?'mock':'study';
-  const canonicalDone=type==='study'&&(progress[a.topicId]||'not-started')==='completed';
   const duration=roadmapDurationMinutes(a);
   const detail=[subject,duration?`${duration} min`:'Planned duration not set',a.difficulty?`Difficulty: ${roadmapDifficultyLabel(a.difficulty)}`:'',a.priority?`Priority: ${a.priority}`:''].filter(Boolean).join(' · ');
   let actions='';
@@ -7444,7 +7451,6 @@ function roadmapRenderActivity(a) {
     actions+=`<button class="roadmap-btn small" onclick="roadmapCreateTodo(${roadmapOnclickArg(a.assignmentId)})">To-Do</button>`;
   } else if(type==='study') {
     if(!['completed','skipped'].includes(a.status)) actions+=`<button class="roadmap-btn small" onclick="roadmapSetGenericActivityStatus(${roadmapOnclickArg(a.assignmentId)},'completed')" title="Marks only this scheduled study activity as performed; does not complete the syllabus topic.">✓ Mark session done</button>`;
-    if(!canonicalDone) actions+=`<button class="roadmap-btn small" onclick="roadmapMarkCanonicalCompleted(${roadmapOnclickArg(a.topicId)},${roadmapOnclickArg(a.assignmentId)})" title="Updates the canonical topic status in Progress Tracker to Completed.">✓ Complete syllabus topic</button>`;
     if(a.status==='completed') actions+=`<button class="roadmap-btn small" onclick="roadmapOpenRevisionPlan(${roadmapOnclickArg(a.topicId)},${roadmapOnclickArg(a.completedAt?roadmapLocalDateOfTimestamp(a.completedAt):a.plannedDate)},${roadmapOnclickArg(a.assignmentId)},'study-assignment-completion')">Set revision plan</button>`;
     if(!['completed','skipped'].includes(a.status)) actions+=`<button class="roadmap-btn small primary" onclick="roadmapContinueNextWeek(${roadmapOnclickArg(a.assignmentId)})">＋ Continue next week</button>`;
     actions+=`<button class="roadmap-btn small" onclick="roadmapOpenAssignment(${roadmapOnclickArg(a.assignmentId)})">Move / edit</button><button class="roadmap-btn small" onclick="roadmapCreateTodo(${roadmapOnclickArg(a.assignmentId)})">To-Do</button>`;
@@ -7453,7 +7459,7 @@ function roadmapRenderActivity(a) {
     if(!['completed','skipped'].includes(a.status)) actions+=`<button class="roadmap-btn small" onclick="roadmapSetGenericActivityStatus(${roadmapOnclickArg(a.assignmentId)},'completed')">Complete</button><button class="roadmap-btn small" onclick="roadmapSetGenericActivityStatus(${roadmapOnclickArg(a.assignmentId)},'skipped')">Skip</button><button class="roadmap-btn small" onclick="roadmapOpenAssignment(${roadmapOnclickArg(a.assignmentId)})">Edit</button>`;
   }
   const statusText=status==='completed'?'Completed':status==='skipped'?'Skipped':status==='overdue'?'Overdue':status==='due'?'This week':status==='needs-anchor'?'Needs date anchor':a.status==='in-progress'?'In progress':'Planned';
-  return `<div class="roadmap-activity"><span class="roadmap-chip ${typeClass}">${type==='study'?(parts.length>1?`NEW STUDY · PART ${partNumber}`:'NEW STUDY'):type==='revision'?'REVISION':'MOCK TEST'}</span><div class="roadmap-activity-main"><div class="roadmap-activity-name">${roadmapEscape(label)}</div><div class="roadmap-activity-meta"><span>${roadmapEscape(detail)}</span><span class="roadmap-chip ${roadmapStatusClass(status)}">${roadmapEscape(statusText)}</span>${canonicalDone?'<span class="roadmap-chip done">✓ Already marked complete in Progress Tracker</span>':''}${a.intervalDays!=null&&type==='revision'?`<span>Interval: ${Number(a.intervalDays)}d</span>`:''}${a.anchorSource==='user-confirmed'?'<span>Anchor: user-confirmed</span>':''}</div></div><div class="roadmap-activity-actions">${actions}</div></div>`;
+  return `<div class="roadmap-activity"><span class="roadmap-chip ${typeClass}">${type==='study'?(parts.length>1?`NEW STUDY · PART ${partNumber}`:'NEW STUDY'):type==='revision'?'REVISION':'MOCK TEST'}</span><div class="roadmap-activity-main"><div class="roadmap-activity-name">${roadmapEscape(label)}</div><div class="roadmap-activity-meta"><span>${roadmapEscape(detail)}</span><span class="roadmap-chip ${roadmapStatusClass(status)}">${roadmapEscape(statusText)}</span>${a.intervalDays!=null&&type==='revision'?`<span>Interval: ${Number(a.intervalDays)}d</span>`:''}${a.anchorSource==='user-confirmed'?'<span>Anchor: user-confirmed</span>':''}</div></div><div class="roadmap-activity-actions">${actions}</div></div>`;
 }
 function renderRoadmapUnscheduled() {
   const el=document.getElementById('roadmap-unscheduled');
@@ -7717,17 +7723,26 @@ function roadmapSetGenericActivityStatus(assignmentId,status) {
     roadmapOpenRevisionPlan(a.topicId,roadmapLocalDateOfTimestamp(a.completedAt),a.assignmentId,'study-assignment-completion');
   } else showToast('Roadmap activity updated; syllabus completion is unchanged.');
 }
-function roadmapMarkCanonicalCompleted(topicId,assignmentId=null) {
-  const t=roadmapSyllabusMap()[topicId];if(!t)return;
-  if((progress[topicId]||'not-started')==='completed'){showToast('This topic is already marked completed in Progress Tracker. Choose “Set revision plan” on a completed study assignment to review its plan.');return;}
-  if(!confirm(`Mark “${t.topicName}” completed in the existing Progress Tracker? This will update the canonical topic record, not just the roadmap assignment.`))return;
-  const now=new Date().toISOString();progress[topicId]='completed';topicPct[topicId]=100;topicCompletionDates[topicId]=now;
-  const linked=roadmapData.assignments.find(a=>a.assignmentId===assignmentId&&a.activityType==='study');
-  if(linked){linked.status='completed';linked.completedAt=now;linked.updatedAt=now;}
-  saveData();updateSidebar();updateSubjectHeader(t.subjectId);
+function roadmapMarkCanonicalCompletedFromRevisionPlan() {
+  const context=roadmapRevisionPlanContext;if(!context)return;
+  if((progress[context.topicId]||'not-started')==='completed'){
+    const button=document.getElementById('rm-revision-plan-mark-topic-complete');if(button)button.style.display='none';
+    showToast('This topic is already marked completed in Progress Tracker.');return;
+  }
+  const topic=roadmapSyllabusMap()[context.topicId];if(!topic)return;
+  if(!confirm(`Mark “${topic.topicName}” completed in the existing Progress Tracker? You can still confirm its revision plan in this dialog.`))return;
+  const now=new Date().toISOString(),anchor=roadmapLocalDateOfTimestamp(now);
+  progress[context.topicId]='completed';topicPct[context.topicId]=100;topicCompletionDates[context.topicId]=now;
+  const linked=roadmapData.assignments.find(a=>a.assignmentId===context.sourceAssignmentId&&a.activityType==='study');
+  // Do not overwrite the actual study-session completion timestamp if the session was already marked done.
+  if(linked&&linked.status!=='completed'){linked.status='completed';linked.completedAt=now;linked.updatedAt=now;}
+  roadmapRevisionPlanContext={...context,anchorDate:anchor,anchorSource:'canonical-completion'};
+  saveData();updateSidebar();updateSubjectHeader(topic.subjectId);
   if(document.getElementById('view-dashboard').style.display!=='none')renderDashboard();
-  renderRoadmap();showToast('✅ Topic marked complete. Confirm your revision plan next.');
-  roadmapOpenRevisionPlan(topicId,roadmapLocalDateOfTimestamp(now),assignmentId||linked?.assignmentId||null,'canonical-completion');
+  renderRoadmap();
+  document.getElementById('rm-revision-plan-topic').textContent=`${topic.subjectName} · anchor ${roadmapFormatDate(anchor)}${linked?' · linked to completed study assignment':''}. This anchor is stored with the revision plan and does not overwrite canonical completion history.`;
+  const button=document.getElementById('rm-revision-plan-mark-topic-complete');if(button)button.style.display='none';
+  showToast('✅ Topic marked complete in Progress Tracker. Confirm the revision plan here when ready.');
 }
 const ROADMAP_REVISION_PRESETS={"set-1":[2,4,7,10],"set-2":[3,7,14,21],"set-3":[7,14,30,60]};
 function roadmapRevisionPlanModeChanged() {
@@ -7747,6 +7762,8 @@ function roadmapOpenRevisionPlan(topicId,anchorDate,sourceAssignmentId=null,anch
   document.getElementById('rm-revision-plan-topic').textContent=`${topic.subjectName} · anchor ${roadmapFormatDate(anchor)}${assignment?' · linked to completed study assignment':''}. This anchor is stored with the revision plan and does not overwrite canonical completion history.`;
   document.getElementById('rm-revision-plan-preset').value=plan.mode==='mastered'?'mastered':(plan.presetId&&ROADMAP_REVISION_PRESETS[plan.presetId]?plan.presetId:'set-2');
   document.getElementById('rm-revision-plan-minutes').value=Number(plan.sessionMinutes)||30;
+  const completeTopicButton=document.getElementById('rm-revision-plan-mark-topic-complete');
+  if(completeTopicButton)completeTopicButton.style.display=(progress[topicId]||'not-started')==='completed'?'none':'';
   roadmapRevisionPlanModeChanged();roadmapOpenModal('roadmap-revision-plan-overlay');
 }
 function roadmapSaveRevisionPlan() {
