@@ -1749,6 +1749,15 @@ body{
 .roadmap-stat-value{font:800 23px 'Syne',sans-serif;margin-top:6px;word-break:break-word;}
 .roadmap-stat-sub{font-size:11px;color:var(--muted2);margin-top:4px;line-height:1.4;}
 .roadmap-toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:12px 0 15px;}
+.roadmap-ai-menu-wrap{margin:12px 0 15px;}
+.roadmap-ai-menu-toggle{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:40px;min-width:190px;}
+.roadmap-ai-menu-chevron{display:inline-block;font-size:16px;color:var(--muted2);line-height:1;transition:transform .15s;}
+.roadmap-ai-menu-toggle[aria-expanded="true"] .roadmap-ai-menu-chevron{transform:rotate(180deg);}
+.roadmap-ai-menu[hidden]{display:none!important;}
+.roadmap-ai-menu{margin-top:8px;padding:10px;background:rgba(255,255,255,.018);border:1px solid var(--border);border-radius:12px;}
+.roadmap-ai-menu .roadmap-toolbar{margin:0 0 10px;}
+.roadmap-ai-menu .roadmap-panel{margin-bottom:0;}
+.roadmap-ai-workflow-row{display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;}
 .roadmap-search{flex:1;min-width:180px;background:var(--card);border:1px solid var(--border2);border-radius:9px;color:var(--text);padding:9px 12px;font:12px 'DM Sans',sans-serif;}
 .roadmap-unscheduled-tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:2px 0 12px;}
 .roadmap-unscheduled-tools .roadmap-search{flex:1 1 250px;min-width:180px;}
@@ -1832,6 +1841,9 @@ body{
   .roadmap-stat-label{font-size:9px;letter-spacing:.4px;}
   .roadmap-stat-value{font-size:20px;}
   .roadmap-stat-sub{font-size:10px;overflow-wrap:anywhere;}
+  .roadmap-ai-menu-wrap{margin:10px 0 12px;}
+  .roadmap-ai-menu-toggle{width:100%;min-height:44px;}
+  .roadmap-ai-menu{padding:8px;}
   .roadmap-toolbar{display:grid;grid-template-columns:1fr;gap:8px;margin:10px 0 12px;}
   .roadmap-search{width:100%;min-width:0;min-height:42px;}
   .roadmap-toolbar .roadmap-btn{width:100%;min-height:42px;}
@@ -2158,18 +2170,25 @@ body{
         </div>
         <div class="roadmap-summary" id="roadmap-summary"></div>
         <div class="roadmap-panel" id="roadmap-capacity-panel" style="display:none;"></div>
-        <div class="roadmap-toolbar">
-          <button class="roadmap-btn" onclick="roadmapExportForAI()">⬆ Export for AI Planning</button>
-          <button class="roadmap-btn" onclick="roadmapOpenImport()">⬇ Import Roadmap</button>
-          <button class="roadmap-btn" onclick="roadmapDownloadTemplate()">JSON format example</button>
-        </div>
-        <div class="roadmap-panel">
-          <div style="display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;">
-            <div style="flex:1;min-width:220px;">
-              <strong style="font-size:12px;">External-AI workflow</strong>
-              <div class="roadmap-note" style="margin-top:4px;">Export a JSON snapshot, copy the generated prompt to an AI assistant yourself, then import its JSON proposal. Nothing is sent to an AI service from this app. Imports are validated and previewed before the saved roadmap changes.</div>
+        <div class="roadmap-ai-menu-wrap">
+          <button type="button" class="roadmap-btn roadmap-ai-menu-toggle" id="roadmap-ai-menu-toggle" aria-expanded="false" aria-controls="roadmap-ai-menu" onclick="roadmapToggleAIMenu()">
+            <span>🤖 AI Planning Menu</span><span class="roadmap-ai-menu-chevron" aria-hidden="true">⌄</span>
+          </button>
+          <div class="roadmap-ai-menu" id="roadmap-ai-menu" hidden>
+            <div class="roadmap-toolbar">
+              <button class="roadmap-btn" onclick="roadmapExportForAI()">⬆ Export for AI Planning</button>
+              <button class="roadmap-btn" onclick="roadmapOpenImport()">⬇ Import Roadmap</button>
+              <button class="roadmap-btn" onclick="roadmapDownloadTemplate()">JSON format example</button>
             </div>
-            <button class="roadmap-btn small" onclick="roadmapCopyPrompt()">Copy AI prompt</button>
+            <div class="roadmap-panel roadmap-ai-workflow">
+              <div class="roadmap-ai-workflow-row">
+                <div style="flex:1;min-width:220px;">
+                  <strong style="font-size:12px;">External-AI workflow</strong>
+                  <div class="roadmap-note" style="margin-top:4px;">Export a JSON snapshot, copy the generated prompt to an AI assistant yourself, then import its JSON proposal. Nothing is sent to an AI service from this app. Imports are validated and previewed before the saved roadmap changes.</div>
+                </div>
+                <button class="roadmap-btn small" onclick="roadmapCopyPrompt()">Copy AI prompt</button>
+              </div>
+            </div>
           </div>
         </div>
         <div id="roadmap-saved-drafts" class="roadmap-section"></div>
@@ -7280,7 +7299,6 @@ function renderRoadmap() {
   if(currentLoad.total>roadmapCapacityMinutes()) warnings.push(`Current week is over capacity by ${Math.round((currentLoad.total-roadmapCapacityMinutes())/60*10)/10} hours.`);
   if(overdueStudy) warnings.push(`${overdueStudy} study assignment(s) are past their planned dates and the canonical topic is not completed.`);
   if(pastEnd) warnings.push(`${pastEnd} active assignment(s) fall after the configured examination end date.`);
-  if(unscheduled.length) warnings.push(`${unscheduled.length} existing topic(s) are not scheduled yet.`);
   if(roadmapIsISODate(c.examEndDate)&&deadline<today) warnings.push('The exam window plus safety buffer has passed. Review dates before generating a new plan.');
   capEl.style.display=warnings.length?'block':'none';
   capEl.innerHTML=warnings.map(w=>`<div class="roadmap-warning">⚠ ${roadmapEscape(w)}</div>`).join('');
@@ -7290,6 +7308,14 @@ function renderRoadmap() {
   renderRoadmapRevisionList();
   renderRoadmapUnscheduled();
   roadmapRenderWidget();
+}
+function roadmapToggleAIMenu(forceOpen) {
+  const menu=document.getElementById('roadmap-ai-menu');
+  const button=document.getElementById('roadmap-ai-menu-toggle');
+  if(!menu||!button) return;
+  const open=typeof forceOpen==='boolean'?forceOpen:menu.hidden;
+  menu.hidden=!open;
+  button.setAttribute('aria-expanded',String(open));
 }
 function roadmapToggleAllMonths(open) { document.querySelectorAll('#roadmap-months details.roadmap-month').forEach(el=>el.open=!!open); }
 function renderRoadmapMonths() {
