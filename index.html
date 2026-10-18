@@ -1750,6 +1750,17 @@ body{
 .roadmap-stat-sub{font-size:11px;color:var(--muted2);margin-top:4px;line-height:1.4;}
 .roadmap-toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:12px 0 15px;}
 .roadmap-search{flex:1;min-width:180px;background:var(--card);border:1px solid var(--border2);border-radius:9px;color:var(--text);padding:9px 12px;font:12px 'DM Sans',sans-serif;}
+.roadmap-unscheduled-tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:2px 0 12px;}
+.roadmap-unscheduled-tools .roadmap-search{flex:1 1 250px;min-width:180px;}
+.roadmap-unscheduled-tools label{cursor:pointer;}
+.roadmap-anchor-card{padding:0;overflow:hidden;}
+.roadmap-anchor-summary{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:13px 14px;cursor:pointer;list-style:none;user-select:none;}
+.roadmap-anchor-summary::-webkit-details-marker{display:none;}
+.roadmap-anchor-summary:focus-visible{outline:2px solid #67d7f2;outline-offset:-3px;}
+.roadmap-anchor-heading{font:800 14px 'Syne',sans-serif;flex:1;min-width:180px;}
+.roadmap-anchor-chevron{color:var(--muted2);font-size:16px;transition:transform .15s;line-height:1;}
+.roadmap-anchor-card:not([open]) .roadmap-anchor-chevron{transform:rotate(-90deg);}
+.roadmap-anchor-content{padding:0 14px 14px;}
 .roadmap-month{background:var(--card);border:1px solid var(--border);border-radius:13px;overflow:hidden;margin-bottom:10px;}
 .roadmap-month summary{list-style:none;cursor:pointer;padding:15px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;user-select:none;}
 .roadmap-month summary::-webkit-details-marker{display:none;}
@@ -1824,7 +1835,12 @@ body{
   .roadmap-toolbar{display:grid;grid-template-columns:1fr;gap:8px;margin:10px 0 12px;}
   .roadmap-search{width:100%;min-width:0;min-height:42px;}
   .roadmap-toolbar .roadmap-btn{width:100%;min-height:42px;}
-  .roadmap-toolbar>label{padding:7px 2px;}
+  .roadmap-unscheduled-tools{display:grid;grid-template-columns:1fr;gap:8px;}
+  .roadmap-unscheduled-tools .roadmap-search{width:100%;min-width:0;min-height:42px;}
+  .roadmap-unscheduled-tools label{padding:4px 2px;min-height:36px;}
+  .roadmap-anchor-summary{padding:12px 10px;gap:7px;}
+  .roadmap-anchor-heading{font-size:13px;min-width:0;flex-basis:calc(100% - 30px);}
+  .roadmap-anchor-content{padding:0 10px 10px;}
   .roadmap-month summary{padding:12px 10px;gap:8px;}
   .roadmap-month-title{min-width:0;flex-basis:100%;font-size:14px;}
   .roadmap-month-meta{font-size:10px;line-height:1.4;}
@@ -2143,8 +2159,6 @@ body{
         <div class="roadmap-summary" id="roadmap-summary"></div>
         <div class="roadmap-panel" id="roadmap-capacity-panel" style="display:none;"></div>
         <div class="roadmap-toolbar">
-          <input id="roadmap-search" class="roadmap-search" placeholder="Search assigned or unscheduled topics…" oninput="renderRoadmap()" aria-label="Search roadmap topics"/>
-          <label class="roadmap-note" style="display:flex;align-items:center;gap:5px;"><input id="roadmap-export-completed" type="checkbox" checked style="accent-color:#118ab2;"/> Include completed topics</label>
           <button class="roadmap-btn" onclick="roadmapExportForAI()">⬆ Export for AI Planning</button>
           <button class="roadmap-btn" onclick="roadmapOpenImport()">⬇ Import Roadmap</button>
           <button class="roadmap-btn" onclick="roadmapDownloadTemplate()">JSON format example</button>
@@ -2186,6 +2200,10 @@ body{
           <div class="roadmap-section-head"><h3>📋 Unscheduled topics</h3><span class="roadmap-note" id="roadmap-unscheduled-count"></span></div>
           <div class="roadmap-panel">
             <div class="roadmap-note" style="margin-bottom:10px;">These are existing syllabus records (including chapters already completed in Progress Tracker) without a study assignment. Scheduling one references its existing topic ID; it does not create another syllabus chapter.</div>
+            <div class="roadmap-unscheduled-tools">
+              <input id="roadmap-search" class="roadmap-search" placeholder="Search assigned or unscheduled topics…" oninput="renderRoadmap()" aria-label="Search roadmap topics"/>
+              <label class="roadmap-note" title="Controls whether completed syllabus topics are included in the AI planning export." style="display:flex;align-items:center;gap:7px;min-height:40px;"><input id="roadmap-export-completed" type="checkbox" checked style="accent-color:#118ab2;width:16px;height:16px;flex-shrink:0;"/> Include completed topics</label>
+            </div>
             <div id="roadmap-unscheduled"></div>
           </div>
         </div>
@@ -7374,10 +7392,11 @@ function renderRoadmapUnscheduled() {
 function renderRoadmapMissingAnchors() {
   const el=document.getElementById('roadmap-missing-anchors');
   if(!el) return;
+  const wasOpen=document.getElementById('roadmap-anchor-details')?.open ?? true;
   const completed=roadmapSyllabusItems(true).filter(t=>t.status==='completed');
   const missing=completed.filter(t=>!t.completedAt&&!t.revisionAnchorDate);
   if(!roadmapConfig().revision.autoGenerate||!missing.length){el.innerHTML='';return;}
-  el.innerHTML=`<div class="roadmap-panel"><div class="roadmap-section-head"><h3>📅 Completed topics needing a revision anchor</h3><span class="roadmap-chip warn">${missing.length} need dates</span></div><div class="roadmap-note" style="margin-bottom:9px;">The older Progress Tracker did not store reliable completion timestamps. Choose an anchor date for each topic to plan spaced revisions. These user-confirmed dates are kept separately and do not alter canonical completion timestamps.</div>${missing.map(t=>`<div class="roadmap-anchor-row"><div><strong>${roadmapEscape(t.topicName)}</strong><div class="roadmap-note">${roadmapEscape(t.subjectName)} · completion time unknown</div></div><input type="date" id="rm-anchor-${roadmapEscape(encodeURIComponent(t.topicId))}" max="${roadmapToday()}" aria-label="Revision anchor for ${roadmapEscape(t.topicName)}"/><button class="roadmap-btn small" onclick="roadmapSaveAnchor(${roadmapOnclickArg(t.topicId)},${roadmapOnclickArg('rm-anchor-'+encodeURIComponent(t.topicId))})">Save date</button></div>`).join('')}</div>`;
+  el.innerHTML=`<details class="roadmap-panel roadmap-anchor-card" id="roadmap-anchor-details" ${wasOpen?'open':''}><summary class="roadmap-anchor-summary"><span class="roadmap-anchor-heading">📅 Completed topics needing a revision anchor</span><span class="roadmap-chip warn">${missing.length} need dates</span><span class="roadmap-anchor-chevron" aria-hidden="true">⌄</span></summary><div class="roadmap-anchor-content"><div class="roadmap-note" style="margin-bottom:9px;">The older Progress Tracker did not store reliable completion timestamps. Choose an anchor date for each topic to plan spaced revisions. These user-confirmed dates are kept separately and do not alter canonical completion timestamps.</div>${missing.map(t=>`<div class="roadmap-anchor-row"><div><strong>${roadmapEscape(t.topicName)}</strong><div class="roadmap-note">${roadmapEscape(t.subjectName)} · completion time unknown</div></div><input type="date" id="rm-anchor-${roadmapEscape(encodeURIComponent(t.topicId))}" max="${roadmapToday()}" aria-label="Revision anchor for ${roadmapEscape(t.topicName)}"/><button class="roadmap-btn small" onclick="roadmapSaveAnchor(${roadmapOnclickArg(t.topicId)},${roadmapOnclickArg('rm-anchor-'+encodeURIComponent(t.topicId))})">Save date</button></div>`).join('')}</div></details>`;
 }
 function renderRoadmapRevisionList() {
   const el=document.getElementById('roadmap-revisions-list'); if(!el) return;
