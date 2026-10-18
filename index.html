@@ -1809,17 +1809,54 @@ body{
 .roadmap-filter{border:1px solid var(--border2);background:none;color:var(--muted2);border-radius:18px;padding:5px 9px;font:600 10px 'DM Sans',sans-serif;cursor:pointer;}
 .roadmap-filter.active{background:rgba(17,138,178,.16);border-color:rgba(17,138,178,.45);color:#67d7f2;}
 @media(max-width:680px){
-  .roadmap-page{padding:14px 14px 38px;}
+  .roadmap-page{padding:12px 10px calc(88px + env(safe-area-inset-bottom, 0px));}
+  .roadmap-hero{gap:12px;margin-bottom:12px;}
   .roadmap-hero h2{font-size:19px;}
-  .roadmap-actions{width:100%;}
-  .roadmap-actions .roadmap-btn{flex:1;}
-  .roadmap-month summary{padding:12px;gap:8px;}
-  .roadmap-mini-track{max-width:none;}
-  .roadmap-activity{flex-wrap:wrap;}
-  .roadmap-activity-actions{width:100%;justify-content:flex-start;padding-left:22px;}
+  .roadmap-hero p{font-size:12px;}
+  .roadmap-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;width:100%;}
+  .roadmap-actions .roadmap-btn{width:100%;min-width:0;min-height:42px;padding:9px 7px;white-space:normal;line-height:1.3;}
+  .roadmap-actions .roadmap-btn.primary{grid-column:1/-1;}
+  .roadmap-summary{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-bottom:10px;}
+  .roadmap-stat{padding:11px 10px;border-radius:10px;}
+  .roadmap-stat-label{font-size:9px;letter-spacing:.4px;}
+  .roadmap-stat-value{font-size:20px;}
+  .roadmap-stat-sub{font-size:10px;overflow-wrap:anywhere;}
+  .roadmap-toolbar{display:grid;grid-template-columns:1fr;gap:8px;margin:10px 0 12px;}
+  .roadmap-search{width:100%;min-width:0;min-height:42px;}
+  .roadmap-toolbar .roadmap-btn{width:100%;min-height:42px;}
+  .roadmap-toolbar>label{padding:7px 2px;}
+  .roadmap-month summary{padding:12px 10px;gap:8px;}
+  .roadmap-month-title{min-width:0;flex-basis:100%;font-size:14px;}
+  .roadmap-month-meta{font-size:10px;line-height:1.4;}
+  .roadmap-month-body{padding:0 7px 8px;}
+  .roadmap-week summary{padding:10px 8px;gap:6px;}
+  .roadmap-week-title{min-width:0;flex-basis:100%;font-size:11.5px;}
+  .roadmap-week-metrics{gap:5px;}
+  .roadmap-week-body{padding:0 7px 8px;}
+  .roadmap-activity{display:grid;grid-template-columns:1fr;gap:7px;padding:11px 7px;}
+  .roadmap-activity-main{width:100%;}
+  .roadmap-activity-actions{width:100%;padding-left:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;justify-content:stretch;}
+  .roadmap-activity-actions .roadmap-btn{min-width:0;min-height:38px;padding:7px 6px;font-size:11px;white-space:normal;line-height:1.25;}
   .roadmap-form-grid{grid-template-columns:1fr;}
-  .roadmap-anchor-row{grid-template-columns:1fr;}
-  .roadmap-modal-head,.roadmap-modal-body,.roadmap-modal-foot{padding-left:14px;padding-right:14px;}
+  .roadmap-anchor-row{grid-template-columns:minmax(0,1fr);gap:7px;padding:12px 0;}
+  .roadmap-anchor-row input,.roadmap-anchor-row .roadmap-btn{width:100%;min-height:40px;}
+  .roadmap-section-head{gap:7px;}
+  .roadmap-section-head h3{font-size:14px;}
+  .roadmap-panel{padding:10px;border-radius:10px;}
+  .roadmap-filters{gap:6px;}
+  .roadmap-filter{min-height:34px;padding:7px 10px;font-size:10.5px;}
+  .roadmap-modal-overlay{padding:6px;align-items:flex-end;}
+  .roadmap-modal{width:100%;max-height:96dvh;border-radius:16px 16px 8px 8px;}
+  .roadmap-modal-head,.roadmap-modal-body,.roadmap-modal-foot{padding-left:12px;padding-right:12px;}
+  .roadmap-modal-body{padding-top:14px;padding-bottom:18px;}
+  .roadmap-modal-foot{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));}
+  .roadmap-modal-foot .roadmap-btn{min-height:40px;}
+}
+@media(max-width:380px){
+  .roadmap-summary{grid-template-columns:1fr;}
+  .roadmap-actions{grid-template-columns:1fr;}
+  .roadmap-actions .roadmap-btn.primary{grid-column:auto;}
+  .roadmap-activity-actions{grid-template-columns:1fr 1fr;}
 }
 
 </style>
@@ -2121,7 +2158,6 @@ body{
             <button class="roadmap-btn small" onclick="roadmapCopyPrompt()">Copy AI prompt</button>
           </div>
         </div>
-        <div id="roadmap-missing-anchors" class="roadmap-section"></div>
         <div id="roadmap-saved-drafts" class="roadmap-section"></div>
         <div class="roadmap-section-head" style="margin-top:18px;">
           <h3>🗓 Monthly roadmap</h3>
@@ -2145,10 +2181,11 @@ body{
             <div id="roadmap-revisions-list"></div>
           </div>
         </div>
+        <div id="roadmap-missing-anchors" class="roadmap-section"></div>
         <div class="roadmap-section">
           <div class="roadmap-section-head"><h3>📋 Unscheduled topics</h3><span class="roadmap-note" id="roadmap-unscheduled-count"></span></div>
           <div class="roadmap-panel">
-            <div class="roadmap-note" style="margin-bottom:10px;">These are existing syllabus records without a future study assignment. Assigning one here references its current topic ID; it does not create a duplicate syllabus entry.</div>
+            <div class="roadmap-note" style="margin-bottom:10px;">These are existing syllabus records (including chapters already completed in Progress Tracker) without a study assignment. Scheduling one references its existing topic ID; it does not create another syllabus chapter.</div>
             <div id="roadmap-unscheduled"></div>
           </div>
         </div>
@@ -2724,7 +2761,7 @@ body{
         <div class="roadmap-field"><label for="rm-exam-end">Exam window ends</label><input id="rm-exam-end" type="date"/></div>
         <div class="roadmap-field full"><label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-weight:600;"><input id="rm-exam-estimated" type="checkbox" style="width:auto;"/> This examination window is an estimate</label><div class="roadmap-note">Keep this checked until you have a reliable official date/window.</div></div>
         <div class="roadmap-field"><label for="rm-week-start">Week starts on</label><select id="rm-week-start"><option value="1">Monday</option><option value="0">Sunday</option><option value="6">Saturday</option></select></div>
-        <div class="roadmap-field"><label for="rm-default-hours">Default topic effort (hours)</label><input id="rm-default-hours" type="number" min="0.25" max="100" step="0.25"/></div>
+        <div class="roadmap-field"><label for="rm-default-study-minutes">Default study block (minutes)</label><input id="rm-default-study-minutes" type="number" min="15" max="480" step="15"/><div class="roadmap-note">Used by local auto-plan as one planning block per topic, adjusted by difficulty. It is not a claim that a chapter can be finished in one block; use “Continue next week” for chapters that need more time.</div></div>
         <div class="roadmap-field"><label for="rm-daily-hours">Daily study-hour limit</label><input id="rm-daily-hours" type="number" min="0.5" max="18" step="0.5"/></div>
         <div class="roadmap-field"><label for="rm-weekly-hours">Weekly study-hour limit</label><input id="rm-weekly-hours" type="number" min="1" max="100" step="1"/></div>
         <div class="roadmap-field"><label for="rm-safety-buffer">Deadline safety buffer (days)</label><input id="rm-safety-buffer" type="number" min="0" max="180" step="1"/></div>
@@ -7056,7 +7093,7 @@ function roadmapDefaultConfig() {
   return {
     examId:'ssc-cgl', examName:'SSC CGL', examStartDate:'2027-09-01', examEndDate:'2027-10-31', examDateIsEstimated:true,
     preparationStartDate:roadmapToday(), weekStartsOn:1, dailyStudyHours:4, weeklyStudyHours:24,
-    availableDays:[1,2,3,4,5,6], unavailableDates:[], defaultTopicHours:3,
+    availableDays:[1,2,3,4,5,6], unavailableDates:[], defaultStudySessionMinutes:90,
     difficultyWeighting:{easy:0.75,moderate:1,hard:1.5}, subjectPriorities:{}, allowTopicSplitting:true,
     safetyBufferDays:14, includeMockTests:true, mockTestFrequencyWeeks:2,
     revision:{enabled:true,intervalsDays:[1,7,21,45],rounds:4,sessionMinutes:30,cutoffDaysBeforeExam:14,autoGenerate:true},
@@ -7071,17 +7108,29 @@ function roadmapNormalizeData(value) {
   if(!value || typeof value!=='object' || Array.isArray(value)) return base;
   const cfg = value.config && typeof value.config==='object' ? value.config : {};
   const rc = cfg.revision && typeof cfg.revision==='object' ? cfg.revision : {};
+  // Backward compatibility: migrate the old topic-hours setting to a default *session block*.
+  const legacyHours=Number(cfg.defaultTopicHours);
+  const defaultStudySessionMinutes=Number(cfg.defaultStudySessionMinutes)>0
+    ? Math.max(15,Math.min(480,Number(cfg.defaultStudySessionMinutes)))
+    : legacyHours>0 ? Math.max(15,Math.min(480,Math.round(legacyHours*60))) : base.config.defaultStudySessionMinutes;
+  const config={...base.config,...cfg,defaultStudySessionMinutes,
+    difficultyWeighting:{...base.config.difficultyWeighting,...(cfg.difficultyWeighting||{})},
+    subjectPriorities:{...(cfg.subjectPriorities||{})},
+    availableDays:Array.isArray(cfg.availableDays)?cfg.availableDays.map(Number).filter(n=>n>=0&&n<=6):base.config.availableDays,
+    unavailableDates:Array.isArray(cfg.unavailableDates)?cfg.unavailableDates.filter(roadmapIsISODate):[],
+    revision:{...base.config.revision,...rc,intervalsDays:Array.isArray(rc.intervalsDays)?rc.intervalsDays.map(Number).filter(n=>Number.isFinite(n)&&n>=0&&n<=3650):base.config.revision.intervalsDays}
+  };
+  delete config.defaultTopicHours;
+  const rawMetadata=value.topicMetadata&&typeof value.topicMetadata==='object'?value.topicMetadata:{};
+  const topicMetadata=Object.fromEntries(Object.entries(rawMetadata).map(([id,meta])=>{
+    const safe=meta&&typeof meta==='object'&&!Array.isArray(meta)?{...meta}:{};
+    delete safe.effortHours; delete safe.effortSource;
+    return [id,safe];
+  }));
   return {
-    schemaVersion:1,
-    config:{...base.config,...cfg,
-      difficultyWeighting:{...base.config.difficultyWeighting,...(cfg.difficultyWeighting||{})},
-      subjectPriorities:{...(cfg.subjectPriorities||{})},
-      availableDays:Array.isArray(cfg.availableDays)?cfg.availableDays.map(Number).filter(n=>n>=0&&n<=6):base.config.availableDays,
-      unavailableDates:Array.isArray(cfg.unavailableDates)?cfg.unavailableDates.filter(roadmapIsISODate):[],
-      revision:{...base.config.revision,...rc,intervalsDays:Array.isArray(rc.intervalsDays)?rc.intervalsDays.map(Number).filter(n=>Number.isFinite(n)&&n>=0&&n<=3650):base.config.revision.intervalsDays}
-    },
+    schemaVersion:1, config,
     assignments:Array.isArray(value.assignments)?value.assignments.filter(a=>a&&typeof a==='object'&&!Array.isArray(a)):[],
-    topicMetadata:value.topicMetadata&&typeof value.topicMetadata==='object'?value.topicMetadata:{},
+    topicMetadata,
     revisionAnchors:value.revisionAnchors&&typeof value.revisionAnchors==='object'?value.revisionAnchors:{},
     drafts:Array.isArray(value.drafts)?value.drafts:[]
   };
@@ -7098,7 +7147,7 @@ function roadmapSyllabusItems(includeCompleted=true) {
     const meta=roadmapData?.topicMetadata?.[id]||{};
     const recordedAt=topicCompletionDates?.[id]||null;
     const userAnchor=roadmapData?.revisionAnchors?.[id]?.date||null;
-    result.push({topicId:id,subjectId:subject.id,subjectName:subject.name,subjectIcon:subject.icon,subjectColor:subject.color,section:section.label,topicName,status,topicPct:topicPct[id]||0,completedAt:recordedAt,completionDateSource:recordedAt?'recorded':'missing',revisionAnchorDate:userAnchor,existingRevisionCount:Number(revisions[id]||0),difficulty:meta.difficulty||'',priority:meta.priority||roadmapConfig().subjectPriorities[subject.id]||roadmapConfig().subjectPriorities.__default||'medium',effortHours:Number.isFinite(Number(meta.effortHours))&&meta.effortHours>0?Number(meta.effortHours):null,effortSource:meta.effortSource||null,prerequisiteTopicIds:Array.isArray(meta.prerequisiteTopicIds)?meta.prerequisiteTopicIds:[]});
+    result.push({topicId:id,subjectId:subject.id,subjectName:subject.name,subjectIcon:subject.icon,subjectColor:subject.color,section:section.label,topicName,status,topicPct:topicPct[id]||0,completedAt:recordedAt,completionDateSource:recordedAt?'recorded':'missing',revisionAnchorDate:userAnchor,existingRevisionCount:Number(revisions[id]||0),difficulty:meta.difficulty||'',priority:meta.priority||roadmapConfig().subjectPriorities[subject.id]||roadmapConfig().subjectPriorities.__default||'medium',prerequisiteTopicIds:Array.isArray(meta.prerequisiteTopicIds)?meta.prerequisiteTopicIds:[]});
   })));
   return result;
 }
@@ -7122,12 +7171,14 @@ function roadmapAssignmentStatus(a) {
     if(a.status==='skipped') return 'skipped';
     return roadmapIsISODate(a.plannedDate)&&a.plannedDate<roadmapToday()?'overdue':roadmapIsISODate(a.plannedDate)&&a.plannedDate===roadmapToday()?'due':'upcoming';
   }
-  const st=progress[a.topicId]||'not-started';
-  if(st==='completed') return 'completed';
+  // Study activity status is independent from canonical topic completion.
+  // The card separately displays whether the syllabus topic is already complete in Progress Tracker.
+  if(a.status==='completed') return 'completed';
   if(a.status==='skipped') return 'skipped';
+  if(a.status==='in-progress') return 'in-progress';
   if(roadmapIsISODate(a.plannedDate)&&a.plannedDate<roadmapToday()) return 'overdue';
   if(roadmapIsISODate(a.plannedDate)&&a.plannedDate===roadmapToday()) return 'due';
-  return st==='in-progress'?'in-progress':'upcoming';
+  return 'upcoming';
 }
 function roadmapStatusLabel(status) {
   return ({upcoming:'Upcoming',due:'Due today',overdue:'Overdue',completed:'Completed',skipped:'Skipped','needs-anchor':'Needs anchor','in-progress':'In progress'})[status]||status;
@@ -7151,7 +7202,7 @@ function roadmapWeeklyLoad(weekStart, source=roadmapData?.assignments||[]) {
   source.filter(a=>a.weekStart===weekStart).forEach(a=>{
     if(['completed','skipped'].includes(a.status)) return;
     const min=roadmapDurationMinutes(a);
-    if(a.activityType==='study') { if(syllabus[a.topicId]?.status!=='completed') study+=min; }
+    if(a.activityType==='study') { study+=min; }
     else if(a.activityType==='revision') revision+=min;
     else if(a.activityType==='mock-test') mock+=min;
   });
@@ -7162,7 +7213,7 @@ function roadmapGetActiveTopicAssignments() {
 }
 function roadmapGetUnscheduledTopics() {
   const scheduled=new Set(roadmapGetActiveTopicAssignments().map(a=>a.topicId));
-  return roadmapSyllabusItems(false).filter(t=>!scheduled.has(t.topicId));
+  return roadmapSyllabusItems(true).filter(t=>!scheduled.has(t.topicId));
 }
 function roadmapRevisionItems() {
   return roadmapEnsureData().assignments.filter(a=>a.activityType==='revision').sort((a,b)=>(a.plannedDate||'9999').localeCompare(b.plannedDate||'9999')||Number(a.round||0)-Number(b.round||0));
@@ -7202,10 +7253,10 @@ function renderRoadmap() {
     <div class="roadmap-stat"><div class="roadmap-stat-label">Current month</div><div class="roadmap-stat-value" style="font-size:17px">${roadmapMonthTitle(thisMonth)}</div><div class="roadmap-stat-sub">${currentMonthAssignments.length} activities · ${Math.round(currentMonthAssignments.reduce((n,a)=>n+roadmapDurationMinutes(a),0)/60*10)/10} estimated hours</div></div>
     <div class="roadmap-stat"><div class="roadmap-stat-label">Current week</div><div class="roadmap-stat-value" style="color:${currentLoad.total>roadmapCapacityMinutes()?'var(--red)':'var(--gold)'}">${Math.round(currentLoad.total/60*10)/10}h</div><div class="roadmap-stat-sub">${roadmapFormatDate(thisWeek)} – ${roadmapFormatDate(roadmapAddDays(thisWeek,6))} · capacity ${Math.round(roadmapCapacityMinutes()/60*10)/10}h</div></div>
     <div class="roadmap-stat"><div class="roadmap-stat-label">Revisions</div><div class="roadmap-stat-value" style="color:#c4b5fd">${revisionCompleted}/${revisionItems.length}</div><div class="roadmap-stat-sub">${revDue} due or overdue · revision progress is separate</div></div>
-    <div class="roadmap-stat"><div class="roadmap-stat-label">Unscheduled</div><div class="roadmap-stat-value" style="color:var(--yellow)">${unscheduled.length}</div><div class="roadmap-stat-sub">Existing incomplete syllabus topics without future study assignments</div></div>`;
+    <div class="roadmap-stat"><div class="roadmap-stat-label">Unscheduled</div><div class="roadmap-stat-value" style="color:var(--yellow)">${unscheduled.length}</div><div class="roadmap-stat-sub">Existing syllabus topics without future study assignments</div></div>`;
   const capEl=document.getElementById('roadmap-capacity-panel');
   const deadline=roadmapAddDays(c.examEndDate,-Math.max(0,Number(c.safetyBufferDays)||0));
-  const overdueStudy=assignments.filter(a=>a.activityType==='study'&&a.plannedDate<today&&(progress[a.topicId]||'not-started')!=='completed'&&a.status!=='skipped').length;
+  const overdueStudy=assignments.filter(a=>a.activityType==='study'&&roadmapAssignmentStatus(a)==='overdue'&&a.status!=='skipped').length;
   const pastEnd=assignments.filter(a=>roadmapIsISODate(a.plannedDate)&&a.plannedDate>c.examEndDate&&a.status!=='completed'&&a.status!=='skipped').length;
   const warnings=[];
   if(currentLoad.total>roadmapCapacityMinutes()) warnings.push(`Current week is over capacity by ${Math.round((currentLoad.total-roadmapCapacityMinutes())/60*10)/10} hours.`);
@@ -7260,7 +7311,7 @@ function renderRoadmapMonths() {
     }
     const weekHtml=[...weeks.entries()].sort((a,b)=>a[0].localeCompare(b[0])).map(([wk,acts])=>roadmapRenderWeek(wk,acts,month,needle)).join('');
     return `<details class="roadmap-month" ${month===currentMonth?'open':''}>
-      <summary><span class="roadmap-month-title">${roadmapEscape(roadmapMonthTitle(month))}</span><span class="roadmap-month-meta">${topicIds.size} topics · ${doneIds.size} complete · ${topicIds.size-doneIds.size} remaining</span><span class="roadmap-month-meta">${weeks.size} weeks · ${pct}% complete</span><span class="roadmap-month-meta">${Math.round(plannedMinutes/60*10)/10}h effort</span><span class="roadmap-chip">${visible.filter(a=>a.activityType==='revision').length} revisions</span><span class="roadmap-mini-track" aria-label="${pct}% of assigned topics complete"><span style="width:${pct}%"></span></span></summary>
+      <summary><span class="roadmap-month-title">${roadmapEscape(roadmapMonthTitle(month))}</span><span class="roadmap-month-meta">${topicIds.size} topics · ${doneIds.size} already complete in tracker · ${topicIds.size-doneIds.size} not yet complete in tracker</span><span class="roadmap-month-meta">${weeks.size} weeks · ${pct}% syllabus status</span><span class="roadmap-month-meta">${Math.round(plannedMinutes/60*10)/10}h effort</span><span class="roadmap-chip">${visible.filter(a=>a.activityType==='revision').length} revisions</span><span class="roadmap-mini-track" aria-label="${pct}% of assigned topics complete"><span style="width:${pct}%"></span></span></summary>
       <div class="roadmap-month-body">${weekHtml||'<div class="roadmap-empty">No activities match this search.</div>'}</div>
     </details>`;
   }).join('') || '<div class="roadmap-empty">No roadmap months yet. Configure dates, then add assignments manually or generate a draft.</div>';
@@ -7280,31 +7331,35 @@ function roadmapRenderWeek(weekStart, activities, monthKey, needle) {
   else contents=visibleActivities.sort((a,b)=>(a.plannedDate||'').localeCompare(b.plannedDate||'')||String(a.activityType).localeCompare(String(b.activityType))).map(roadmapRenderActivity).join('');
   return `<details class="roadmap-week" ${weekStart===roadmapWeekStart(roadmapToday(),c.weekStartsOn)?'open':''}>
     <summary><span class="roadmap-week-title">Week ${roadmapEscape(roadmapFormatDate(weekStart,{day:'numeric',month:'short'}))} – ${roadmapEscape(roadmapFormatDate(end,{day:'numeric',month:'short'}))}</span>
-      <span class="roadmap-chip">${studyTopics.size} topics · ${completeCount} complete · ${studyTopics.size-completeCount} remaining${studyTopics.size?` · ${Math.round(completeCount/studyTopics.size*100)}%`:''}</span><span class="roadmap-chip ${over?'overdue':''}">${Math.round(totals.study/60*10)/10}h study</span><span class="roadmap-chip revision">${Math.round(totals.revision/60*10)/10}h revision</span><span class="roadmap-chip mock">${Math.round(totals.mock/60*10)/10}h mock</span>${over?'<span class="roadmap-chip overdue">Over capacity</span>':''}</summary>
+      <span class="roadmap-chip">${studyTopics.size} topics · ${completeCount} already complete in tracker · ${studyTopics.size-completeCount} not yet complete in tracker${studyTopics.size?` · ${Math.round(completeCount/studyTopics.size*100)}% syllabus status`:''}</span><span class="roadmap-chip ${over?'overdue':''}">${Math.round(totals.study/60*10)/10}h study</span><span class="roadmap-chip revision">${Math.round(totals.revision/60*10)/10}h revision</span><span class="roadmap-chip mock">${Math.round(totals.mock/60*10)/10}h mock</span>${over?'<span class="roadmap-chip overdue">Over capacity</span>':''}</summary>
     <div class="roadmap-week-body">${contents}</div>
   </details>`;
 }
 function roadmapRenderActivity(a) {
   const syllabus=roadmapSyllabusMap(), topic=syllabus[a.topicId], type=a.activityType;
-  const status=roadmapAssignmentStatus(a), label=type==='study'?(topic?.topicName||'[Unknown topic]'):type==='revision'?`Revision ${a.round||''} · ${topic?.topicName||'[Unknown topic]'}`:type==='mock-test'?(a.title||'Mock test'):(a.title||'Activity');
+  const status=roadmapAssignmentStatus(a);
+  const parts=type==='study'?roadmapGetActiveTopicAssignments().filter(x=>x.topicId===a.topicId).sort((x,y)=>(x.plannedDate||'').localeCompare(y.plannedDate||'')||String(x.assignmentId).localeCompare(String(y.assignmentId))):[];
+  const partNumber=type==='study'?Math.max(0,parts.findIndex(x=>x.assignmentId===a.assignmentId))+1:0;
+  const label=type==='study'?`${topic?.topicName||'[Unknown topic]'}${parts.length>1?` · Part ${partNumber} of ${parts.length}`:''}`:type==='revision'?`Revision ${a.round||''} · ${topic?.topicName||'[Unknown topic]'}`:type==='mock-test'?(a.title||'Mock test'):(a.title||'Activity');
   const subject=topic?.subjectName||a.subjectName||(type==='mock-test'?'Exam practice':'Unknown subject');
   const typeClass=type==='revision'?'revision':type==='mock-test'?'mock':'study';
+  const canonicalDone=type==='study'&&(progress[a.topicId]||'not-started')==='completed';
   const date=roadmapFormatAssignmentDate(a), duration=roadmapDurationMinutes(a);
-  const detail=[subject,date,duration?`${duration} min`:'Effort not set',a.difficulty?`Difficulty: ${a.difficulty}`:'',a.priority?`Priority: ${a.priority}`:''].filter(Boolean).join(' · ');
+  const detail=[subject,date,duration?`${duration} min`:'Planned duration not set',a.difficulty?`Difficulty: ${a.difficulty}`:'',a.priority?`Priority: ${a.priority}`:''].filter(Boolean).join(' · ');
   let actions='';
   if(type==='revision') {
     if(!['completed','skipped'].includes(a.status)) actions+=`<button class="roadmap-btn small" onclick="roadmapSetRevisionStatus(${roadmapOnclickArg(a.assignmentId)},'completed')">✓ Revised</button><button class="roadmap-btn small" onclick="roadmapSetRevisionStatus(${roadmapOnclickArg(a.assignmentId)},'skipped')">Skip</button>`;
     if(!['completed','skipped'].includes(a.status)) actions+=`<button class="roadmap-btn small" onclick="roadmapMoveOrder(${roadmapOnclickArg(a.assignmentId)},-1)" title="Move earlier in day">↑</button><button class="roadmap-btn small" onclick="roadmapMoveOrder(${roadmapOnclickArg(a.assignmentId)},1)" title="Move later in day">↓</button><button class="roadmap-btn small" onclick="roadmapOpenAssignment(${roadmapOnclickArg(a.assignmentId)})">Move / edit</button>`;
     actions+=`<button class="roadmap-btn small" onclick="roadmapCreateTodo(${roadmapOnclickArg(a.assignmentId)})">To-Do</button>`;
   } else if(type==='study') {
-    if(status!=='completed') actions+=`<button class="roadmap-btn small" onclick="roadmapMarkCanonicalCompleted(${roadmapOnclickArg(a.topicId)})">Mark topic complete</button>`;
-    actions+=`<button class="roadmap-btn small" onclick="roadmapMoveOrder(${roadmapOnclickArg(a.assignmentId)},-1)" title="Move earlier in day">↑</button><button class="roadmap-btn small" onclick="roadmapMoveOrder(${roadmapOnclickArg(a.assignmentId)},1)" title="Move later in day">↓</button><button class="roadmap-btn small" onclick="roadmapOpenAssignment(${roadmapOnclickArg(a.assignmentId)})">Move / edit</button><button class="roadmap-btn small" onclick="roadmapCreateTodo(${roadmapOnclickArg(a.assignmentId)})">To-Do</button>`;
+    if(!canonicalDone) actions+=`<button class="roadmap-btn small" onclick="roadmapMarkCanonicalCompleted(${roadmapOnclickArg(a.topicId)})">Mark topic complete</button>`;
+    actions+=`<button class="roadmap-btn small primary" onclick="roadmapContinueNextWeek(${roadmapOnclickArg(a.assignmentId)})">＋ Continue next week</button><button class="roadmap-btn small" onclick="roadmapMoveOrder(${roadmapOnclickArg(a.assignmentId)},-1)" title="Move earlier in day">↑</button><button class="roadmap-btn small" onclick="roadmapMoveOrder(${roadmapOnclickArg(a.assignmentId)},1)" title="Move later in day">↓</button><button class="roadmap-btn small" onclick="roadmapOpenAssignment(${roadmapOnclickArg(a.assignmentId)})">Move / edit</button><button class="roadmap-btn small" onclick="roadmapCreateTodo(${roadmapOnclickArg(a.assignmentId)})">To-Do</button>`;
     if(!['completed','skipped'].includes(a.status)) actions+=`<button class="roadmap-btn small warn" onclick="roadmapRemoveAssignment(${roadmapOnclickArg(a.assignmentId)})">Remove</button>`;
   } else {
     if(!['completed','skipped'].includes(a.status)) actions+=`<button class="roadmap-btn small" onclick="roadmapSetGenericActivityStatus(${roadmapOnclickArg(a.assignmentId)},'completed')">Complete</button><button class="roadmap-btn small" onclick="roadmapSetGenericActivityStatus(${roadmapOnclickArg(a.assignmentId)},'skipped')">Skip</button><button class="roadmap-btn small" onclick="roadmapOpenAssignment(${roadmapOnclickArg(a.assignmentId)})">Edit</button>`;
   }
   const statusText=status==='completed'?'Completed':status==='skipped'?'Skipped':status==='overdue'?'Overdue':status==='due'?'Due today':status==='needs-anchor'?'Needs date anchor':a.status==='in-progress'?'In progress':'Planned';
-  return `<div class="roadmap-activity"><span class="roadmap-chip ${typeClass}">${type==='study'?'NEW STUDY':type==='revision'?'REVISION':'MOCK TEST'}</span><div class="roadmap-activity-main"><div class="roadmap-activity-name">${roadmapEscape(label)}</div><div class="roadmap-activity-meta"><span>${roadmapEscape(detail)}</span><span class="roadmap-chip ${roadmapStatusClass(status)}">${roadmapEscape(statusText)}</span>${a.intervalDays!=null&&type==='revision'?`<span>Interval: ${Number(a.intervalDays)}d</span>`:''}${a.anchorSource==='user-confirmed'?'<span>Anchor: user-confirmed</span>':''}</div></div><div class="roadmap-activity-actions">${actions}</div></div>`;
+  return `<div class="roadmap-activity"><span class="roadmap-chip ${typeClass}">${type==='study'?(parts.length>1?`NEW STUDY · PART ${partNumber}`:'NEW STUDY'):type==='revision'?'REVISION':'MOCK TEST'}</span><div class="roadmap-activity-main"><div class="roadmap-activity-name">${roadmapEscape(label)}</div><div class="roadmap-activity-meta"><span>${roadmapEscape(detail)}</span><span class="roadmap-chip ${roadmapStatusClass(status)}">${roadmapEscape(statusText)}</span>${canonicalDone?'<span class="roadmap-chip done">✓ Already marked complete in Progress Tracker</span>':''}${a.intervalDays!=null&&type==='revision'?`<span>Interval: ${Number(a.intervalDays)}d</span>`:''}${a.anchorSource==='user-confirmed'?'<span>Anchor: user-confirmed</span>':''}</div></div><div class="roadmap-activity-actions">${actions}</div></div>`;
 }
 function renderRoadmapUnscheduled() {
   const el=document.getElementById('roadmap-unscheduled');
@@ -7312,9 +7367,9 @@ function renderRoadmapUnscheduled() {
   const all=roadmapGetUnscheduledTopics(), needle=(document.getElementById('roadmap-search')?.value||'').trim().toLowerCase();
   const items=all.filter(t=>`${t.topicName} ${t.subjectName} ${t.section}`.toLowerCase().includes(needle));
   document.getElementById('roadmap-unscheduled-count').textContent=`${all.length} existing topics unscheduled`;
-  if(!items.length){el.innerHTML=all.length?'<div class="roadmap-empty">No topics match this search.</div>':'<div class="roadmap-empty">All incomplete topics have at least one future study assignment. Nice—now the hard part is doing them.</div>';return;}
+  if(!items.length){el.innerHTML=all.length?'<div class="roadmap-empty">No topics match this search.</div>':'<div class="roadmap-empty">Every syllabus topic already has a study assignment. Add a continuation from any chapter card when you need another week.</div>';return;}
   const grouped={}; items.forEach(t=>(grouped[t.subjectId] ||= {name:t.subjectName,icon:t.subjectIcon,items:[]}).items.push(t));
-  el.innerHTML=Object.values(grouped).map(group=>`<div class="roadmap-section" style="margin-top:8px;"><div style="font-weight:800;font-size:12px;margin-bottom:5px;">${roadmapEscape(group.icon)} ${roadmapEscape(group.name)} <span style="font-size:10px;color:var(--muted);font-weight:500;">(${group.items.length})</span></div>${group.items.map(t=>`<div class="roadmap-activity"><span class="roadmap-chip study">${roadmapEscape(t.section)}</span><div class="roadmap-activity-main"><div class="roadmap-activity-name">${roadmapEscape(t.topicName)}</div><div class="roadmap-activity-meta"><span>${roadmapEscape(STATUS_LABEL[t.status]||t.status)}</span><span>${t.effortHours?roadmapEscape(t.effortHours+'h effort'):'Effort estimate missing'}</span><span>${t.difficulty?roadmapEscape(t.difficulty):'Difficulty unset'}</span></div></div><div class="roadmap-activity-actions"><button class="roadmap-btn small primary" onclick="roadmapOpenAssignment(null,${roadmapOnclickArg(t.topicId)})">Schedule</button><button class="roadmap-btn small" onclick="roadmapEditTopicMetadata(${roadmapOnclickArg(t.topicId)})">Details</button></div></div>`).join('')}</div>`).join('');
+  el.innerHTML=Object.values(grouped).map(group=>`<div class="roadmap-section" style="margin-top:8px;"><div style="font-weight:800;font-size:12px;margin-bottom:5px;">${roadmapEscape(group.icon)} ${roadmapEscape(group.name)} <span style="font-size:10px;color:var(--muted);font-weight:500;">(${group.items.length})</span></div>${group.items.map(t=>`<div class="roadmap-activity"><span class="roadmap-chip study">${roadmapEscape(t.section)}</span><div class="roadmap-activity-main"><div class="roadmap-activity-name">${roadmapEscape(t.topicName)}</div><div class="roadmap-activity-meta"><span>${roadmapEscape(t.status==='completed'?'Already marked complete in Progress Tracker':(STATUS_LABEL[t.status]||t.status))}</span><span>${t.difficulty?roadmapEscape(t.difficulty):'Difficulty unset'}</span></div></div><div class="roadmap-activity-actions"><button class="roadmap-btn small primary" onclick="roadmapOpenAssignment(null,${roadmapOnclickArg(t.topicId)})">Schedule</button><button class="roadmap-btn small" onclick="roadmapEditTopicMetadata(${roadmapOnclickArg(t.topicId)})">Details</button></div></div>`).join('')}</div>`).join('');
 }
 function renderRoadmapMissingAnchors() {
   const el=document.getElementById('roadmap-missing-anchors');
@@ -7353,7 +7408,7 @@ function roadmapOpenSettings() {
   document.getElementById('rm-exam-end').value=c.examEndDate||'2027-10-31';
   document.getElementById('rm-exam-estimated').checked=c.examDateIsEstimated!==false;
   document.getElementById('rm-week-start').value=String(c.weekStartsOn);
-  document.getElementById('rm-default-hours').value=c.defaultTopicHours||3;
+  document.getElementById('rm-default-study-minutes').value=c.defaultStudySessionMinutes||90;
   document.getElementById('rm-daily-hours').value=c.dailyStudyHours||4;
   document.getElementById('rm-weekly-hours').value=c.weeklyStudyHours||24;
   document.getElementById('rm-safety-buffer').value=c.safetyBufferDays??14;
@@ -7389,7 +7444,7 @@ function roadmapSaveSettings() {
   if(!availableDays.length){showToast('⚠️ Select at least one study day.');return;}
   c.examName=document.getElementById('rm-exam-name').value.trim()||'SSC CGL';
   c.examId='ssc-cgl';c.preparationStartDate=start;c.examStartDate=examStart;c.examEndDate=examEnd;c.examDateIsEstimated=document.getElementById('rm-exam-estimated').checked;c.weekStartsOn=Number(document.getElementById('rm-week-start').value);
-  c.defaultTopicHours=Math.max(.25,Math.min(100,Number(document.getElementById('rm-default-hours').value)||3));
+  c.defaultStudySessionMinutes=Math.max(15,Math.min(480,Math.round(Number(document.getElementById('rm-default-study-minutes').value)||90)));delete c.defaultTopicHours;
   c.dailyStudyHours=Math.max(.5,Math.min(18,Number(document.getElementById('rm-daily-hours').value)||4));
   c.weeklyStudyHours=Math.max(1,Math.min(100,Number(document.getElementById('rm-weekly-hours').value)||24));
   c.safetyBufferDays=Math.max(0,Math.min(180,Number(document.getElementById('rm-safety-buffer').value)||0));
@@ -7408,12 +7463,12 @@ function roadmapOpenAssignment(assignmentId=null, topicId=null) {
   const a=assignmentId?roadmapData.assignments.find(x=>x.assignmentId===assignmentId):null;
   const all=roadmapSyllabusItems(true);
   const topicSelect=document.getElementById('rm-assignment-topic');
-  topicSelect.innerHTML=all.map(t=>`<option value="${roadmapEscape(t.topicId)}">${roadmapEscape(t.subjectName)} · ${roadmapEscape(t.topicName)}${t.status==='completed'?' (completed)':''}</option>`).join('');
+  topicSelect.innerHTML=all.map(t=>`<option value="${roadmapEscape(t.topicId)}">${roadmapEscape(t.subjectName)} · ${roadmapEscape(t.topicName)}${t.status==='completed'?' — already marked complete in Progress Tracker':''}</option>`).join('');
   document.getElementById('roadmap-assignment-title').textContent=a?'✏ Edit roadmap assignment':'＋ Add roadmap assignment';
   document.getElementById('rm-assignment-type').value=a?.activityType||'study';
   document.getElementById('rm-assignment-date').value=a?.plannedDate||roadmapToday();
   document.getElementById('rm-assignment-topic').value=a?.topicId||topicId||all.find(t=>t.status!=='completed')?.topicId||all[0]?.topicId||'';
-  document.getElementById('rm-assignment-duration').value=a?.estimatedMinutes||Math.round((roadmapConfig().defaultTopicHours||3)*60);
+  document.getElementById('rm-assignment-duration').value=a?.estimatedMinutes||roadmapConfig().defaultStudySessionMinutes||90;
   document.getElementById('rm-assignment-round').value=a?.round||'';
   const meta=roadmapData.topicMetadata[topicSelect.value]||{};
   document.getElementById('rm-assignment-difficulty').value=a?.difficulty||meta.difficulty||'';
@@ -7434,7 +7489,10 @@ function roadmapAssignmentTopicChanged() {
   if(!t)return;
   if(!document.getElementById('rm-assignment-difficulty').value) document.getElementById('rm-assignment-difficulty').value=meta.difficulty||'';
   document.getElementById('rm-assignment-priority').value=meta.priority||t.priority||'medium';
-  if(t.status==='completed'&&!t.completedAt&&!t.revisionAnchorDate) document.getElementById('rm-assignment-hint').textContent='This topic is completed but has no reliable completion timestamp. Set a user-confirmed anchor date before creating a revision.';
+  const type=document.getElementById('rm-assignment-type').value;
+  if(type==='study'&&t.status==='completed') document.getElementById('rm-assignment-hint').textContent='Already marked complete in Progress Tracker. This chapter can still be scheduled in the roadmap; its planned activity status stays independent.';
+  else if(type==='revision'&&t.status==='completed'&&!t.completedAt&&!t.revisionAnchorDate) document.getElementById('rm-assignment-hint').textContent='This topic is completed but has no reliable completion timestamp. Set a user-confirmed anchor date before creating a revision.';
+  else roadmapAssignmentTypeChanged();
 }
 function roadmapSaveAssignment() {
   const type=document.getElementById('rm-assignment-type').value,date=document.getElementById('rm-assignment-date').value,topicId=document.getElementById('rm-assignment-topic').value;
@@ -7472,17 +7530,45 @@ function roadmapSaveAssignment() {
   }
   saveData();roadmapCloseModal('roadmap-assignment-overlay');renderRoadmap();showToast('✅ Roadmap assignment saved.');
 }
+function roadmapFirstAvailableDayInWeek(weekStart) {
+  const c=roadmapConfig();
+  for(let offset=0;offset<7;offset++){
+    const date=roadmapAddDays(weekStart,offset),day=roadmapDateFromISO(date).getDay();
+    if(c.availableDays.includes(day)&&!c.unavailableDates.includes(date))return date;
+  }
+  return null;
+}
+function roadmapContinueNextWeek(assignmentId) {
+  const source=roadmapData.assignments.find(a=>a.assignmentId===assignmentId&&a.activityType==='study');
+  if(!source||source.status==='skipped')return;
+  const c=roadmapConfig(),baseWeek=source.weekStart||roadmapWeekStart(source.plannedDate||roadmapToday(),c.weekStartsOn),nextWeek=roadmapAddDays(baseWeek,7);
+  const minutes=roadmapDurationMinutes(source)||Math.max(15,Number(c.defaultStudySessionMinutes)||90);
+  const loads=roadmapEnsureWeekData(roadmapData.assignments);
+  // Prefer a day with available capacity; if the week is full, still allow a manual continuation and show a warning.
+  const plannedDate=roadmapAvailableDateForWeek(nextWeek,loads.daily,loads.weekly,minutes,null,nextWeek)||roadmapFirstAvailableDayInWeek(nextWeek)||nextWeek;
+  const siblings=roadmapGetActiveTopicAssignments().filter(a=>a.topicId===source.topicId);
+  const segment=Math.max(0,...siblings.map(a=>Number(a.segment)||1))+1;
+  const record={
+    assignmentId:roadmapUID('study'),activityType:'study',topicId:source.topicId,subjectId:source.subjectId,
+    plannedDate,weekStart:roadmapWeekStart(plannedDate,c.weekStartsOn),estimatedMinutes:minutes,status:'planned',
+    source:'manual-continuation',priority:source.priority||'medium',difficulty:source.difficulty||null,
+    segment,split:true,continuationOf:source.continuationOf||source.assignmentId,createdAt:new Date().toISOString()
+  };
+  roadmapData.assignments.push(record);saveData();renderRoadmap();
+  const newLoad=roadmapWeeklyLoad(record.weekStart);
+  const notices=[];
+  if(newLoad.total>roadmapCapacityMinutes())notices.push('That week is over capacity');
+  if(plannedDate>c.examEndDate)notices.push('the assignment falls after the configured exam window');
+  showToast(notices.length?`Continuation added for ${roadmapFormatDate(plannedDate)}; warning: ${notices.join(' and ')}.`:`✅ Added another week for the same chapter (${roadmapFormatDate(plannedDate)}).`);
+}
 function roadmapEditTopicMetadata(topicId) {
   const topic=roadmapSyllabusMap()[topicId];if(!topic)return;
   const old=roadmapData.topicMetadata[topicId]||{};
-  const effort=prompt(`Estimated effort hours for ${topic.topicName} (leave blank if unknown):`,old.effortHours??'');
-  if(effort===null)return;
-  let hours=null;if(effort.trim()){hours=Number(effort);if(!Number.isFinite(hours)||hours<=0||hours>100){showToast('⚠️ Effort must be between 0 and 100 hours.');return;}}
   const difficulty=prompt('Difficulty: easy, moderate, hard, or blank',old.difficulty||topic.difficulty||'');if(difficulty===null)return;
   if(difficulty.trim()&&!['easy','moderate','hard'].includes(difficulty.trim().toLowerCase())){showToast('⚠️ Difficulty must be easy, moderate, or hard.');return;}
   const priority=prompt('Priority: low, medium, high',old.priority||topic.priority||'medium');if(priority===null)return;
   if(!['low','medium','high'].includes(priority.trim().toLowerCase())){showToast('⚠️ Priority must be low, medium, or high.');return;}
-  roadmapData.topicMetadata[topicId]={...old,effortHours:hours,effortSource:hours?'user':'unknown',difficulty:difficulty.trim().toLowerCase(),priority:priority.trim().toLowerCase()};
+  const cleanMeta={...old,difficulty:difficulty.trim().toLowerCase(),priority:priority.trim().toLowerCase()};delete cleanMeta.effortHours;delete cleanMeta.effortSource;roadmapData.topicMetadata[topicId]=cleanMeta;
   saveData();renderRoadmap();showToast('✅ Topic planning metadata saved.');
 }
 function roadmapRemoveAssignment(assignmentId) {
@@ -7546,8 +7632,8 @@ function roadmapBuildExport(includeCompleted=true) {
   const c=roadmapConfig(), items=roadmapSyllabusItems(true).filter(t=>includeCompleted||t.status!=='completed');
   const validIds=new Set(items.map(t=>t.topicId));
   const existingAssignments=roadmapData.assignments.filter(a=>a.activityType==='mock-test'||!a.topicId||validIds.has(a.topicId));
-  const syllabus=items.map(t=>({subjectId:t.subjectId,subjectName:t.subjectName,topicId:t.topicId,topicName:t.topicName,section:t.section,parentTopicId:null,isSubtopic:false,status:t.status,topicPct:t.topicPct,completedAt:t.completedAt,completionDateSource:t.completionDateSource,revisionAnchorDate:t.revisionAnchorDate,revisionAnchorSource:t.revisionAnchorDate?'user-confirmed':null,existingRevisionCount:t.existingRevisionCount,estimatedEffortHours:t.effortHours,effortSource:t.effortSource||'unknown',difficulty:t.difficulty||null,priority:t.priority||'medium',remainingEffortHours:t.status==='completed'?0:(t.effortHours||c.defaultTopicHours),prerequisiteTopicIds:t.prerequisiteTopicIds}));
-  return {format:'progress-tracker-syllabus-roadmap',schemaVersion:1,exportedAt:new Date().toISOString(),examination:{id:c.examId,name:c.examName,windowStart:c.examStartDate,windowEnd:c.examEndDate,dateIsEstimate:!!c.examDateIsEstimated},preparation:{startDate:c.preparationStartDate,weekStartsOn:c.weekStartsOn,weekStartName:roadmapWeekdayName(c.weekStartsOn)},planningPreferences:{dailyStudyHours:c.dailyStudyHours,weeklyStudyHours:c.weeklyStudyHours,availableDays:c.availableDays,unavailableDates:c.unavailableDates,defaultTopicHours:c.defaultTopicHours,difficultyWeighting:c.difficultyWeighting,subjectPriorities:c.subjectPriorities,allowTopicSplitting:c.allowTopicSplitting,safetyBufferDays:c.safetyBufferDays,includeMockTests:c.includeMockTests,mockTestFrequencyWeeks:c.mockTestFrequencyWeeks,userPreferences:c.userPreferences||''},revisionPreferences:{enabled:c.revision.enabled,autoGenerate:c.revision.autoGenerate,intervalsDays:c.revision.intervalsDays,rounds:c.revision.rounds,sessionMinutes:c.revision.sessionMinutes,cutoffDaysBeforeExam:c.revision.cutoffDaysBeforeExam},subjects:getAllSubjects().map(s=>({subjectId:s.id,name:s.name,topicIds:s.sections.flatMap(sec=>sec.topics.map(t=>topicKey(s.id,t)))})).filter(s=>s.topicIds.some(id=>validIds.has(id))),syllabus,assignments:existingAssignments.map(a=>({...a,monthKey:roadmapAssignmentMonthKey(a),weekEnd:a.weekStart?roadmapAddDays(a.weekStart,6):null,displayStatus:roadmapAssignmentStatus(a)})),unscheduledTopicIds:roadmapGetUnscheduledTopics().filter(t=>validIds.has(t.topicId)).map(t=>t.topicId),unavailableDates:c.unavailableDates,legacyRevisionCountsNote:'existingRevisionCount represents an undated legacy counter only; the app cannot infer old revision dates or historical revision completion timestamps.'};
+  const syllabus=items.map(t=>({subjectId:t.subjectId,subjectName:t.subjectName,topicId:t.topicId,topicName:t.topicName,section:t.section,parentTopicId:null,isSubtopic:false,status:t.status,topicPct:t.topicPct,completedAt:t.completedAt,completionDateSource:t.completionDateSource,revisionAnchorDate:t.revisionAnchorDate,revisionAnchorSource:t.revisionAnchorDate?'user-confirmed':null,existingRevisionCount:t.existingRevisionCount,difficulty:t.difficulty||null,priority:t.priority||'medium',prerequisiteTopicIds:t.prerequisiteTopicIds}));
+  return {format:'progress-tracker-syllabus-roadmap',schemaVersion:1,exportedAt:new Date().toISOString(),examination:{id:c.examId,name:c.examName,windowStart:c.examStartDate,windowEnd:c.examEndDate,dateIsEstimate:!!c.examDateIsEstimated},preparation:{startDate:c.preparationStartDate,weekStartsOn:c.weekStartsOn,weekStartName:roadmapWeekdayName(c.weekStartsOn)},planningPreferences:{dailyStudyHours:c.dailyStudyHours,weeklyStudyHours:c.weeklyStudyHours,availableDays:c.availableDays,unavailableDates:c.unavailableDates,defaultStudySessionMinutes:c.defaultStudySessionMinutes,difficultyWeighting:c.difficultyWeighting,subjectPriorities:c.subjectPriorities,allowTopicSplitting:c.allowTopicSplitting,safetyBufferDays:c.safetyBufferDays,includeMockTests:c.includeMockTests,mockTestFrequencyWeeks:c.mockTestFrequencyWeeks,userPreferences:c.userPreferences||''},revisionPreferences:{enabled:c.revision.enabled,autoGenerate:c.revision.autoGenerate,intervalsDays:c.revision.intervalsDays,rounds:c.revision.rounds,sessionMinutes:c.revision.sessionMinutes,cutoffDaysBeforeExam:c.revision.cutoffDaysBeforeExam},subjects:getAllSubjects().map(s=>({subjectId:s.id,name:s.name,topicIds:s.sections.flatMap(sec=>sec.topics.map(t=>topicKey(s.id,t)))})).filter(s=>s.topicIds.some(id=>validIds.has(id))),syllabus,assignments:existingAssignments.map(a=>({...a,monthKey:roadmapAssignmentMonthKey(a),weekEnd:a.weekStart?roadmapAddDays(a.weekStart,6):null,displayStatus:roadmapAssignmentStatus(a)})),unscheduledTopicIds:roadmapGetUnscheduledTopics().filter(t=>validIds.has(t.topicId)).map(t=>t.topicId),unavailableDates:c.unavailableDates,legacyRevisionCountsNote:'existingRevisionCount represents an undated legacy counter only; the app cannot infer old revision dates or historical revision completion timestamps.'};
 }
 function roadmapDownloadJSON(data,filename) {
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');
@@ -7561,11 +7647,11 @@ function roadmapExportForAI() {
 }
 function roadmapDownloadTemplate() {
   const c=roadmapConfig(),today=roadmapToday(),exampleDate=roadmapAddDays(today,7),topicId='maths::Percentage';
-  const template={format:'progress-tracker-syllabus-roadmap',schemaVersion:1,exportedAt:new Date().toISOString(),examination:{id:c.examId,name:c.examName,windowStart:c.examStartDate,windowEnd:c.examEndDate,dateIsEstimate:!!c.examDateIsEstimated},preparation:{startDate:c.preparationStartDate,weekStartsOn:c.weekStartsOn,weekStartName:roadmapWeekdayName(c.weekStartsOn)},planningPreferences:{dailyStudyHours:c.dailyStudyHours,weeklyStudyHours:c.weeklyStudyHours,availableDays:c.availableDays,unavailableDates:c.unavailableDates,defaultTopicHours:c.defaultTopicHours,allowTopicSplitting:c.allowTopicSplitting,safetyBufferDays:c.safetyBufferDays},revisionPreferences:{enabled:c.revision.enabled,autoGenerate:c.revision.autoGenerate,intervalsDays:c.revision.intervalsDays,rounds:c.revision.rounds,sessionMinutes:c.revision.sessionMinutes,cutoffDaysBeforeExam:c.revision.cutoffDaysBeforeExam},assignments:[],unscheduledTopicIds:[],exampleRevisionActivity:{assignmentId:'rev_maths_percentage_round_1_example',activityType:'revision',topicId,subjectId:'maths',plannedDate:exampleDate,weekStart:roadmapWeekStart(exampleDate,c.weekStartsOn),estimatedMinutes:c.revision.sessionMinutes,status:'planned',round:1,intervalDays:7,anchorDate:today,anchorSource:'user-confirmed',priority:'medium',difficulty:'moderate',source:'external-ai-example'},formatNotes:{canonicalTopicId:'Use the existing subjectId::topicName key exactly; do not create syllabus records.',activityTypes:['study','revision','mock-test'],revisionStatus:['planned','completed','skipped'],studyStatus:'Keep study assignment status planned; canonical completion stays in Progress Tracker.',dateRules:'plannedDate and weekStart must be ISO YYYY-MM-DD; weekStart must match the configured week start day. exampleRevisionActivity is illustrative and is not imported as an assignment.'}};
+  const template={format:'progress-tracker-syllabus-roadmap',schemaVersion:1,exportedAt:new Date().toISOString(),examination:{id:c.examId,name:c.examName,windowStart:c.examStartDate,windowEnd:c.examEndDate,dateIsEstimate:!!c.examDateIsEstimated},preparation:{startDate:c.preparationStartDate,weekStartsOn:c.weekStartsOn,weekStartName:roadmapWeekdayName(c.weekStartsOn)},planningPreferences:{dailyStudyHours:c.dailyStudyHours,weeklyStudyHours:c.weeklyStudyHours,availableDays:c.availableDays,unavailableDates:c.unavailableDates,defaultStudySessionMinutes:c.defaultStudySessionMinutes,allowTopicSplitting:c.allowTopicSplitting,safetyBufferDays:c.safetyBufferDays},revisionPreferences:{enabled:c.revision.enabled,autoGenerate:c.revision.autoGenerate,intervalsDays:c.revision.intervalsDays,rounds:c.revision.rounds,sessionMinutes:c.revision.sessionMinutes,cutoffDaysBeforeExam:c.revision.cutoffDaysBeforeExam},assignments:[],unscheduledTopicIds:[],exampleRevisionActivity:{assignmentId:'rev_maths_percentage_round_1_example',activityType:'revision',topicId,subjectId:'maths',plannedDate:exampleDate,weekStart:roadmapWeekStart(exampleDate,c.weekStartsOn),estimatedMinutes:c.revision.sessionMinutes,status:'planned',round:1,intervalDays:7,anchorDate:today,anchorSource:'user-confirmed',priority:'medium',difficulty:'moderate',source:'external-ai-example'},formatNotes:{canonicalTopicId:'Use the existing subjectId::topicName key exactly; do not create syllabus records.',activityTypes:['study','revision','mock-test'],revisionStatus:['planned','completed','skipped'],studyStatus:'Keep study assignment status planned; canonical completion stays in Progress Tracker.',dateRules:'plannedDate and weekStart must be ISO YYYY-MM-DD; weekStart must match the configured week start day. exampleRevisionActivity is illustrative and is not imported as an assignment.'}};
   roadmapDownloadJSON(template,'syllabus_roadmap_v1_template.json');showToast('JSON format example downloaded.');
 }
 function roadmapBuildAIPrompt() {
-  return `You are creating a schedule proposal for the Progress Tracker Syllabus Roadmap. I will provide a JSON export with format "progress-tracker-syllabus-roadmap", schemaVersion 1. Return ONLY a valid JSON object in that same format, with an assignments array and unscheduledTopicIds.\n\nMandatory rules:\n1. Treat all provided data as source facts. Clearly distinguish estimates from known dates/effort.\n2. Use topicId, subjectId, subject names, and existing IDs exactly as supplied. Never create, rename, duplicate, or delete syllabus topics. Schedule only existing syllabus topic IDs.\n3. Allocate study assignments across months and weeks from preparation.startDate through the examination window, respecting weekStartsOn, daily/weekly hour limits, availableDays, unavailableDates, difficulty, priority, prerequisites when provided, and the safety buffer. Do not silently exceed capacity.\n4. Preserve existing assignments and manual decisions where feasible. Give every activity a stable, unique assignmentId. Include a reason in the returned planningNotes if any topics remain unscheduled or deadlines are infeasible.\n5. Include mock-test activities if configured. Use activityType "mock-test"; these do not create Mock Test history automatically.\n6. Include spaced revision activities for EVERY already-completed topic when revisionPreferences.enabled is true, including topics completed before roadmap creation. Use activityType "revision" with the same canonical topicId. Revisions are separate activities, not syllabus topics. Use distinct assignmentIds and include round, intervalDays, anchorDate, plannedDate, weekStart, estimatedMinutes, and status.\n7. Anchor revisions on syllabus[].completedAt only when completionDateSource is "recorded". Otherwise use a user-confirmed revisionAnchorDate if supplied. Never invent a completion date. If there is no reliable or user-confirmed anchor, do not fabricate one; mention the topic in planningNotes/unscheduledTopicIds and flag that an anchor date is needed.\n8. Respect configured revision intervals, rounds, session duration, and revision cutoff before the exam. If a revision date has already passed, preserve it as due/overdue or explicitly propose a future reschedule; do not silently discard it. Preserve completed and skipped revision history.\n9. A revision status may be planned, completed, or skipped. Completing/skipping/rescheduling a revision must NEVER change canonical topic status or completedAt. Never encode revision as a new topic or mark a study assignment completed.\n10. Include assignments only for activityType "study", "revision", or "mock-test". For study/revision, subjectId must match the referenced topic. Exported displayStatus is derived for display only; use schema-approved status values and never copy derived "overdue" or "due" into status. Do not add executable HTML, JavaScript, scripts, or extra code.\n11. Return examination, preparation, planningPreferences, revisionPreferences, assignments, unscheduledTopicIds, and optional planningNotes. Keep schemaVersion 1.\n\nPlease analyze capacity trade-offs explicitly and make the schedule realistic.\n`;
+  return `You are creating a schedule proposal for the Progress Tracker Syllabus Roadmap. I will provide a JSON export with format "progress-tracker-syllabus-roadmap", schemaVersion 1. Return ONLY a valid JSON object in that same format, with an assignments array and unscheduledTopicIds.\n\nMandatory rules:\n1. Treat all provided data as source facts. Clearly distinguish estimated exam dates from confirmed dates, and planned activity durations from actual study time.\n2. Use topicId, subjectId, subject names, and existing IDs exactly as supplied. Never create, rename, duplicate, or delete syllabus topics. Schedule only existing syllabus topic IDs.\n3. Allocate study assignments across months and weeks from preparation.startDate through the examination window, respecting weekStartsOn, daily/weekly hour limits, availableDays, unavailableDates, difficulty, priority, prerequisites when provided, and the safety buffer. Do not invent per-topic effort-hour estimates; use planningPreferences.defaultStudySessionMinutes as a planning block and flag uncertainty. Do not silently exceed capacity.\n4. Preserve existing assignments and manual decisions where feasible. Give every activity a stable, unique assignmentId. Include a reason in the returned planningNotes if any topics remain unscheduled or deadlines are infeasible.\n5. Include mock-test activities if configured. Use activityType "mock-test"; these do not create Mock Test history automatically.\n6. Include spaced revision activities for EVERY already-completed topic when revisionPreferences.enabled is true, including topics completed before roadmap creation. Use activityType "revision" with the same canonical topicId. Revisions are separate activities, not syllabus topics. Use distinct assignmentIds and include round, intervalDays, anchorDate, plannedDate, weekStart, estimatedMinutes, and status.\n7. Anchor revisions on syllabus[].completedAt only when completionDateSource is "recorded". Otherwise use a user-confirmed revisionAnchorDate if supplied. Never invent a completion date. If there is no reliable or user-confirmed anchor, do not fabricate one; mention the topic in planningNotes/unscheduledTopicIds and flag that an anchor date is needed.\n8. Respect configured revision intervals, rounds, session duration, and revision cutoff before the exam. If a revision date has already passed, preserve it as due/overdue or explicitly propose a future reschedule; do not silently discard it. Preserve completed and skipped revision history.\n9. A revision status may be planned, completed, or skipped. Completing/skipping/rescheduling a revision must NEVER change canonical topic status or completedAt. Never encode revision as a new topic or mark a study assignment completed.\n10. Include assignments only for activityType "study", "revision", or "mock-test". For study/revision, subjectId must match the referenced topic. Exported displayStatus is derived for display only; use schema-approved status values and never copy derived "overdue" or "due" into status. Do not add executable HTML, JavaScript, scripts, or extra code.\n11. Return examination, preparation, planningPreferences, revisionPreferences, assignments, unscheduledTopicIds, and optional planningNotes. Keep schemaVersion 1.\n\nPlease analyze capacity trade-offs explicitly and make the schedule realistic.\n`;
 }
 async function roadmapCopyPrompt() {
   const prompt=roadmapBuildAIPrompt();
@@ -7639,7 +7725,6 @@ function roadmapValidateImport(raw) {
     if(a.activityType==='mock-test'&&a.status!=null&&!['planned','in-progress','completed','skipped'].includes(a.status))fail(`${prefix}: mock-test status must be planned, in-progress, completed, or skipped.`);
     if(a.activityType==='study'){
       if(a.status!=null&&a.status!=='planned'&&a.status!=='in-progress')fail(`${prefix}: study assignment status must be planned or in-progress; canonical completion belongs to Progress Tracker.`);
-      if(syllabus[a.topicId]?.status==='completed')warn(`${prefix}: this topic is already canonically completed; confirm whether the activity should be a revision instead.`);
     }
     if(a.activityType==='revision'){
       if(!['planned','completed','skipped'].includes(a.status||'planned'))fail(`${prefix}: revision status must be planned, completed, or skipped.`);
@@ -7752,7 +7837,7 @@ function roadmapGenerateRescheduleDraft(strategy='balanced') {
   const c=roadmapConfig(), today=roadmapToday();
   const candidates=roadmapData.assignments.filter(a=>{
     if(!roadmapIsISODate(a.plannedDate)||a.plannedDate>=today||['completed','skipped'].includes(a.status))return false;
-    if(a.activityType==='study')return (progress[a.topicId]||'not-started')!=='completed';
+    if(a.activityType==='study')return true;
     return a.activityType==='revision';
   });
   if(!candidates.length){showToast('No overdue unfinished study or revision activities to reschedule.');return;}
@@ -7771,7 +7856,7 @@ function roadmapGenerateRescheduleDraft(strategy='balanced') {
   const moved=[],failed=[];
   candidates.forEach(a=>{
     const cutoff=a.activityType==='revision'?lastRevisionDay:lastStudyDay;
-    const minutes=roadmapDurationMinutes(a)||(a.activityType==='revision'?Math.max(5,Number(c.revision.sessionMinutes)||30):Math.round((Number(c.defaultTopicHours)||3)*60));
+    const minutes=roadmapDurationMinutes(a)||(a.activityType==='revision'?Math.max(5,Number(c.revision.sessionMinutes)||30):Math.round(Number(c.defaultStudySessionMinutes)||90));
     const weeksOrdered=strategy==='balanced'
       ?[...weeks].sort((x,y)=>(weeklyLoads[x]||0)-(weeklyLoads[y]||0)||x.localeCompare(y))
       :weeks;
@@ -7796,7 +7881,7 @@ function roadmapApplyRescheduleDraft() {
   const moves=new Map(candidate.assignments.map(a=>[a.assignmentId,a])),now=new Date().toISOString();
   roadmapData.assignments=roadmapData.assignments.map(old=>{
     const next=moves.get(old.assignmentId);
-    if(!next||['completed','skipped'].includes(old.status)||(old.activityType==='study'&&(progress[old.topicId]||'not-started')==='completed'))return old;
+    if(!next||['completed','skipped'].includes(old.status))return old;
     const history=Array.isArray(old.rescheduleHistory)?old.rescheduleHistory.slice():[];
     history.push({from:old.plannedDate||null,to:next.plannedDate,at:now,strategy:candidate.rescheduleStrategy||'balanced'});
     return {...old,originalPlannedDate:old.originalPlannedDate||old.plannedDate||null,plannedDate:next.plannedDate,weekStart:next.weekStart,estimatedMinutes:next.estimatedMinutes||old.estimatedMinutes,rescheduledAt:now,rescheduleCount:Number(old.rescheduleCount||0)+1,rescheduleHistory:history,updatedAt:now};
@@ -7804,7 +7889,7 @@ function roadmapApplyRescheduleDraft() {
   saveData();roadmapCloseModal('roadmap-import-overlay');renderRoadmap();roadmapImportCandidate=null;showToast('✅ Overdue activities moved. The rest of your roadmap and syllabus progress were preserved.');
 }
 
-// Deterministic local planner: schedule only existing topics, balance load by week/day, and draft revisions separately.
+// Deterministic local planner: schedule existing incomplete topics using a difficulty-weighted study block (not topic-hour estimates), balance load by week/day, and draft revisions separately.
 function roadmapAvailableDateForWeek(weekStart, dayLoads, weeklyLoads, extraMinutes, allowDelayUntil=null, allowFromDate=roadmapToday()) {
   const c=roadmapConfig(), capacity=roadmapCapacityMinutes(), dayCap=Math.max(.5,Number(c.dailyStudyHours)||4)*60;
   for(let offset=0;offset<7;offset++){
@@ -7852,8 +7937,8 @@ function roadmapGenerateAutoDraft() {
   const failTopics=[];
   todo.forEach(t=>{
     const weight=c.difficultyWeighting[t.difficulty||'moderate']||1;
-    const effortHours=t.effortHours||c.defaultTopicHours*weight;
-    let remaining=Math.max(15,Math.round(effortHours*60));let segment=0;let scheduled=false;
+    const plannedBlockMinutes=Math.max(15,Math.round((Number(c.defaultStudySessionMinutes)||90)*weight));
+    let remaining=plannedBlockMinutes;let segment=0;let scheduled=false;
     while(remaining>0){
       let placed=false;
       for(const week of [...weekStarts].sort((a,b)=>(weeklyLoads[a]||0)-(weeklyLoads[b]||0)||a.localeCompare(b))){
@@ -7864,7 +7949,7 @@ function roadmapGenerateAutoDraft() {
         if(chunk>Math.max(.5,c.dailyStudyHours)*60)continue;
         const date=roadmapAvailableDateForWeek(week,dayLoads,weeklyLoads,chunk);
         if(!date)continue;
-        const a={assignmentId:`study_${encodeURIComponent(t.topicId)}_${week}_${segment+1}`,activityType:'study',topicId:t.topicId,subjectId:t.subjectId,plannedDate:date,weekStart:roadmapWeekStart(date,c.weekStartsOn),estimatedMinutes:chunk,status:'planned',source:'local-auto',difficulty:t.difficulty||null,priority:t.priority||'medium',effortEstimateSource:t.effortHours?'user':'configured-default',segment:segment+1,split:!!c.allowTopicSplitting&&effortHours*60>chunk};
+        const a={assignmentId:`study_${encodeURIComponent(t.topicId)}_${week}_${segment+1}`,activityType:'study',topicId:t.topicId,subjectId:t.subjectId,plannedDate:date,weekStart:roadmapWeekStart(date,c.weekStartsOn),estimatedMinutes:chunk,status:'planned',source:'local-auto',difficulty:t.difficulty||null,priority:t.priority||'medium',planningBlockSource:'difficulty-weighted-default',segment:segment+1,split:!!c.allowTopicSplitting&&plannedBlockMinutes>chunk};
         if(existing.some(x=>x.assignmentId===a.assignmentId)||generated.some(x=>x.assignmentId===a.assignmentId)){segment++;remaining-=chunk;scheduled=true;placed=true;break;}
         generated.push(a);weeklyLoads[a.weekStart]=(weeklyLoads[a.weekStart]||0)+chunk;dayLoads[date]=(dayLoads[date]||0)+chunk;remaining-=chunk;segment++;scheduled=true;placed=true;break;
       }
@@ -7955,7 +8040,7 @@ function roadmapApplyAutoDraft(mode) {
 }
 
 function roadmapBuildTopicMetadataExport(t) {
-  return {subjectId:t.subjectId,subjectName:t.subjectName,topicId:t.topicId,topicName:t.topicName,status:t.status,completedAt:t.completedAt,completionDateSource:t.completionDateSource,revisionAnchorDate:t.revisionAnchorDate,estimatedEffortHours:t.effortHours,effortSource:t.effortSource||'unknown',difficulty:t.difficulty||null,priority:t.priority||'medium',remainingEffortHours:t.status==='completed'?0:(t.effortHours||roadmapConfig().defaultTopicHours),prerequisiteTopicIds:t.prerequisiteTopicIds||[]};
+  return {subjectId:t.subjectId,subjectName:t.subjectName,topicId:t.topicId,topicName:t.topicName,status:t.status,completedAt:t.completedAt,completionDateSource:t.completionDateSource,revisionAnchorDate:t.revisionAnchorDate,difficulty:t.difficulty||null,priority:t.priority||'medium',prerequisiteTopicIds:t.prerequisiteTopicIds||[]};
 }
 
 function roadmapMoveOrder(assignmentId,delta) {
@@ -7996,7 +8081,7 @@ function roadmapRunSelfTests() {
   test('Revision status independent',()=>{const a={activityType:'revision',status:'completed',plannedDate:roadmapToday()};return roadmapAssignmentStatus(a)==='completed';});
   test('Default schema has separate assignments and metadata',()=>{const d=roadmapDefaultData();return Array.isArray(d.assignments)&&!!d.topicMetadata&&!!d.revisionAnchors&&d.schemaVersion===1;});
   test('Revision intervals extrapolate without repeating the last interval',()=>roadmapRevisionIntervalDays(5,{revision:{intervalsDays:[1,7,21,45]}})===69);
-  test('Auto scheduler respects the earliest allowed day in a week',()=>{const t=roadmapToday(),w=roadmapWeekStart(t,roadmapConfig().weekStartsOn);return roadmapAvailableDateForWeek(w,{}, {},30,null,t)>=t;});
+  test('Auto scheduler never chooses a date before the earliest allowed day',()=>{const t=roadmapToday(),w=roadmapWeekStart(t,roadmapConfig().weekStartsOn),d=roadmapAvailableDateForWeek(w,{}, {},30,null,t);return d===null||d>=t;});
   test('Unsupported schema version is rejected',()=>roadmapValidateImport({format:'progress-tracker-syllabus-roadmap',schemaVersion:999,examination:{id:'ssc-cgl',windowStart:'2027-09-01',windowEnd:'2027-10-31'},preparation:{startDate:'2026-10-17',weekStartsOn:1},assignments:[]}).errors.some(e=>e.includes('schemaVersion')));
   test('Missing preparation date is rejected',()=>roadmapValidateImport({format:'progress-tracker-syllabus-roadmap',schemaVersion:1,examination:{id:'ssc-cgl',windowStart:'2027-09-01',windowEnd:'2027-10-31'},preparation:{weekStartsOn:1},assignments:[]}).errors.some(e=>e.includes('preparation.startDate')));
   return {passed:results.filter(r=>r.passed).length,total:results.length,results};
