@@ -1729,6 +1729,17 @@ body{
 /* ═══════════════════════════════════════════
    SYLLABUS ROADMAP
    ═══════════════════════════════════════════ */
+/* Roadmap-only layout guardrails. All selectors stay scoped to the Roadmap view. */
+#view-roadmap{min-width:0;overflow-wrap:anywhere;}
+#view-roadmap .roadmap-page{width:100%;max-width:1600px;margin-inline:auto;min-width:0;}
+#view-roadmap .roadmap-hero>div:first-child{flex:1 1 320px;min-width:0;}
+#view-roadmap .roadmap-summary>*,#view-roadmap .roadmap-panel,#view-roadmap .roadmap-ai-menu-wrap,#view-roadmap .roadmap-month,#view-roadmap .roadmap-week{min-width:0;}
+#view-roadmap .roadmap-month-meta{white-space:normal;overflow-wrap:anywhere;}
+#view-roadmap .roadmap-activity-actions{min-width:0;max-width:100%;}
+#view-roadmap .roadmap-activity-actions .roadmap-btn{overflow-wrap:anywhere;}
+#view-roadmap .roadmap-form-grid>*{min-width:0;}
+#view-roadmap .roadmap-modal{min-width:0;overscroll-behavior:contain;}
+#view-roadmap .roadmap-modal-body>*{min-width:0;max-width:100%;}
 .roadmap-widget{background:linear-gradient(135deg,rgba(17,138,178,.15),rgba(99,102,241,.08));border-color:rgba(17,138,178,.35);}
 .roadmap-widget .pom-widget-icon{background:rgba(17,138,178,.18);}
 .roadmap-page{padding:18px 28px 44px;}
@@ -1793,7 +1804,6 @@ body{
 .roadmap-week summary::-webkit-details-marker{display:none;}
 .roadmap-week-title{font-weight:700;flex:1;min-width:135px;font-size:12px;}
 .roadmap-week-body{padding:0 10px 10px;}
-.roadmap-week-metrics{display:flex;gap:7px;align-items:center;flex-wrap:wrap;}
 .roadmap-activity{display:flex;align-items:flex-start;gap:10px;padding:10px 9px;border-top:1px solid rgba(255,255,255,.045);}
 .roadmap-activity:first-child{border-top:0;}
 .roadmap-activity-main{flex:1;min-width:0;}
@@ -1830,8 +1840,12 @@ body{
 .roadmap-filters{display:flex;gap:5px;flex-wrap:wrap;}
 .roadmap-filter{border:1px solid var(--border2);background:none;color:var(--muted2);border-radius:18px;padding:5px 9px;font:600 10px 'DM Sans',sans-serif;cursor:pointer;}
 .roadmap-filter.active{background:rgba(17,138,178,.16);border-color:rgba(17,138,178,.45);color:#67d7f2;}
+@media(max-width:900px){
+  #view-roadmap .roadmap-page{padding-left:14px;padding-right:14px;}
+  #view-roadmap .roadmap-summary{grid-template-columns:repeat(2,minmax(0,1fr));}
+}
 @media(max-width:680px){
-  .roadmap-page{padding:12px 10px calc(88px + env(safe-area-inset-bottom, 0px));}
+  #view-roadmap .roadmap-page{padding:12px 10px calc(88px + env(safe-area-inset-bottom, 0px));}
   .roadmap-hero{gap:12px;margin-bottom:12px;}
   .roadmap-hero h2{font-size:19px;}
   .roadmap-hero p{font-size:12px;}
@@ -1861,7 +1875,6 @@ body{
   .roadmap-month-body{padding:0 7px 8px;}
   .roadmap-week summary{padding:10px 8px;gap:6px;}
   .roadmap-week-title{min-width:0;flex-basis:100%;font-size:11.5px;}
-  .roadmap-week-metrics{gap:5px;}
   .roadmap-week-body{padding:0 7px 8px;}
   .roadmap-activity{display:grid;grid-template-columns:1fr;gap:7px;padding:11px 7px;}
   .roadmap-activity-main{width:100%;}
@@ -1883,7 +1896,9 @@ body{
   .roadmap-modal-foot .roadmap-btn{min-height:40px;}
 }
 @media(max-width:380px){
-  .roadmap-summary{grid-template-columns:1fr;}
+  #view-roadmap .roadmap-hero{padding-right:42px;}
+  #view-roadmap .roadmap-settings-button{width:34px;height:34px;min-width:34px;}
+  #view-roadmap .roadmap-summary{grid-template-columns:1fr;}
   .roadmap-actions{grid-template-columns:1fr;}
   .roadmap-actions .roadmap-btn.primary{grid-column:auto;}
   .roadmap-activity-actions{grid-template-columns:1fr 1fr;}
@@ -7178,7 +7193,7 @@ function roadmapDifficultyLabel(value) {
 function roadmapDefaultConfig() {
   return {
     examId:'ssc-cgl', examName:'SSC CGL', examStartDate:'2027-09-01', examEndDate:'2027-10-31', examDateIsEstimated:true,
-    preparationStartDate:roadmapToday(), weekStartsOn:1, dailyStudyHours:4, weeklyStudyHours:24,
+    preparationStartDate:'2026-11-02', weekStartsOn:1, weekPickerStartMigrated:true, dailyStudyHours:4, weeklyStudyHours:24,
     availableDays:[1,2,3,4,5,6], unavailableDates:[], defaultStudySessionMinutes:90,
     difficultyWeighting:{easiest:0.5,easy:0.75,medium:1,hard:1.5,hardest:2}, subjectPriorities:{}, allowTopicSplitting:true,
     safetyBufferDays:14, includeMockTests:true, mockTestFrequencyWeeks:2,
@@ -7209,6 +7224,12 @@ function roadmapNormalizeData(value) {
     unavailableDates:Array.isArray(cfg.unavailableDates)?cfg.unavailableDates.filter(roadmapIsISODate):[],
     revision:{...base.config.revision,...rc,intervalsDays:Array.isArray(rc.intervalsDays)?rc.intervalsDays.map(Number).filter(n=>Number.isFinite(n)&&n>=0&&n<=3650):base.config.revision.intervalsDays}
   };
+  // The previous release defaulted this value to the app-open date. Migrate those known
+  // defaults once; a user can still deliberately choose one of these dates later.
+  if(!cfg.weekPickerStartMigrated){
+    if(['2026-10-17','2026-10-18'].includes(config.preparationStartDate)) config.preparationStartDate='2026-11-02';
+    config.weekPickerStartMigrated=true;
+  }
   if(config.difficultyWeighting.easiest==null)config.difficultyWeighting.easiest=0.5;
   if(config.difficultyWeighting.hardest==null)config.difficultyWeighting.hardest=2;
   delete config.defaultTopicHours;
@@ -7227,7 +7248,18 @@ function roadmapNormalizeData(value) {
     drafts:Array.isArray(value.drafts)?value.drafts:[]
   };
 }
-function roadmapEnsureData() { roadmapData = roadmapNormalizeData(roadmapData); return roadmapData; }
+function roadmapEnsureData() {
+  // Profile payloads are normalized when loaded/imported. Avoid rebuilding every assignment and
+  // metadata object on each render-helper call; only normalize when the outer schema is missing.
+  const d=roadmapData;
+  if(!d||typeof d!=='object'||Array.isArray(d)||d.schemaVersion!==1||
+     !d.config||typeof d.config!=='object'||!Array.isArray(d.assignments)||
+     !d.topicMetadata||typeof d.topicMetadata!=='object'||
+     !d.revisionAnchors||typeof d.revisionAnchors!=='object'||!Array.isArray(d.drafts)) {
+    roadmapData=roadmapNormalizeData(d);
+  }
+  return roadmapData;
+}
 function roadmapConfig() { return roadmapEnsureData().config; }
 function roadmapAssignmentMonthKey(a) { return a.weekStart ? roadmapMonthKey(a.weekStart) : roadmapMonthKey(a.plannedDate); }
 function roadmapTopicId(subjectId, topicName) { return topicKey(subjectId, topicName); }
@@ -7272,17 +7304,11 @@ function roadmapAssignmentStatus(a) {
   if(assignedWeek===currentWeek) return 'due';
   return 'upcoming';
 }
-function roadmapStatusLabel(status) {
-  return ({upcoming:'Upcoming',due:'This week',overdue:'Overdue',completed:'Completed',skipped:'Skipped','needs-anchor':'Needs anchor','in-progress':'In progress'})[status]||status;
-}
 function roadmapStatusClass(status) {
   if(status==='completed') return 'done';
   if(status==='due'||status==='in-progress'||status==='needs-anchor') return 'warn';
   if(status==='overdue') return 'overdue';
   return '';
-}
-function roadmapWeekBounds(weekStart) {
-  return {start:weekStart,end:roadmapAddDays(weekStart,6)};
 }
 function roadmapCapacityMinutes() {
   const c=roadmapConfig(), dayHours=Math.max(.5,Number(c.dailyStudyHours)||4), weekHours=Math.max(1,Number(c.weeklyStudyHours)||24);
@@ -7559,18 +7585,24 @@ function roadmapSaveSettings() {
 }
 function roadmapBuildWeekOptions(selectedWeek='') {
   const c=roadmapConfig();
-  const startDate=roadmapIsISODate(c.preparationStartDate)?c.preparationStartDate:roadmapToday();
+  const startDate=roadmapIsISODate(c.preparationStartDate)?c.preparationStartDate:'2026-11-02';
   const endDate=roadmapIsISODate(c.examEndDate)&&c.examEndDate>=startDate?c.examEndDate:roadmapAddDays(startDate,365);
   const first=roadmapWeekStart(startDate,c.weekStartsOn),last=roadmapWeekStart(endDate,c.weekStartsOn);
   const weeks=new Set();let cursor=first,guard=0;
   while(cursor<=last&&guard++<520){weeks.add(cursor);cursor=roadmapAddDays(cursor,7);}
   const normalizedSelected=roadmapIsISODate(selectedWeek)?roadmapWeekStart(selectedWeek,c.weekStartsOn):'';
-  if(normalizedSelected)weeks.add(normalizedSelected);
+  // Preserve an already-assigned week if it sits outside the configured planning window,
+  // but keep the normal picker range numbered cleanly from Week 1.
+  if(normalizedSelected&&(normalizedSelected<first||normalizedSelected>last))weeks.add(normalizedSelected);
+  const fmt=date=>roadmapFormatDate(date,{day:'numeric',month:'short',year:'numeric'});
   return [...weeks].sort().map(w=>{
-    const end=roadmapAddDays(w,6),label=`Week ${roadmapFormatDate(w,{day:'numeric',month:'short',year:'numeric'})} – ${roadmapFormatDate(end,{day:'numeric',month:'short',year:'numeric'})}`;
+    const end=roadmapAddDays(w,6),offsetDays=Math.round((roadmapDateFromISO(w)-roadmapDateFromISO(first))/86400000),weekNo=Math.floor(offsetDays/7)+1;
+    const inside=w>=first&&w<=last;
+    const label=inside?`Week ${weekNo} - ${fmt(w)} - ${fmt(end)}`:`Previously scheduled - ${fmt(w)} - ${fmt(end)}`;
     return `<option value="${w}"${w===normalizedSelected?' selected':''}>${roadmapEscape(label)}</option>`;
   }).join('');
 }
+
 function roadmapOpenAssignment(assignmentId=null, topicId=null) {
   roadmapEditingAssignmentId=assignmentId;
   const a=assignmentId?roadmapData.assignments.find(x=>x.assignmentId===assignmentId):null;
@@ -7579,7 +7611,9 @@ function roadmapOpenAssignment(assignmentId=null, topicId=null) {
   topicSelect.innerHTML=all.map(t=>`<option value="${roadmapEscape(t.topicId)}">${roadmapEscape(t.subjectName)} · ${roadmapEscape(t.topicName)}${t.status==='completed'?' — already marked complete in Progress Tracker':''}</option>`).join('');
   document.getElementById('roadmap-assignment-title').textContent=a?'✏ Edit roadmap assignment':'＋ Add roadmap assignment';
   document.getElementById('rm-assignment-type').value=a?.activityType||'study';
-  const selectedWeek=roadmapWeekStart(a?.weekStart||a?.plannedDate||roadmapToday(),roadmapConfig().weekStartsOn);
+  const config=roadmapConfig();
+  const preferredWeek=a?.weekStart||a?.plannedDate||(config.preparationStartDate>roadmapToday()?config.preparationStartDate:roadmapToday());
+  const selectedWeek=roadmapWeekStart(preferredWeek,config.weekStartsOn);
   const weekSelect=document.getElementById('rm-assignment-week');
   weekSelect.innerHTML=roadmapBuildWeekOptions(selectedWeek);
   weekSelect.value=selectedWeek;
@@ -7648,14 +7682,6 @@ function roadmapSaveAssignment() {
     roadmapData.assignments.push(record);
   }
   saveData();roadmapCloseModal('roadmap-assignment-overlay');renderRoadmap();showToast('✅ Roadmap assignment saved.');
-}
-function roadmapFirstAvailableDayInWeek(weekStart) {
-  const c=roadmapConfig();
-  for(let offset=0;offset<7;offset++){
-    const date=roadmapAddDays(weekStart,offset),day=roadmapDateFromISO(date).getDay();
-    if(c.availableDays.includes(day)&&!c.unavailableDates.includes(date))return date;
-  }
-  return null;
 }
 function roadmapContinueNextWeek(assignmentId) {
   const source=roadmapData.assignments.find(a=>a.assignmentId===assignmentId&&a.activityType==='study');
@@ -8110,10 +8136,6 @@ function roadmapEnsureWeekData(assignments) {
   });
   return {weekly,daily};
 }
-function roadmapBuildTopicMetadataExport(t) {
-  return {subjectId:t.subjectId,subjectName:t.subjectName,topicId:t.topicId,topicName:t.topicName,status:t.status,completedAt:t.completedAt,completionDateSource:t.completionDateSource,revisionAnchorDate:t.revisionAnchorDate,difficulty:t.difficulty||null,priority:t.priority||'medium',prerequisiteTopicIds:t.prerequisiteTopicIds||[]};
-}
-
 function roadmapRenderSavedDrafts() {
   const host=document.getElementById('roadmap-saved-drafts');if(!host)return;
   const drafts=roadmapEnsureData().drafts||[];
