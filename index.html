@@ -469,14 +469,6 @@ body{
 }
 .pct-pop-close:hover{opacity:0.8;}
 
-.topic-note-btn{
-  background:none;border:none;cursor:pointer;
-  color:var(--muted);font-size:14px;padding:2px 4px;
-  transition:color 0.15s;
-}
-.topic-note-btn:hover{color:var(--gold);}
-.topic-note-btn.has-note{color:var(--gold2);}
-
 /* ── MODAL (notes) ── */
 .modal-overlay{
   display:none;position:fixed;inset:0;
@@ -1980,6 +1972,14 @@ body{
   .roadmap-chevron,.roadmap-month>summary::after,.roadmap-week>summary::after{transition:none;}
 }
 
+/* Current (running) week: a clearly different card so it is easy to spot among the other weeks */
+.roadmap-week.is-current{background:linear-gradient(135deg,rgba(17,138,178,.32),rgba(103,215,242,.10));border-color:rgba(103,215,242,.65);box-shadow:inset 4px 0 0 #67d7f2,0 0 0 1px rgba(103,215,242,.14),0 6px 18px rgba(17,138,178,.16);}
+.roadmap-week.is-current .roadmap-week-title{color:#d9f6fd;}
+.roadmap-now-badge{display:inline-block;margin-left:8px;padding:1px 8px;border-radius:20px;background:#67d7f2;color:#05222b;font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;vertical-align:1px;white-space:nowrap;}
+/* leave room for the fixed mobile menu button when scrolling a card into view */
+.roadmap-week,.roadmap-month{scroll-margin-top:24px;}
+@media(max-width:680px){.roadmap-week,.roadmap-month{scroll-margin-top:76px;}}
+
 </style>
 </head>
 <body>
@@ -2864,19 +2864,6 @@ body{
   </div>
 </div>
 
-<!-- NOTE MODAL -->
-<div class="modal-overlay" id="note-modal">
-  <div class="modal">
-    <h3 id="modal-topic-name">Topic Name</h3>
-    <div class="modal-sub" id="modal-subject-name">Subject</div>
-    <textarea id="modal-textarea" placeholder="Add your notes, doubts, or reminders here..."></textarea>
-    <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-      <button class="btn-save" onclick="saveNote()">Save Note</button>
-    </div>
-  </div>
-</div>
-
 <!-- ROADMAP SETTINGS MODAL -->
 <div class="roadmap-modal-overlay" id="roadmap-settings-overlay" role="dialog" aria-modal="true" aria-labelledby="roadmap-settings-title">
   <div class="roadmap-modal">
@@ -3269,7 +3256,7 @@ let profiles        = {};        // { profileId: {name,icon,createdAt,...allProf
 let progress     = {};
 let topicCompletionDates = {}; // reliable completion timestamps recorded by the existing status workflow
 let roadmapData = null; // roadmap assignments/settings live inside this existing profile
-let notes        = {};
+let notes        = {};   // legacy per-topic notes: feature removed from the UI; kept in the profile/backup untouched so nothing the user wrote is lost
 let revisions    = {};
 let revisionDates  = {};    // { 'subjectId::topic': ISO timestamp of last revision }
 let topicPct       = {};    // { 'subjectId::topic': 0-100 }
@@ -3283,7 +3270,6 @@ let _activeViewKey = 'dashboard';
 // We restore scroll position ourselves (see showView), so stop the browser
 // from doing its own automatic (and sometimes animated/racy) restoration.
 if('scrollRestoration' in history) history.scrollRestoration = 'manual';
-let activeNoteKey = null;
 let currentSort   = 'default';          // 'default'|'alpha'|'pct-desc'|'pct-asc'|'revisions'
 let pinnedSubjects = [];                 // [ subjectId, ... ]
 let pinnedTopics   = {};                 // { subjectId: [ topicName, ... ] }
@@ -3611,6 +3597,9 @@ function showView(view, btn, _fromPopstate) {
     history.pushState({view}, '', '#' + view);
   }
 
+  // Opening the Roadmap lands on the running week (not on back/forward, which restores the previous position).
+  if(view==='syllabus-roadmap' && !_fromPopstate) roadmapScrollToCurrentWeek();
+
   // Auto-close sidebar on mobile after navigation
   if(window.innerWidth <= 680) closeSidebar();
 }
@@ -3639,7 +3628,6 @@ function renderDashboard(){
   pomRenderWidget();
   roadmapRenderWidget();
   const g = getStats();
-  const totalNotes = Object.keys(notes).filter(k => notes[k] && notes[k].trim()).length;
   const totalRevs  = Object.values(revisions).reduce((a,b)=>a+b, 0);
 
   document.getElementById('dash-cards').innerHTML = `
@@ -3657,16 +3645,6 @@ function renderDashboard(){
       <div class="dc-top"><span class="dc-icon">📋</span><span class="dc-label">NOT STARTED</span></div>
       <div class="dc-val" style="color:var(--muted2)">${g.ns}</div>
       <div class="dc-sub">topics remaining · <span style="color:var(--muted2);font-size:11px;">tap to view ↗</span></div>
-    </div>
-    <div class="dash-card">
-      <div class="dc-top"><span class="dc-icon">🎯</span><span class="dc-label">OVERALL</span></div>
-      <div class="dc-val" style="color:var(--gold)">${g.pct}%</div>
-      <div class="dc-sub">syllabus complete</div>
-    </div>
-    <div class="dash-card" style="cursor:pointer;transition:border-color 0.2s;" onmouseenter="this.style.borderColor='rgba(251,191,36,0.35)'" onmouseleave="this.style.borderColor=''" onclick="openDrawer('notes')">
-      <div class="dc-top"><span class="dc-icon">📝</span><span class="dc-label">NOTES WRITTEN</span></div>
-      <div class="dc-val" style="color:var(--gold2)">${totalNotes}</div>
-      <div class="dc-sub">topics have notes · <span style="color:var(--gold2);font-size:11px;">tap to view ↗</span></div>
     </div>
     <div class="dash-card" style="cursor:pointer;transition:border-color 0.2s;" onmouseenter="this.style.borderColor='rgba(167,139,250,0.35)'" onmouseleave="this.style.borderColor=''" onclick="openDrawer('revisions')">
       <div class="dc-top"><span class="dc-icon">🔁</span><span class="dc-label">TOTAL REVISIONS</span></div>
@@ -3778,7 +3756,6 @@ function renderTopics(){
       sec.topics.forEach(t=>{
         const k = topicKey(s.id,t);
         const st = progress[k] || 'not-started';
-        const hasNote = !!(notes[k] && notes[k].trim());
 
         if(currentFilter!=='all' && st!==currentFilter) return;
         if(query && !t.toLowerCase().includes(query) && !s.name.toLowerCase().includes(query)) return;
@@ -3801,7 +3778,6 @@ function renderTopics(){
         //   & → &amp; (HTML attr), ' → \' (JS single-quoted string arg)
         const kE = k.replace(/&/g,'&amp;').replace(/'/g,"\\'");
         const tE = t.replace(/&/g,'&amp;').replace(/'/g,"\\'");
-        const sE = s.name.replace(/&/g,'&amp;').replace(/'/g,"\\'");
         const rowHtml = `
           <div class="topic-row" id="row-${safe}">
             <div class="topic-row-main">
@@ -3812,10 +3788,6 @@ function renderTopics(){
                 onclick="openRevPopover('${kE}','${tE}',this)"
                 title="${revTitle}" style="line-height:1.2;">
                 ${revCount>0?revCount+'×':'🔁'}${revLabel}
-              </button>
-              <button class="topic-note-btn ${hasNote?'has-note':''}" title="${hasNote?'View/Edit Note':'Add Note'}"
-                onclick="openModal('${kE}','${tE}','${sE}')">
-                ${hasNote?'📒':'📝'}
               </button>
               <button class="pct-trigger ${pct>0?'has-pct':''}" id="pct-btn-${safe}"
                 onclick="openPctPopover('${kE}',this)" title="Set how much of this topic you've learned">
@@ -4230,105 +4202,18 @@ function updateSubjectHeader(subjectId){
 }
 
 // ═══════════════════════════════════════════
-//  NOTES MODAL
-// ═══════════════════════════════════════════
-function openModal(key,topicName,subjectName){
-  activeNoteKey = key;
-  document.getElementById('modal-topic-name').textContent = topicName;
-  document.getElementById('modal-subject-name').textContent = subjectName;
-  document.getElementById('modal-textarea').value = notes[key]||'';
-  document.getElementById('note-modal').classList.add('open');
-  setTimeout(()=>document.getElementById('modal-textarea').focus(),100);
-}
-function closeModal(){
-  document.getElementById('note-modal').classList.remove('open');
-  activeNoteKey = null;
-}
-function saveNote(){
-  if(!activeNoteKey) return;
-  const val = document.getElementById('modal-textarea').value.trim();
-  if(val) notes[activeNoteKey]=val;
-  else delete notes[activeNoteKey];
-  saveData();
-  closeModal();
-  renderTopics();
-  showToast('📝 Note saved!');
-}
-document.getElementById('note-modal').addEventListener('click',function(e){
-  if(e.target===this) closeModal();
-});
-
-// ═══════════════════════════════════════════
 //  STATUS DRAWER
 // ═══════════════════════════════════════════
 const DRAWER_CONFIG = {
   'completed':    { icon:'✅', bg:'rgba(6,214,160,0.15)',   color:'var(--green)',  dot:'#06d6a0', title:'Completed Topics',    verb:'completed'    },
   'in-progress':  { icon:'🔄', bg:'rgba(255,209,102,0.15)', color:'var(--yellow)', dot:'#ffd166', title:'In Progress Topics',  verb:'in progress'  },
   'not-started':  { icon:'📋', bg:'rgba(138,146,170,0.12)', color:'var(--muted2)', dot:'#8892aa', title:'Not Started Topics',  verb:'not started'  },
-  'notes':        { icon:'📝', bg:'rgba(251,191,36,0.15)',  color:'var(--gold2)',  dot:'#fbbf24', title:'Topics with Notes',   verb:'have notes'   },
   'revisions':    { icon:'🔁', bg:'rgba(167,139,250,0.15)', color:'#c4b5fd',       dot:'#a78bfa', title:'Revision Log',        verb:'revised'      },
 };
 
 function openDrawer(status, _fromPopstate) {
   const cfg = DRAWER_CONFIG[status];
-
-  // ── NOTES MODE ──
-  if(status === 'notes') {
-    let groups = [], total = 0;
-    getAllSubjects().forEach(s => {
-      let topics = [];
-      s.sections.forEach(sec => {
-        sec.topics.forEach(t => {
-          const k = topicKey(s.id, t);
-          if(notes[k] && notes[k].trim()) {
-            topics.push({ name: t, key: k, note: notes[k] });
-            total++;
-          }
-        });
-      });
-      if(topics.length) groups.push({ subject: s, topics });
-    });
-
-    document.getElementById('drawer-icon').textContent = cfg.icon;
-    document.getElementById('drawer-icon').style.background = cfg.bg;
-    document.getElementById('drawer-title').textContent = cfg.title;
-    document.getElementById('drawer-sub').textContent = total
-      ? `${total} topic${total>1?'s':''} have notes across ${groups.length} subject${groups.length>1?'s':''}`
-      : 'No topic notes written yet';
-
-    const body = document.getElementById('drawer-body');
-    if(!total) {
-      body.innerHTML = `<div class="drawer-empty"><div class="de-icon">📝</div><strong>No topic notes yet</strong>Open any subject, tap 📝 on a topic to add a note.</div>`;
-    } else {
-      body.innerHTML = groups.map(g => `
-        <div class="drawer-subject-group">
-          <div class="drawer-subject-label">
-            <span>${g.subject.icon}</span>
-            <span style="color:${g.subject.color}">${g.subject.name}</span>
-            <span style="margin-left:auto;background:${g.subject.color}22;color:${g.subject.color};border-radius:10px;padding:1px 8px;font-size:10px;">${g.topics.length}</span>
-          </div>
-          ${g.topics.map(t => {
-            const kE2 = t.key.replace(/&/g,'&amp;').replace(/'/g,"\\'");
-            const nE2 = t.name.replace(/&/g,'&amp;').replace(/'/g,"\\'");
-            const sE2 = g.subject.name.replace(/&/g,'&amp;').replace(/'/g,"\\'");
-            return `
-            <div class="drawer-topic-row" onclick="openModal('${kE2}','${nE2}','${sE2}');_forceCloseDrawer()">
-              <div class="drawer-status-dot" style="background:${cfg.dot};"></div>
-              <div style="flex:1;min-width:0;">
-                <div class="drawer-topic-name">${t.name}</div>
-                <div class="drawer-note-preview">${t.note}</div>
-              </div>
-              <span style="font-size:11px;color:var(--muted);flex-shrink:0;margin-left:8px;">edit ↗</span>
-            </div>`;
-          }).join('')}
-        </div>
-      `).join('');
-    }
-    document.getElementById('status-drawer-overlay').classList.add('open');
-    document.body.style.overflow = 'hidden';
-    if(!_fromPopstate) history.pushState({view: _currentViewState(), drawer: status}, '', '#drawer-' + status);
-    return;
-  }
+  if(!cfg) return; // e.g. an old browser-history entry for the removed 'notes' drawer
 
   // ── REVISIONS MODE ──
   if(status === 'revisions') {
@@ -7483,7 +7368,7 @@ function _renderRoadmapInner() {
     <div class="roadmap-stat"><div class="roadmap-stat-label">Planned vs actual</div><div class="roadmap-stat-value" style="font-size:17px;color:${planStatusColor}">${dueTopicIds.size?`${dueDoneCount}/${dueTopicIds.size} due`:'Not due yet'}</div><div class="roadmap-stat-sub">${!dueTopicIds.size?'No cumulative study targets due yet':dueDoneCount>=dueTopicIds.size?'On track against assigned targets':`${dueTopicIds.size-dueDoneCount} assigned topic(s) not yet complete`}</div></div>
     <div class="roadmap-stat"><div class="roadmap-stat-label">Current month</div><div class="roadmap-stat-value" style="font-size:17px">${roadmapMonthTitle(thisMonth)}</div><div class="roadmap-stat-sub">${currentMonthAssignments.length} activities · ${Math.round(currentMonthAssignments.reduce((n,a)=>n+roadmapDurationMinutes(a),0)/60*10)/10} estimated hours</div></div>
     <div class="roadmap-stat"><div class="roadmap-stat-label">Current week</div><div class="roadmap-stat-value" style="color:${currentLoad.total>roadmapCapacityMinutes()?'var(--red)':'var(--gold)'}">${Math.round(currentLoad.total/60*10)/10}h</div><div class="roadmap-stat-sub">${roadmapFormatDate(thisWeek)} – ${roadmapFormatDate(roadmapAddDays(thisWeek,6))} · capacity ${Math.round(roadmapCapacityMinutes()/60*10)/10}h</div></div>
-    <div class="roadmap-stat"><div class="roadmap-stat-label">Revisions</div><div class="roadmap-stat-value" style="color:#c4b5fd">${revisionCompleted}/${revisionItems.length}</div><div class="roadmap-stat-sub">${revDue} due or overdue · revision progress is separate</div></div>
+    <div class="roadmap-stat"><div class="roadmap-stat-label">Revisions</div><div class="roadmap-stat-value" style="color:#c4b5fd">${revisionCompleted}/${revisionItems.length}</div><div class="roadmap-stat-sub">${revDue} due or overdue · completing one also logs it in Progress Tracker</div></div>
     <div class="roadmap-stat"><div class="roadmap-stat-label">Unscheduled</div><div class="roadmap-stat-value" style="color:var(--yellow)">${unscheduled.length}</div><div class="roadmap-stat-sub">Existing syllabus topics without future study assignments</div></div>`;
   const capEl=document.getElementById('roadmap-capacity-panel');
   const deadline=roadmapAddDays(c.examEndDate,-Math.max(0,Number(c.safetyBufferDays)||0));
@@ -7513,6 +7398,28 @@ function roadmapToggleAIMenu(forceOpen) {
   button.setAttribute('aria-expanded',String(open));
 }
 function roadmapToggleAllMonths(open) { document.querySelectorAll('#roadmap-months details.roadmap-month').forEach(el=>el.open=!!open); }
+// Scroll the Roadmap to the card of the week that is running now (opening its month if the user had it collapsed).
+// If today is outside the planning window (or a search hides it) fall back to the nearest month card.
+function roadmapScrollToCurrentWeek() {
+  const go=()=>{
+    const host=document.getElementById('roadmap-months');if(!host||document.getElementById('view-roadmap').style.display==='none')return null;
+    const c=roadmapConfig(),today=roadmapToday(),currentWeek=roadmapWeekStart(today,c.weekStartsOn);
+    let target=host.querySelector(`details.roadmap-week[data-week="${currentWeek}"]`);
+    if(target){const month=target.closest('details.roadmap-month');if(month&&!month.open)month.open=true;}
+    else{
+      const months=[...host.querySelectorAll('details.roadmap-month')];
+      target=host.querySelector(`details.roadmap-month[data-month="${roadmapMonthKey(today)}"]`)||(today<c.preparationStartDate?months[0]:months[months.length-1]);
+    }
+    if(!target)return null;
+    target.scrollIntoView({block:'start'}); // honours scroll-margin-top (clears the mobile menu button)
+    return window.scrollY;
+  };
+  // after layout; once more after web fonts settle, but only if the user hasn't scrolled in between
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    const y=go();if(y==null||!document.fonts?.ready)return;
+    document.fonts.ready.then(()=>{if(Math.abs(window.scrollY-y)<3)go();});
+  }));
+}
 function roadmapSearchNeedle() { return (document.getElementById('roadmap-search')?.value||'').trim().toLowerCase(); }
 // While a search is active every matching month/week is force-opened; don't record that as the user's own choice.
 function roadmapRememberOpen(kind,key,el) { if(!roadmapUiState[kind]||roadmapSearchNeedle())return; roadmapUiState[kind][key]=!!el.open; }
@@ -7575,9 +7482,10 @@ function roadmapRenderWeek(weekStart, activities, monthKey, needle) {
   let contents='';
   if(!visibleActivities.length) contents='<div class="roadmap-empty" style="padding:12px;">No assignments in this week yet. Use “Add assignment” to plan a topic here.</div>';
   else contents=visibleActivities.sort((a,b)=>(a.plannedDate||'').localeCompare(b.plannedDate||'')||String(a.activityType).localeCompare(String(b.activityType))).map(roadmapRenderActivity).join('');
-  const weekOpen=needle?true:(roadmapUiState.weeks[weekStart]??(weekStart===roadmapWeekStart(roadmapToday(),c.weekStartsOn)));
-  return `<details class="roadmap-week" data-week="${weekStart}" ${weekOpen?'open':''} ontoggle="roadmapRememberOpen('weeks','${weekStart}',this)">
-    <summary><span class="roadmap-week-title">Week ${roadmapEscape(roadmapFormatDate(weekStart,{day:'numeric',month:'short'}))} – ${roadmapEscape(roadmapFormatDate(end,{day:'numeric',month:'short'}))}</span>
+  const isCurrent=weekStart===roadmapWeekStart(roadmapToday(),c.weekStartsOn);
+  const weekOpen=needle?true:(roadmapUiState.weeks[weekStart]??isCurrent);
+  return `<details class="roadmap-week${isCurrent?' is-current':''}" data-week="${weekStart}" ${weekOpen?'open':''} ontoggle="roadmapRememberOpen('weeks','${weekStart}',this)">
+    <summary><span class="roadmap-week-title">Week ${roadmapEscape(roadmapFormatDate(weekStart,{day:'numeric',month:'short'}))} – ${roadmapEscape(roadmapFormatDate(end,{day:'numeric',month:'short'}))}${isCurrent?'<span class="roadmap-now-badge">Current week</span>':''}</span>
       <span class="roadmap-chip">${studyTopics.size} topics · ${completeCount} already complete in tracker · ${studyTopics.size-completeCount} not yet complete in tracker${studyTopics.size?` · ${Math.round(completeCount/studyTopics.size*100)}% syllabus status`:''}</span><span class="roadmap-chip ${over?'overdue':''}">${Math.round(totals.study/60*10)/10}h study</span><span class="roadmap-chip revision">${Math.round(totals.revision/60*10)/10}h revision</span><span class="roadmap-chip mock">${Math.round(totals.mock/60*10)/10}h mock</span>${over?'<span class="roadmap-chip overdue">Over capacity</span>':''}</summary>
     <div class="roadmap-week-body">${contents}</div>
   </details>`;
@@ -7607,7 +7515,7 @@ function roadmapRenderActivity(a) {
     if(!['completed','skipped'].includes(a.status)) actions+=`<button class="roadmap-btn small" onclick="roadmapSetGenericActivityStatus(${roadmapOnclickArg(a.assignmentId)},'completed')">Complete</button><button class="roadmap-btn small" onclick="roadmapSetGenericActivityStatus(${roadmapOnclickArg(a.assignmentId)},'skipped')">Skip</button><button class="roadmap-btn small" onclick="roadmapOpenAssignment(${roadmapOnclickArg(a.assignmentId)})">Edit</button>`;
   }
   const statusText=status==='completed'?'Completed':status==='skipped'?'Skipped':status==='overdue'?'Overdue':status==='due'?'This week':status==='needs-anchor'?'Needs date anchor':a.status==='in-progress'?'In progress':'Planned';
-  return `<div class="roadmap-activity"><span class="roadmap-chip ${typeClass}">${type==='study'?(parts.length>1?`NEW STUDY · PART ${partNumber}`:'NEW STUDY'):type==='revision'?'REVISION':'MOCK TEST'}</span><div class="roadmap-activity-main"><div class="roadmap-activity-name">${roadmapEscape(label)}</div><div class="roadmap-activity-meta"><span>${roadmapEscape(detail)}</span><span class="roadmap-chip ${roadmapStatusClass(status)}">${roadmapEscape(statusText)}</span>${a.intervalDays!=null&&type==='revision'?`<span>Interval: ${Number(a.intervalDays)}d</span>`:''}${a.anchorSource==='user-confirmed'?'<span>Anchor: user-confirmed</span>':''}</div></div><div class="roadmap-activity-actions">${actions}</div></div>`;
+  return `<div class="roadmap-activity"><span class="roadmap-chip ${typeClass}">${type==='study'?(parts.length>1?`NEW STUDY · PART ${partNumber}`:'NEW STUDY'):type==='revision'?'REVISION':'MOCK TEST'}</span><div class="roadmap-activity-main"><div class="roadmap-activity-name">${roadmapEscape(label)}</div><div class="roadmap-activity-meta"><span>${roadmapEscape(detail)}</span><span class="roadmap-chip ${roadmapStatusClass(status)}">${roadmapEscape(statusText)}</span>${a.intervalDays!=null&&type==='revision'?`<span>Interval: ${Number(a.intervalDays)}d</span>`:''}${a.anchorSource==='user-confirmed'?'<span>Anchor: user-confirmed</span>':''}${type==='revision'&&a.trackerLoggedAt?'<span title="Counted in Progress Tracker → Log Revision">🔁 Logged in tracker</span>':''}</div></div><div class="roadmap-activity-actions">${actions}</div></div>`;
 }
 function renderRoadmapUnscheduled() {
   const el=document.getElementById('roadmap-unscheduled');
@@ -7769,7 +7677,7 @@ function roadmapAssignmentTypeChanged(userChanged=false) {
   topicWrap.style.display=type==='mock-test'?'none':'';
   roundWrap.style.display=type==='revision'?'':'none';
   anchorWrap.style.display=type==='revision'?'':'none';
-  document.getElementById('rm-assignment-hint').textContent=type==='revision'?'This is a separate revision activity. Completing it will not modify the topic’s canonical completion state.':type==='mock-test'?'A mock-test block is a roadmap activity and is not automatically added to Mock Test history.':'A study assignment references an existing canonical topic. Only the existing Progress Tracker controls syllabus completion.';
+  document.getElementById('rm-assignment-hint').textContent=type==='revision'?'This is a separate revision activity. Completing it adds one to the topic’s revision count in Progress Tracker (Log Revision) and does not change its canonical completion state.':type==='mock-test'?'A mock-test block is a roadmap activity and is not automatically added to Mock Test history.':'A study assignment references an existing canonical topic. Only the existing Progress Tracker controls syllabus completion.';
   if(userChanged){
     // Switching type by hand: a mock test starts neutral; study/revision pick up the chosen topic's planning defaults.
     if(type==='mock-test'){document.getElementById('rm-assignment-difficulty').value='';document.getElementById('rm-assignment-priority').value='medium';}
@@ -7884,13 +7792,35 @@ function roadmapRemoveAssignment(assignmentId) {
   roadmapData.assignments=roadmapData.assignments.filter(x=>x.assignmentId!==assignmentId);
   saveData();renderRoadmap();showToast('Assignment removed; syllabus record preserved.');
 }
+// Completing a Roadmap revision adds one to the topic's Progress Tracker revision count (the same data as the tracker's
+// "Log Revision" button). Idempotent per assignment, and reversed if the revision is later un-completed.
+function roadmapLogRevisionToTracker(a, whenIso) {
+  if(!a||a.activityType!=='revision'||a.trackerLoggedAt)return null;
+  const key=a.topicId;if(!key||!roadmapSyllabusMap()[key])return null; // never create tracker entries for topics that no longer exist
+  const when=whenIso||a.completedAt||new Date().toISOString();
+  a.trackerPrevRevisionDate=revisionDates[key]||null;
+  revisions[key]=(revisions[key]||0)+1;
+  if(!revisionDates[key]||new Date(when)>=new Date(revisionDates[key]))revisionDates[key]=when;
+  a.trackerLoggedAt=when;
+  return revisions[key];
+}
+function roadmapUnlogRevisionFromTracker(a) {
+  if(!a||!a.trackerLoggedAt)return;
+  const key=a.topicId,left=(revisions[key]||0)-1;
+  if(left>0){
+    revisions[key]=left;
+    if(revisionDates[key]===a.trackerLoggedAt){if(a.trackerPrevRevisionDate)revisionDates[key]=a.trackerPrevRevisionDate;else delete revisionDates[key];}
+  } else {delete revisions[key];delete revisionDates[key];}
+  delete a.trackerLoggedAt;delete a.trackerPrevRevisionDate;
+}
 function roadmapSetRevisionStatus(assignmentId,status) {
   const a=roadmapData.assignments.find(x=>x.assignmentId===assignmentId&&x.activityType==='revision');if(!a)return;
   if(!['completed','skipped','planned'].includes(status))return;
-  if(status==='completed'){a.status='completed';a.completedAt=new Date().toISOString();a.updatedAt=a.completedAt;}
-  else if(status==='skipped'){if(!confirm('Mark this revision session skipped? The canonical topic remains completed.'))return;a.status='skipped';a.skippedAt=new Date().toISOString();a.updatedAt=a.skippedAt;}
-  else {a.status='planned';delete a.completedAt;delete a.skippedAt;}
-  saveData();renderRoadmap();showToast(status==='completed'?'✅ Revision recorded. Topic completion was not changed.':status==='skipped'?'Revision skipped; topic completion remains unchanged.':'Revision restored to planned.');
+  let loggedCount=null;
+  if(status==='completed'){if(a.status==='completed')return;a.status='completed';a.completedAt=new Date().toISOString();a.updatedAt=a.completedAt;loggedCount=roadmapLogRevisionToTracker(a,a.completedAt);}
+  else if(status==='skipped'){if(!confirm('Mark this revision session skipped? The canonical topic remains completed.'))return;roadmapUnlogRevisionFromTracker(a);a.status='skipped';a.skippedAt=new Date().toISOString();a.updatedAt=a.skippedAt;}
+  else {roadmapUnlogRevisionFromTracker(a);a.status='planned';delete a.completedAt;delete a.skippedAt;}
+  saveData();renderRoadmap();showToast(status==='completed'?(loggedCount?`✅ Revision recorded and logged in Progress Tracker (${loggedCount}× revised). Topic completion was not changed.`:'✅ Revision recorded. Topic completion was not changed.'):status==='skipped'?'Revision skipped; topic completion remains unchanged.':'Revision restored to planned.');
 }
 function roadmapSetGenericActivityStatus(assignmentId,status) {
   const a=roadmapData.assignments.find(x=>x.assignmentId===assignmentId);if(!a||a.activityType==='revision')return;
@@ -8062,7 +7992,7 @@ function roadmapSyncTodoCompletion(todo, completed) {
   if(!todo?.roadmapAssignmentId||!completed)return;
   const a=roadmapData?.assignments?.find(x=>x.assignmentId===todo.roadmapAssignmentId);if(!a)return;
   const now=new Date().toISOString();
-  if(a.activityType==='revision'&&a.status!=='completed') {a.status='completed';a.completedAt=todo.completedAt||now;a.updatedAt=now;saveData();}
+  if(a.activityType==='revision'&&a.status!=='completed') {a.status='completed';a.completedAt=todo.completedAt||now;a.updatedAt=now;roadmapLogRevisionToTracker(a,a.completedAt);saveData();}
   else if(a.activityType==='study') {a.todoCompletedAt=todo.completedAt||now;a.updatedAt=now;saveData();}
   else if(a.activityType==='mock-test') {a.todoCompletedAt=todo.completedAt||now;a.updatedAt=now;saveData();}
   if(document.getElementById('view-roadmap')?.style.display!=='none')renderRoadmap();
