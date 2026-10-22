@@ -1842,7 +1842,7 @@ body{
 .roadmap-filters{display:flex;gap:5px;flex-wrap:wrap;}
 .roadmap-filter{border:1px solid var(--border2);background:none;color:var(--muted2);border-radius:18px;padding:5px 9px;font:600 10px var(--rm-font);cursor:pointer;}
 .roadmap-filter.active{background:rgba(17,138,178,.16);border-color:rgba(17,138,178,.45);color:#67d7f2;}
-.roadmap-plan-row{display:grid;grid-template-columns:minmax(0,1fr) 112px 128px auto;gap:8px;align-items:center;padding:9px 0;border-top:1px solid rgba(255,255,255,.05);}
+.roadmap-plan-row{display:grid;grid-template-columns:minmax(0,1fr) 112px 128px;gap:8px;align-items:center;padding:9px 0;border-top:1px solid rgba(255,255,255,.05);}
 .roadmap-plan-row:first-of-type{border-top:0;}
 .roadmap-plan-name strong{font-size:11.5px;word-break:break-word;}
 .roadmap-plan-meta{margin-top:3px;display:flex;flex-wrap:wrap;gap:5px;align-items:center;}
@@ -1850,7 +1850,7 @@ body{
 .roadmap-plan-input span{font-size:9px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:var(--muted2);}
 .roadmap-plan-input select,.roadmap-plan-input input{background:var(--surface);border:1px solid var(--border2);border-radius:7px;color:var(--text);padding:7px 8px;font:11px var(--rm-font);color-scheme:dark;min-width:0;width:100%;}
 .roadmap-plan-input select:focus,.roadmap-plan-input input:focus{outline:1px solid #67d7f2;border-color:#67d7f2;}
-@media(max-width:680px){.roadmap-plan-row{grid-template-columns:1fr 1fr;}.roadmap-plan-name{grid-column:1/-1;}.roadmap-plan-row>.roadmap-btn{grid-column:1/-1;}}
+@media(max-width:680px){.roadmap-plan-row{grid-template-columns:1fr 1fr;}.roadmap-plan-name{grid-column:1/-1;}}
 @media(max-width:900px){
   #view-roadmap .roadmap-page{padding-left:14px;padding-right:14px;}
   #view-roadmap .roadmap-summary{grid-template-columns:repeat(2,minmax(0,1fr));}
@@ -7609,7 +7609,7 @@ function roadmapPlanRowMeta(t, e) {
 function roadmapPlanRowHtml(t, e) {
   const idArg=roadmapOnclickArg(t.topicId), name=roadmapEscape(t.topicName);
   const opts=`<option value=""${t.priority?'':' selected'}>Not set</option>`+ROADMAP_PRIORITY_ORDER.map(p=>`<option value="${p}"${t.priority===p?' selected':''}>${ROADMAP_PRIORITY_LABELS[p]}</option>`).join('');
-  return `<div class="roadmap-plan-row" data-topic-id="${roadmapEscape(t.topicId)}"><div class="roadmap-plan-name"><strong>${name}</strong><div class="roadmap-note roadmap-plan-meta">${roadmapPlanRowMeta(t,e)}</div></div><label class="roadmap-plan-input"><span>Priority</span><select aria-label="Priority for ${name}" onchange="roadmapInlineSetPriority(${idArg},this.value)">${opts}</select></label><label class="roadmap-plan-input"><span>Est. total hours</span><input type="number" min="0.25" max="${ROADMAP_MAX_ESTIMATE_HOURS}" step="0.25" inputmode="decimal" placeholder="Not set" value="${t.estimatedTotalStudyHours==null?'':t.estimatedTotalStudyHours}" aria-label="Estimated total study hours for ${name}" onchange="roadmapInlineSetHours(${idArg},this)"/></label><button type="button" class="roadmap-btn small" onclick="roadmapEditTopicMetadata(${idArg})">Details</button></div>`;
+  return `<div class="roadmap-plan-row" data-topic-id="${roadmapEscape(t.topicId)}"><div class="roadmap-plan-name"><strong>${name}</strong><div class="roadmap-note roadmap-plan-meta">${roadmapPlanRowMeta(t,e)}</div></div><label class="roadmap-plan-input"><span>Priority</span><select aria-label="Priority for ${name}" onchange="roadmapInlineSetPriority(${idArg},this.value)">${opts}</select></label><label class="roadmap-plan-input"><span>Est. total hours</span><input type="number" min="0.25" max="${ROADMAP_MAX_ESTIMATE_HOURS}" step="0.25" inputmode="decimal" placeholder="Not set" value="${t.estimatedTotalStudyHours==null?'':t.estimatedTotalStudyHours}" aria-label="Estimated total study hours for ${name}" onchange="roadmapInlineSetHours(${idArg},this)"/></label></div>`;
 }
 function roadmapSetTopicPlanFilter(filter, btn) {
   roadmapTopicPlanFilter=filter;
