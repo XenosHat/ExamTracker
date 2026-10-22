@@ -1843,9 +1843,9 @@ body{
 .roadmap-filter{border:1px solid var(--border2);background:none;color:var(--muted2);border-radius:18px;padding:5px 9px;font:600 10px var(--rm-font);cursor:pointer;}
 .roadmap-filter.active{background:rgba(17,138,178,.16);border-color:rgba(17,138,178,.45);color:#67d7f2;}
 .roadmap-plan-row{display:grid;grid-template-columns:minmax(0,1fr) 112px 128px;gap:8px;align-items:center;padding:9px 0;border-top:1px solid rgba(255,255,255,.05);}
-#roadmap-topic-planning{max-height:min(58vh,520px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding-right:6px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.25) transparent;}
-#roadmap-topic-planning::-webkit-scrollbar{width:8px;}
-#roadmap-topic-planning::-webkit-scrollbar-thumb{background:rgba(255,255,255,.22);border-radius:8px;}
+#roadmap-topic-planning,#roadmap-unscheduled{max-height:min(58vh,520px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding-right:6px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.25) transparent;}
+#roadmap-topic-planning::-webkit-scrollbar,#roadmap-unscheduled::-webkit-scrollbar{width:8px;}
+#roadmap-topic-planning::-webkit-scrollbar-thumb,#roadmap-unscheduled::-webkit-scrollbar-thumb{background:rgba(255,255,255,.22);border-radius:8px;}
 .roadmap-plan-subject{position:sticky;top:0;z-index:2;background:var(--card);padding:7px 0 6px;font-weight:800;font-size:12px;}
 .roadmap-plan-subject span{font-size:10px;color:var(--muted);font-weight:500;}
 .roadmap-plan-name strong{font-size:11.5px;word-break:break-word;}
@@ -2336,15 +2336,17 @@ body{
         </div>
         <div id="roadmap-missing-anchors" class="roadmap-section"></div>
         <div class="roadmap-section">
-          <div class="roadmap-section-head"><h3>📋 Unscheduled topics</h3><span class="roadmap-note" id="roadmap-unscheduled-count"></span></div>
-          <div class="roadmap-panel">
-            <div class="roadmap-note" style="margin-bottom:10px;">These are existing syllabus records (including chapters already completed in Progress Tracker) without a study assignment. Scheduling one references its existing topic ID; it does not create another syllabus chapter.</div>
             <div class="roadmap-unscheduled-tools">
               <input id="roadmap-search" class="roadmap-search" placeholder="Search assigned or unscheduled topics…" oninput="roadmapSearchInput()" aria-label="Search roadmap topics"/>
               <label class="roadmap-note" title="Controls whether completed syllabus topics are included in the AI planning export." style="display:flex;align-items:center;gap:7px;min-height:40px;"><input id="roadmap-export-completed" type="checkbox" checked style="accent-color:#118ab2;width:16px;height:16px;flex-shrink:0;"/> Include completed topics</label>
             </div>
-            <div id="roadmap-unscheduled"></div>
-          </div>
+          <details class="roadmap-panel roadmap-anchor-card" id="roadmap-unscheduled-details">
+            <summary class="roadmap-anchor-summary"><span class="roadmap-anchor-heading">📋 Unscheduled topics</span><span class="roadmap-chip" id="roadmap-unscheduled-count"></span><span class="roadmap-chevron roadmap-anchor-chevron" aria-hidden="true"></span></summary>
+            <div class="roadmap-anchor-content">
+              <div class="roadmap-note" style="margin-bottom:9px;">These are existing syllabus records (including chapters already completed in Progress Tracker) without a study assignment. Scheduling one references its existing topic ID; it does not create another syllabus chapter. The search box above also filters this list.</div>
+              <div id="roadmap-unscheduled" role="region" aria-label="Unscheduled topics list" tabindex="0"></div>
+            </div>
+          </details>
         </div>
       </div>
     </div>
@@ -7597,11 +7599,13 @@ function renderRoadmapUnscheduled() {
   const el=document.getElementById('roadmap-unscheduled');
   if(!el) return;
   const all=roadmapGetUnscheduledTopics(), needle=(document.getElementById('roadmap-search')?.value||'').trim().toLowerCase();
+  const prevTop=el.scrollTop,needleChanged=el.dataset.needle!==needle;el.dataset.needle=needle; // keep your place unless the search changed
   const items=all.filter(t=>`${t.topicName} ${t.subjectName} ${t.section}`.toLowerCase().includes(needle));
-  document.getElementById('roadmap-unscheduled-count').textContent=`${all.length} existing topics unscheduled`;
+  const countChip=document.getElementById('roadmap-unscheduled-count');countChip.textContent=all.length?`${all.length} unscheduled`:'All scheduled';countChip.className='roadmap-chip '+(all.length?'warn':'done');
   if(!items.length){el.innerHTML=all.length?'<div class="roadmap-empty">No topics match this search.</div>':'<div class="roadmap-empty">Every syllabus topic already has a study assignment. Add a continuation from any chapter card when you need another week.</div>';return;}
   const grouped={}; items.forEach(t=>(grouped[t.subjectId] ||= {name:t.subjectName,icon:t.subjectIcon,items:[]}).items.push(t));
-  el.innerHTML=Object.values(grouped).map(group=>`<div class="roadmap-section" style="margin-top:8px;"><div style="font-weight:800;font-size:12px;margin-bottom:5px;">${roadmapEscape(group.icon)} ${roadmapEscape(group.name)} <span style="font-size:10px;color:var(--muted);font-weight:500;">(${group.items.length})</span></div>${group.items.map(t=>`<div class="roadmap-activity"><span class="roadmap-chip study">${roadmapEscape(t.section)}</span><div class="roadmap-activity-main"><div class="roadmap-activity-name">${roadmapEscape(t.topicName)}</div><div class="roadmap-activity-meta"><span>${roadmapEscape(t.status==='completed'?'Already marked complete in Progress Tracker':(STATUS_LABEL[t.status]||t.status))}</span><span class="roadmap-chip ${t.priority||t.status==='completed'?'':'warn'}">${t.priority?`Priority: ${roadmapEscape(roadmapPriorityLabel(t.priority))}`:'Priority not set'}</span><span class="roadmap-chip ${t.estimatedTotalStudyHours!=null?'study':(t.status==='completed'?'':'warn')}">${t.estimatedTotalStudyHours!=null?`Estimate: ${roadmapFormatHours(t.estimatedTotalStudyHours*60)}`:'Estimate not set'}</span></div></div><div class="roadmap-activity-actions"><button class="roadmap-btn small primary" onclick="roadmapOpenAssignment(null,${roadmapOnclickArg(t.topicId)})">Schedule</button><button class="roadmap-btn small" onclick="roadmapEditTopicMetadata(${roadmapOnclickArg(t.topicId)})">Details</button></div></div>`).join('')}</div>`).join('');
+  el.innerHTML=Object.values(grouped).map(group=>`<div class="roadmap-section" style="margin-top:8px;"><div class="roadmap-plan-subject">${roadmapEscape(group.icon)} ${roadmapEscape(group.name)} <span>(${group.items.length})</span></div>${group.items.map(t=>`<div class="roadmap-activity"><span class="roadmap-chip study">${roadmapEscape(t.section)}</span><div class="roadmap-activity-main"><div class="roadmap-activity-name">${roadmapEscape(t.topicName)}</div><div class="roadmap-activity-meta"><span>${roadmapEscape(t.status==='completed'?'Already marked complete in Progress Tracker':(STATUS_LABEL[t.status]||t.status))}</span><span class="roadmap-chip ${t.priority||t.status==='completed'?'':'warn'}">${t.priority?`Priority: ${roadmapEscape(roadmapPriorityLabel(t.priority))}`:'Priority not set'}</span><span class="roadmap-chip ${t.estimatedTotalStudyHours!=null?'study':(t.status==='completed'?'':'warn')}">${t.estimatedTotalStudyHours!=null?`Estimate: ${roadmapFormatHours(t.estimatedTotalStudyHours*60)}`:'Estimate not set'}</span></div></div><div class="roadmap-activity-actions"><button class="roadmap-btn small primary" onclick="roadmapOpenAssignment(null,${roadmapOnclickArg(t.topicId)})">Schedule</button><button class="roadmap-btn small" onclick="roadmapEditTopicMetadata(${roadmapOnclickArg(t.topicId)})">Details</button></div></div>`).join('')}</div>`).join('');
+  el.scrollTop=needleChanged?0:prevTop;
 }
 // ---- Topic effort & priority panel: every topic's two planning inputs, editable in place -------------------------------------------
 // A topic ID is the stable key for estimate and priority. Should a topic ever be listed under more than one section it is still one canonical
@@ -7643,7 +7647,7 @@ function renderRoadmapTopicPlanning(force=false) {
   if(chips)chips.innerHTML=(noEstimate?`<span class="roadmap-chip warn">${noEstimate} without estimate</span>`:'<span class="roadmap-chip done">All estimates entered</span>')+(noPriority?`<span class="roadmap-chip warn">${noPriority} without priority</span>`:'<span class="roadmap-chip done">All priorities set</span>');
   // Keep the rows stable while the user is typing in one of them (saving re-renders the page).
   if(!force&&host.children.length&&host.contains(document.activeElement))return;
-  const prevTop=host.scrollTop,needle=roadmapSearchNeedle(), filter=roadmapTopicPlanFilter;
+  const prevTop=host.scrollTop,needle=roadmapSearchNeedle(), filter=roadmapTopicPlanFilter,needleChanged=host.dataset.needle!==needle;host.dataset.needle=needle;
   const rows=items.filter(t=>{
     if(needle&&!`${t.topicName} ${t.subjectName} ${t.section}`.toLowerCase().includes(needle))return false;
     if(filter==='no-estimate')return t.status!=='completed'&&t.estimatedTotalStudyHours==null;
@@ -7654,7 +7658,7 @@ function renderRoadmapTopicPlanning(force=false) {
   if(!rows.length){host.innerHTML='<div class="roadmap-empty">No topics match this filter.</div>';return;}
   const grouped={};rows.forEach(t=>(grouped[t.subjectId] ||= {name:t.subjectName,icon:t.subjectIcon,items:[]}).items.push(t));
   host.innerHTML=Object.values(grouped).map(g=>`<div class="roadmap-section" style="margin-top:6px;"><div class="roadmap-plan-subject">${roadmapEscape(g.icon)} ${roadmapEscape(g.name)} <span>(${g.items.length})</span></div>${g.items.map(t=>roadmapPlanRowHtml(t,roadmapTopicEffort(t,assignments))).join('')}</div>`).join('');
-  host.scrollTop=force?0:prevTop; // a filter change starts at the top; any other refresh keeps your place
+  host.scrollTop=(force||needleChanged)?0:prevTop; // a filter change starts at the top; any other refresh keeps your place
 }
 function roadmapPatchPlanRow(topicId) {
   const host=document.getElementById('roadmap-topic-planning');if(!host)return;
@@ -8686,6 +8690,7 @@ function roadmapRunSelfTests() {
   test('Every syllabus topic ID appears exactly once (English "Narration" lives only under Non-Grammar)',()=>{const ids=roadmapSyllabusItems(true).map(t=>t.topicId),eng=getAllSubjects().find(x=>x.id==='english'),sec=l=>eng.sections.find(x=>x.label===l).topics;return new Set(ids).size===ids.length&&sec('Non-Grammar').includes('Narration')&&!sec('Grammar').includes('Narration');});
   test('A topic listed under two sections would still be one topic in planning, counts and export',()=>{const u=roadmapUniqueTopics([{topicId:'a',section:'X'},{topicId:'a',section:'Y'},{topicId:'b',section:'X'}]);const raw=roadmapSyllabusItems(true),e=roadmapBuildExport(true);return u.length===2&&u[0].section==='X / Y'&&e.syllabus.length===roadmapUniqueTopics(raw).length&&new Set(e.syllabus.map(t=>t.topicId)).size===e.syllabus.length&&new Set(e.unscheduledTopicIds).size===e.unscheduledTopicIds.length&&roadmapPlanningCounts().total===e.syllabus.length;});
   test('Counts of topics still needing an estimate or a priority ignore topics already complete',()=>withSample(null,null,()=>{const c=roadmapPlanningCounts(),all=roadmapUniqueTopics(roadmapSyllabusItems(true)).filter(t=>t.status!=='completed').length;return c.needEstimate===all&&c.needPriority===all;})&&withSample({estimatedTotalStudyHours:5,priority:'low'},null,()=>{const c=roadmapPlanningCounts(),all=roadmapUniqueTopics(roadmapSyllabusItems(true)).filter(t=>t.status!=='completed').length;return c.needEstimate===all-1&&c.needPriority===all-1;}));
+  test('Unscheduled topics is a collapsible card whose list scrolls inside it, with the shared search kept outside so it stays visible',()=>{const d=document.getElementById('roadmap-unscheduled-details'),l=document.getElementById('roadmap-unscheduled'),q=document.getElementById('roadmap-search');return !!d&&d.tagName==='DETAILS'&&d.contains(l)&&l.getAttribute('role')==='region'&&!!q&&!d.contains(q);});
   return {passed:results.filter(r=>r.passed).length,total:results.length,results};
 }
 
