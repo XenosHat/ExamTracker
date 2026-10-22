@@ -3049,7 +3049,7 @@ const SYLLABUS = [
       { label:'Grammar', topics:[
         'Tense','Noun','Pronoun','Adjective',
         'Subject & Verb Agreement','Preposition','Verb','Adverb','Conjunction',
-        'Active–Passive Voice','Narration','Direct & Indirect Speech',
+        'Active–Passive Voice','Direct & Indirect Speech',
         'Conditional Sentences','Articles','Question Tag',
         'Participial','Infinitive','Gerund','Inversion','Superfluous Expression'
       ]},
@@ -7453,9 +7453,6 @@ function _renderRoadmapInner() {
   if(currentLoad.total>roadmapCapacityMinutes(thisWeek)) warnings.push(`Current week is over capacity by ${Math.round((currentLoad.total-roadmapCapacityMinutes(thisWeek))/60*10)/10} hours.`);
   if(overdueStudy) warnings.push(`${overdueStudy} study assignment(s) are past their planned dates and the canonical topic is not completed.`);
   if(pastEnd) warnings.push(`${pastEnd} active assignment(s) fall after the configured examination end date.`);
-  const planCounts=roadmapPlanningCounts();
-  if(planCounts.needEstimate) warnings.push(`${planCounts.needEstimate} topic(s) have no Estimated Total Study Hours yet. Enter them under “Topic effort & priority” so their effort can be planned; nothing is estimated for you.`);
-  if(planCounts.needPriority) warnings.push(`${planCounts.needPriority} topic(s) have no Priority set. Priority decides how daily and weekly study time is shared between competing topics.`);
   if(roadmapIsISODate(c.examEndDate)&&deadline<today) warnings.push('The exam window plus safety buffer has passed. Review dates before generating a new plan.');
   const misaligned=roadmapRealignCount(roadmapData,c.weekStartsOn).assignments;
   capEl.style.display=(warnings.length||misaligned)?'block':'none';
@@ -7607,8 +7604,8 @@ function renderRoadmapUnscheduled() {
   el.innerHTML=Object.values(grouped).map(group=>`<div class="roadmap-section" style="margin-top:8px;"><div style="font-weight:800;font-size:12px;margin-bottom:5px;">${roadmapEscape(group.icon)} ${roadmapEscape(group.name)} <span style="font-size:10px;color:var(--muted);font-weight:500;">(${group.items.length})</span></div>${group.items.map(t=>`<div class="roadmap-activity"><span class="roadmap-chip study">${roadmapEscape(t.section)}</span><div class="roadmap-activity-main"><div class="roadmap-activity-name">${roadmapEscape(t.topicName)}</div><div class="roadmap-activity-meta"><span>${roadmapEscape(t.status==='completed'?'Already marked complete in Progress Tracker':(STATUS_LABEL[t.status]||t.status))}</span><span class="roadmap-chip ${t.priority||t.status==='completed'?'':'warn'}">${t.priority?`Priority: ${roadmapEscape(roadmapPriorityLabel(t.priority))}`:'Priority not set'}</span><span class="roadmap-chip ${t.estimatedTotalStudyHours!=null?'study':(t.status==='completed'?'':'warn')}">${t.estimatedTotalStudyHours!=null?`Estimate: ${roadmapFormatHours(t.estimatedTotalStudyHours*60)}`:'Estimate not set'}</span></div></div><div class="roadmap-activity-actions"><button class="roadmap-btn small primary" onclick="roadmapOpenAssignment(null,${roadmapOnclickArg(t.topicId)})">Schedule</button><button class="roadmap-btn small" onclick="roadmapEditTopicMetadata(${roadmapOnclickArg(t.topicId)})">Details</button></div></div>`).join('')}</div>`).join('');
 }
 // ---- Topic effort & priority panel: every topic's two planning inputs, editable in place -------------------------------------------
-// A topic ID is the stable key for estimate and priority, and the syllabus lists a few topics under more than one section (for example
-// English "Narration" in Grammar and in Non-Grammar). They are one canonical topic with one saved estimate, so planning shows and exports it once.
+// A topic ID is the stable key for estimate and priority. Should a topic ever be listed under more than one section it is still one canonical
+// topic with one saved estimate, so planning shows and exports it once, with its sections combined.
 function roadmapUniqueTopics(items) {
   const byId=new Map();
   items.forEach(t=>{const first=byId.get(t.topicId);if(!first)byId.set(t.topicId,{topic:t,sections:[t.section]});else if(!first.sections.includes(t.section))first.sections.push(t.section);});
@@ -7642,7 +7639,7 @@ function renderRoadmapTopicPlanning(force=false) {
   const host=document.getElementById('roadmap-topic-planning'), chips=document.getElementById('roadmap-topic-plan-chips');
   if(!host)return;
   const items=roadmapUniqueTopics(roadmapSyllabusItems(true)), assignments=roadmapData.assignments;
-  const noEstimate=items.filter(t=>t.status!=='completed'&&t.estimatedTotalStudyHours==null).length, noPriority=items.filter(t=>t.status!=='completed'&&!t.priority).length;
+  const {needEstimate:noEstimate,needPriority:noPriority}=roadmapPlanningCounts(items);
   if(chips)chips.innerHTML=(noEstimate?`<span class="roadmap-chip warn">${noEstimate} without estimate</span>`:'<span class="roadmap-chip done">All estimates entered</span>')+(noPriority?`<span class="roadmap-chip warn">${noPriority} without priority</span>`:'<span class="roadmap-chip done">All priorities set</span>');
   // Keep the rows stable while the user is typing in one of them (saving re-renders the page).
   if(!force&&host.children.length&&host.contains(document.activeElement))return;
@@ -8686,7 +8683,8 @@ function roadmapRunSelfTests() {
   test('Import effort check counts topics that still have no estimate at all',()=>withSample(null,null,t=>{const r=val(t,[study(t,W1,60)]);return r.effort.missingEstimateTotal>0&&r.effort.missingEstimateTotal===roadmapPlanningCounts().needEstimate;}));
   test('Saved drafts keep the AI notes and unallocated report, and a draft review shows them',()=>withSample({estimatedTotalStudyHours:12},null,t=>{const r=val(t,[study(t,W1,300)],{planningNotes:['n1'],unallocatedStudy:[{topicId:t.topicId,unallocatedMinutes:60,reason:'full'}]});return r.errors.length===0&&r.effort.aiReported.length===1&&r.notes.length===1;}));
   test('The export file for an AI is compact JSON while the format example stays readable',()=>{const e=JSON.stringify(roadmapBuildExport(true));const a=JSON.stringify(roadmapBuildExport(true),null,2);return a.length>e.length*1.15;});
-  test('A topic listed under two sections is one canonical topic in planning, counts and export',()=>{const raw=roadmapSyllabusItems(true),u=roadmapUniqueTopics(raw),ids=u.map(t=>t.topicId),e=roadmapBuildExport(true);return new Set(ids).size===ids.length&&e.syllabus.length===u.length&&new Set(e.syllabus.map(t=>t.topicId)).size===e.syllabus.length&&new Set(e.unscheduledTopicIds).size===e.unscheduledTopicIds.length&&roadmapPlanningCounts().total===u.length&&(raw.length===u.length||u.some(t=>t.section.includes(' / ')));});
+  test('Every syllabus topic ID appears exactly once (English "Narration" lives only under Non-Grammar)',()=>{const ids=roadmapSyllabusItems(true).map(t=>t.topicId),eng=getAllSubjects().find(x=>x.id==='english'),sec=l=>eng.sections.find(x=>x.label===l).topics;return new Set(ids).size===ids.length&&sec('Non-Grammar').includes('Narration')&&!sec('Grammar').includes('Narration');});
+  test('A topic listed under two sections would still be one topic in planning, counts and export',()=>{const u=roadmapUniqueTopics([{topicId:'a',section:'X'},{topicId:'a',section:'Y'},{topicId:'b',section:'X'}]);const raw=roadmapSyllabusItems(true),e=roadmapBuildExport(true);return u.length===2&&u[0].section==='X / Y'&&e.syllabus.length===roadmapUniqueTopics(raw).length&&new Set(e.syllabus.map(t=>t.topicId)).size===e.syllabus.length&&new Set(e.unscheduledTopicIds).size===e.unscheduledTopicIds.length&&roadmapPlanningCounts().total===e.syllabus.length;});
   test('Counts of topics still needing an estimate or a priority ignore topics already complete',()=>withSample(null,null,()=>{const c=roadmapPlanningCounts(),all=roadmapUniqueTopics(roadmapSyllabusItems(true)).filter(t=>t.status!=='completed').length;return c.needEstimate===all&&c.needPriority===all;})&&withSample({estimatedTotalStudyHours:5,priority:'low'},null,()=>{const c=roadmapPlanningCounts(),all=roadmapUniqueTopics(roadmapSyllabusItems(true)).filter(t=>t.status!=='completed').length;return c.needEstimate===all-1&&c.needPriority===all-1;}));
   return {passed:results.filter(r=>r.passed).length,total:results.length,results};
 }
