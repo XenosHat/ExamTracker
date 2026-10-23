@@ -182,7 +182,7 @@ body{
 .sort-menu{
   position:absolute;top:calc(100% + 6px);left:0;z-index:120;
   background:var(--card);border:1px solid var(--border2);
-  border-radius:12px;padding:6px;min-width:190px;
+  border-radius:12px;padding:6px;min-width:190px;max-width:calc(100vw - 16px);
   box-shadow:0 8px 28px rgba(0,0,0,0.5);
   display:none;
 }
@@ -3914,9 +3914,24 @@ function toggleCard(id){
 // ═══════════════════════════════════════════
 //  SORT
 // ═══════════════════════════════════════════
-function toggleSortMenu(){
-  document.getElementById('sort-menu').classList.toggle('open');
+// How far (px) a menu spanning left..right must move left to stay inside a viewport of width vw, never past the left margin.
+function sortMenuShift(left, right, vw, margin=8) {
+  const overflow = right - (vw - margin);
+  return overflow <= 0 ? 0 : Math.max(0, Math.min(overflow, left - margin));
 }
+function placeSortMenu(menu, vw=document.documentElement.clientWidth) {
+  menu.style.left = '0';                                   // start from the normal position, then measure
+  const r = menu.getBoundingClientRect(), shift = sortMenuShift(r.left, r.right, vw);
+  menu.style.left = shift ? (-shift) + 'px' : '0';
+}
+function toggleSortMenu(){
+  const menu = document.getElementById('sort-menu');
+  if(menu.classList.toggle('open')) placeSortMenu(menu);
+}
+window.addEventListener('resize', function(){
+  const menu = document.getElementById('sort-menu');
+  if(menu && menu.classList.contains('open')) placeSortMenu(menu);
+});
 
 function setSort(mode){
   currentSort = mode;
@@ -8818,6 +8833,16 @@ function roadmapRunSelfTests() {
       const after=[...document.querySelectorAll(`#sc-${sub.id} .topic-tier-btn`)].map(b=>b.dataset.key);
       return after[0]===last&&document.getElementById('sc-'+sub.id).classList.contains('open');
     } finally{saveData=realSave;currentSort=saved.sort;currentFilter=saved.filter;currentSubjectFilter=saved.subj;sb.value=saved.q;roadmapData=saved.data;_roadmapMapCache=saved.cache;renderTopics();}
+  });
+  // ---- Sort menu stays on screen ----
+  test('Sort menu shift keeps it inside the screen without pushing it past the left edge',()=>sortMenuShift(300,528,390)===146&&sortMenuShift(28,256,390)===0&&sortMenuShift(300,520,390)===138&&sortMenuShift(20,420,390)===12&&sortMenuShift(5,420,390)===0);
+  test('Opening the sort menu near the right edge moves it left to fit, and a menu that already fits is left alone',()=>{
+    const menu=document.getElementById('sort-menu');
+    try{
+      menu.getBoundingClientRect=()=>({left:300,right:528,width:228});placeSortMenu(menu,390);const shifted=menu.style.left==='-146px';
+      menu.getBoundingClientRect=()=>({left:28,right:256,width:228});placeSortMenu(menu,390);const untouched=menu.style.left==='0px'||menu.style.left==='0';
+      return shifted&&untouched;
+    } finally{delete menu.getBoundingClientRect;menu.style.left='';}
   });
   return {passed:results.filter(r=>r.passed).length,total:results.length,results};
 }
