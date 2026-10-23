@@ -2272,6 +2272,7 @@ body{
             <div class="sort-menu-item" id="sort-opt-pct-desc" onclick="setSort('pct-desc')">📊 <span>% Learned (high→low)</span><span class="sort-check">✓</span></div>
             <div class="sort-menu-item" id="sort-opt-pct-asc" onclick="setSort('pct-asc')">📊 <span>% Learned (low→high)</span><span class="sort-check">✓</span></div>
             <div class="sort-menu-item" id="sort-opt-revisions" onclick="setSort('revisions')">🔁 <span>Most Revisions</span><span class="sort-check">✓</span></div>
+            <div class="sort-menu-item" id="sort-opt-priority" onclick="setSort('priority')">🏷️ <span>Priority (S→E)</span><span class="sort-check">✓</span></div>
           </div>
         </div>
       </div>
@@ -3327,7 +3328,7 @@ let _activeViewKey = 'dashboard';
 // We restore scroll position ourselves (see showView), so stop the browser
 // from doing its own automatic (and sometimes animated/racy) restoration.
 if('scrollRestoration' in history) history.scrollRestoration = 'manual';
-let currentSort   = 'default';          // 'default'|'alpha'|'pct-desc'|'pct-asc'|'revisions'
+let currentSort   = 'default';          // 'default'|'alpha'|'pct-desc'|'pct-asc'|'revisions'|'priority'
 let hiddenSubjects = [];                 // built-in subjects hidden in this profile
 let hiddenTopics   = {};                 // { subjectId: [topicName,...] } hidden per subject
 let quoteData      = {                   // Motivational quote
@@ -3846,7 +3847,7 @@ function renderTopics(){
               <div class="topic-learn-fill ${isDone?'done-fill':''}" style="width:${pct}%"></div>
             </div>
           </div>`;
-        allTopicRows.push({name:t, key:k, pct, revCount, sectionLabel:sec.label, html:rowHtml});
+        allTopicRows.push({name:t, key:k, pct, revCount, rank:tier?ROADMAP_PRIORITY_ORDER.indexOf(tier):ROADMAP_PRIORITY_ORDER.length, sectionLabel:sec.label, html:rowHtml});
       });
     });
 
@@ -3858,6 +3859,7 @@ function renderTopics(){
     else if(currentSort==='pct-desc') sorted.sort((a,b)=>b.pct-a.pct);
     else if(currentSort==='pct-asc')  sorted.sort((a,b)=>a.pct-b.pct);
     else if(currentSort==='revisions') sorted.sort((a,b)=>b.revCount-a.revCount);
+    else if(currentSort==='priority')  sorted.sort((a,b)=>a.rank-b.rank);
 
     let topicsHtml='';
     if(currentSort!=='default'){
@@ -3923,7 +3925,7 @@ function setSort(mode){
   if(active) active.classList.add('active');
   const labels = {
     'default':'', 'alpha':'A–Z',
-    'pct-desc':'% ↓', 'pct-asc':'% ↑', 'revisions':'Revisions'
+    'pct-desc':'% ↓', 'pct-asc':'% ↑', 'revisions':'Revisions', 'priority':'S→E'
   };
   document.getElementById('sort-label-active').textContent = labels[mode] ? ' · '+labels[mode] : '';
   const sortBtn = document.getElementById('sort-btn-trigger');
@@ -3981,6 +3983,13 @@ function closeTierPopover() {
   if(pop) pop.classList.remove('open');
   _tierActiveKey = null;
 }
+// Re-renders the subject list but keeps the same subject cards open and the same scroll position.
+function renderTopicsKeepingOpen() {
+  const open = [...document.querySelectorAll('#subjects-container .subject-card.open')].map(c => c.id), y = window.scrollY;
+  renderTopics();
+  open.forEach(id => { const c = document.getElementById(id); if(c) c.classList.add('open'); });
+  window.scrollTo(0, y);
+}
 function pickTier(tier) { if(_tierActiveKey) setTopicTier(_tierActiveKey, tier); }
 function setTopicTier(key, tier) {
   const p = tier ? roadmapNormalizePriority(tier) : '';
@@ -3990,8 +3999,12 @@ function setTopicTier(key, tier) {
   if(p) meta.priority = p; else delete meta.priority;
   roadmapData.topicMetadata[key] = meta;
   saveData();
-  // Update the box in place: no re-render, so open subject cards and your scroll position stay as they are.
-  document.querySelectorAll('.topic-tier-btn').forEach(b => { if(b.dataset.key === key) _tierPaintButton(b, p); });
+  if(currentSort === 'priority') {
+    renderTopicsKeepingOpen();                 // the row has to move to its new place in the sorted list
+  } else {
+    // Update the box in place: no re-render, so open subject cards and your scroll position stay as they are.
+    document.querySelectorAll('.topic-tier-btn').forEach(b => { if(b.dataset.key === key) _tierPaintButton(b, p); });
+  }
   closeTierPopover();
   showToast(p ? 'Priority ' + p + ' set' : 'Priority cleared');
 }
@@ -8771,6 +8784,40 @@ function roadmapRunSelfTests() {
       closeTierPopover();
       return open&&!pop.classList.contains('open');
     } finally{closeTierPopover();btn.remove();}
+  });
+  // ---- Sort by priority ----
+  test('The sort menu offers Priority (S→E) and selecting it updates the menu and button',()=>{
+    const prev=currentSort,item=document.getElementById('sort-opt-priority');
+    try{setSort('priority');return !!item&&item.classList.contains('active')&&currentSort==='priority'&&document.getElementById('sort-label-active').textContent.includes('S→E')&&document.getElementById('sort-btn-trigger').classList.contains('active');}
+    finally{setSort(prev);}
+  });
+  test('Sorting by priority lists S first through E, then topics with no priority, keeping syllabus order within a tier',()=>{
+    const sb=document.getElementById('search-box'),saved={sort:currentSort,filter:currentFilter,subj:currentSubjectFilter,q:sb.value,data:roadmapData,cache:_roadmapMapCache};
+    try{
+      currentSort='default';currentFilter='all';currentSubjectFilter='all';sb.value='';
+      roadmapData=roadmapNormalizeData({config:TEST_CFG});_roadmapMapCache=null;renderTopics();
+      const sub=getAllSubjects()[0],keys=[...document.querySelectorAll(`#sc-${sub.id} .topic-tier-btn`)].map(b=>b.dataset.key);
+      if(keys.length<6)return true;
+      roadmapData=roadmapNormalizeData({config:TEST_CFG,topicMetadata:{[keys[4]]:{priority:'E'},[keys[1]]:{priority:'S'},[keys[3]]:{priority:'B'},[keys[5]]:{priority:'B'}}});_roadmapMapCache=null;
+      currentSort='priority';renderTopics();
+      const boxes=[...document.querySelectorAll(`#sc-${sub.id} .topic-tier-btn`)],letters=boxes.map(b=>b.textContent),order=boxes.map(b=>b.dataset.key);
+      const unset=keys.filter(k=>![keys[1],keys[3],keys[4],keys[5]].includes(k));
+      return letters.slice(0,4).join('')==='SBBE'&&order[1]===keys[3]&&order[2]===keys[5]&&letters.slice(4).every(x=>x==='–')&&order.slice(4).join('|')===unset.join('|')&&!document.querySelector('#sc-'+sub.id+' .subsection-label');
+    } finally{currentSort=saved.sort;currentFilter=saved.filter;currentSubjectFilter=saved.subj;sb.value=saved.q;roadmapData=saved.data;_roadmapMapCache=saved.cache;renderTopics();}
+  });
+  test('Changing a tier while sorted by priority moves the row and keeps the same subject cards open',()=>{
+    const sb=document.getElementById('search-box'),saved={sort:currentSort,filter:currentFilter,subj:currentSubjectFilter,q:sb.value,data:roadmapData,cache:_roadmapMapCache},realSave=saveData;
+    try{
+      saveData=()=>{};currentSort='priority';currentFilter='all';currentSubjectFilter='all';sb.value='';
+      roadmapData=roadmapNormalizeData({config:TEST_CFG});_roadmapMapCache=null;renderTopics();
+      const sub=getAllSubjects()[0],card=document.getElementById('sc-'+sub.id),keys=[...card.querySelectorAll('.topic-tier-btn')].map(b=>b.dataset.key);
+      if(keys.length<3)return true;
+      card.classList.add('open');
+      const last=keys[keys.length-1];
+      setTopicTier(last,'S');
+      const after=[...document.querySelectorAll(`#sc-${sub.id} .topic-tier-btn`)].map(b=>b.dataset.key);
+      return after[0]===last&&document.getElementById('sc-'+sub.id).classList.contains('open');
+    } finally{saveData=realSave;currentSort=saved.sort;currentFilter=saved.filter;currentSubjectFilter=saved.subj;sb.value=saved.q;roadmapData=saved.data;_roadmapMapCache=saved.cache;renderTopics();}
   });
   return {passed:results.filter(r=>r.passed).length,total:results.length,results};
 }
