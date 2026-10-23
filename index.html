@@ -163,7 +163,7 @@ body{
   border-color:rgba(240,163,10,0.4);
 }
 
-/* ── SORT & PIN CONTROLS ── */
+/* ── SORT CONTROLS ── */
 .filter-sort-row{
   display:flex;align-items:center;gap:6px;flex-wrap:wrap;
   padding:0 28px 12px;
@@ -197,24 +197,54 @@ body{
 .sort-menu-item .sort-check{margin-left:auto;font-size:11px;opacity:0;}
 .sort-menu-item.active .sort-check{opacity:1;}
 
-/* pin button on subject header */
-.pin-btn{
-  background:none;border:none;cursor:pointer;
-  font-size:14px;padding:4px 6px;color:var(--muted);
-  border-radius:6px;transition:all 0.15s;flex-shrink:0;
-  line-height:1;
+/* priority box on topic rows (S–E; takes the place the old pin button had) */
+.topic-tier-btn{
+  width:24px;height:24px;flex-shrink:0;padding:0;
+  display:inline-flex;align-items:center;justify-content:center;
+  border-radius:6px;border:1px solid var(--border2);background:rgba(255,255,255,0.03);
+  color:var(--muted);font-family:inherit;font-size:11px;font-weight:800;line-height:1;
+  cursor:pointer;transition:all 0.15s;
 }
-.pin-btn:hover{color:var(--gold);background:rgba(240,163,10,0.1);}
-.pin-btn.pinned{color:var(--gold);}
+.topic-tier-btn:hover{border-color:var(--muted2);color:var(--text);}
+.topic-tier-btn.tier-none{border-style:dashed;font-weight:600;}
+.tier-S{--tier-rgb:255,107,107;}
+.tier-A{--tier-rgb:255,159,67;}
+.tier-B{--tier-rgb:240,163,10;}
+.tier-C{--tier-rgb:34,201,122;}
+.tier-D{--tier-rgb:74,168,255;}
+.tier-E{--tier-rgb:139,139,163;}
+.topic-tier-btn.has-tier{color:rgb(var(--tier-rgb));background:rgba(var(--tier-rgb),0.14);border-color:rgba(var(--tier-rgb),0.45);}
+.topic-tier-btn.has-tier:hover{border-color:rgb(var(--tier-rgb));}
 
-/* pin button on topic rows */
-.topic-pin-btn{
-  background:none;border:none;cursor:pointer;
-  font-size:12px;padding:2px 5px;color:var(--muted);
-  border-radius:5px;transition:all 0.15s;flex-shrink:0;
+/* priority popup */
+.tier-popover{
+  position:fixed;z-index:250;
+  background:var(--card);border:1px solid var(--border2);
+  border-radius:14px;padding:14px 14px 12px;width:214px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.55);
+  display:none;
 }
-.topic-pin-btn:hover{color:var(--gold);}
-.topic-pin-btn.pinned{color:var(--gold);}
+.tier-popover.open{display:block;}
+.tier-pop-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+.tier-pop-title{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-weight:700;}
+.tier-pop-x{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;padding:2px 4px;}
+.tier-pop-x:hover{color:var(--text);}
+.tier-pop-topic{font-size:12px;color:var(--text);margin-bottom:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.tier-pop-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.tier-pop-opt{
+  height:46px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  border-radius:10px;border:1px solid rgba(var(--tier-rgb),0.45);background:rgba(var(--tier-rgb),0.12);
+  color:rgb(var(--tier-rgb));font-family:inherit;font-size:18px;font-weight:800;line-height:1;
+  cursor:pointer;transition:all 0.12s;
+}
+.tier-pop-opt small{font-size:8px;letter-spacing:0.4px;text-transform:uppercase;font-weight:700;opacity:0.85;margin-top:3px;}
+.tier-pop-opt:hover{background:rgba(var(--tier-rgb),0.24);}
+.tier-pop-opt.selected{background:rgba(var(--tier-rgb),0.3);box-shadow:0 0 0 2px rgba(var(--tier-rgb),0.55);}
+.tier-pop-clear{
+  width:100%;margin-top:10px;padding:8px;border-radius:9px;border:1px solid var(--border2);
+  background:none;color:var(--muted2);cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;
+}
+.tier-pop-clear:hover{color:var(--text);background:rgba(255,255,255,0.05);}
 
 /* ── MOTIVATIONAL QUOTE CARD ── */
 .quote-card{
@@ -288,11 +318,6 @@ body{
   text-decoration:none;transition:all 0.15s;cursor:pointer;
 }
 .tg-badge:hover{background:rgba(33,150,243,0.22);border-color:rgba(33,150,243,0.4);}
-
-/* pinned subject subtle glow */
-.subject-card.pinned-subject > .subject-header{
-  border-left:3px solid var(--gold);
-}
 
 /* ── SUBJECT CARDS ── */
 .subjects-grid{
@@ -2685,6 +2710,13 @@ body{
 </div>
 
 <!-- PCT POPOVER (topic learned %) -->
+<div class="tier-popover" id="tier-popover" role="dialog" aria-label="Set topic priority">
+  <div class="tier-pop-head"><span class="tier-pop-title">🏷️ Priority</span><button type="button" class="tier-pop-x" onclick="closeTierPopover()" aria-label="Close">✕</button></div>
+  <div class="tier-pop-topic" id="tier-pop-topic"></div>
+  <div class="tier-pop-grid" id="tier-pop-grid"></div>
+  <button type="button" class="tier-pop-clear" id="tier-pop-clear" onclick="setTopicTier(_tierActiveKey,'')">Clear priority</button>
+</div>
+
 <div class="pct-popover" id="pct-popover">
   <div class="pct-pop-title">📊 How much learned?</div>
   <div class="pct-pop-value" id="pct-pop-value">0%</div>
@@ -2920,7 +2952,7 @@ body{
           <label style="display:flex;gap:7px;align-items:center;text-transform:none;letter-spacing:0;font-weight:500;"><input id="rm-mock-tests" type="checkbox" style="width:auto;"/> Include mock tests in AI-proposed roadmaps</label>
         </div>
         <div class="roadmap-field"><label for="rm-mock-frequency">Preferred mock-test frequency (weeks)</label><input id="rm-mock-frequency" type="number" min="1" max="12" step="1"/><div class="roadmap-note">This preference is exported for external-AI planning; the app does not create mock tests automatically.</div></div>
-        <div class="roadmap-field"><label for="rm-subject-priority">Default subject priority</label><select id="rm-subject-priority"><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select><div class="roadmap-note">Subject-level guidance for balancing subjects in AI proposals. It never fills in a topic’s own priority; set that per topic.</div></div>
+        <div class="roadmap-field"><label for="rm-subject-priority">Default subject priority</label><select id="rm-subject-priority"></select><div class="roadmap-note">Subject-level guidance for balancing subjects in AI proposals. It never fills in a topic’s own priority; set that per topic.</div></div>
         <div class="roadmap-field full"><label>Per-subject priority overrides</label><div id="rm-subject-priorities" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:9px;"></div><div style="margin-top:2px;"><button type="button" class="roadmap-btn small" onclick="roadmapResetSubjectPriorities()">Reset all to Default</button></div><div class="roadmap-note">These priorities guide external-AI proposals. “Default” uses the default subject priority above. A topic’s own priority always takes precedence for that topic.</div></div>
       </div>
     </div>
@@ -2956,7 +2988,7 @@ body{
       <div class="roadmap-note" id="rm-topic-details-subtitle">Estimated hours and priority are planning inputs; they do not change actual progress.</div>
       <div class="roadmap-form-grid">
         <div class="roadmap-field"><label for="rm-topic-details-hours">Estimated total study hours</label><input id="rm-topic-details-hours" type="number" min="0.25" max="2000" step="0.25" inputmode="decimal" placeholder="Not set" oninput="roadmapUpdateTopicDetailsEffort()"/></div>
-        <div class="roadmap-field"><label for="rm-topic-details-priority">Priority</label><select id="rm-topic-details-priority"><option value="">Not set</option><option value="critical">Critical</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select></div>
+        <div class="roadmap-field"><label for="rm-topic-details-priority">Priority</label><select id="rm-topic-details-priority"></select></div>
         <div class="roadmap-field full"><div class="roadmap-note" id="rm-topic-details-effort"></div><div class="roadmap-note">Estimated total study hours is the focused primary study this topic needs across <em>all</em> its study activities, not one session and not the time between your first and last session. Leave it blank until you have an estimate. Priority only changes how study time is shared between topics; it never changes these hours.</div></div>
       </div>
     </div>
@@ -3296,8 +3328,6 @@ let _activeViewKey = 'dashboard';
 // from doing its own automatic (and sometimes animated/racy) restoration.
 if('scrollRestoration' in history) history.scrollRestoration = 'manual';
 let currentSort   = 'default';          // 'default'|'alpha'|'pct-desc'|'pct-asc'|'revisions'
-let pinnedSubjects = [];                 // [ subjectId, ... ]
-let pinnedTopics   = {};                 // { subjectId: [ topicName, ... ] }
 let hiddenSubjects = [];                 // built-in subjects hidden in this profile
 let hiddenTopics   = {};                 // { subjectId: [topicName,...] } hidden per subject
 let quoteData      = {                   // Motivational quote
@@ -3373,7 +3403,7 @@ function _profileSnapshot() {
     progress, topicCompletionDates, roadmapData: roadmapNormalizeData(roadmapData), notes, revisions, revisionDates, topicPct,
     customSyllabus, mockTests, journal: journalNotes,
     notesHash:     notesHash || null,
-    pinnedSubjects, pinnedTopics, quoteData, countdownData,
+    quoteData, countdownData,
     hiddenSubjects, hiddenTopics,
     pomSettings: pomSettings || pomDefaultSettings(),
     pomSessions: pomSessions || []
@@ -3393,8 +3423,6 @@ function _applyProfile(d) {
   mockTests      = d.mockTests      || [];
   journalNotes   = d.journal        || [];
   notesHash      = d.notesHash      || null;
-  pinnedSubjects = d.pinnedSubjects || [];
-  pinnedTopics   = d.pinnedTopics   || {};
   hiddenSubjects = d.hiddenSubjects || [];
   hiddenTopics   = d.hiddenTopics   || {};
   if(d.quoteData)     quoteData     = d.quoteData;
@@ -3457,8 +3485,6 @@ async function loadFromFirebase() {
       mockTests:      d.mockTests      || [],
       journal:        d.journal        || [],
       notesHash:      d.notesHash      || null,
-      pinnedSubjects: d.pinnedSubjects || [],
-      pinnedTopics:   d.pinnedTopics   || {},
       quoteData:      d.quoteData      || quoteData,
       countdownData:  d.countdownData  || countdownData,
       hiddenSubjects: [],
@@ -3759,18 +3785,12 @@ function renderTopics(){
   const container = document.getElementById('subjects-container');
   const query = (document.getElementById('search-box').value||'').toLowerCase();
 
-  // Build subject list respecting pin + subject-filter
+  closeTierPopover(); // the rows below are rebuilt, so any open priority popup would point at a stale box
+
+  // Subject list respecting the subject filter
   let subjects = currentSubjectFilter==='all'
     ? getAllSubjects()
     : getAllSubjects().filter(s=>s.id===currentSubjectFilter);
-
-  // Pin pinned subjects to top (only when showing all)
-  if(currentSubjectFilter==='all' && pinnedSubjects.length){
-    subjects = [
-      ...subjects.filter(s=>pinnedSubjects.includes(s.id)),
-      ...subjects.filter(s=>!pinnedSubjects.includes(s.id))
-    ];
-  }
 
   let html='';
   subjects.forEach(s=>{
@@ -3797,7 +3817,7 @@ function renderTopics(){
         const pct = topicPct[k] ?? (st==='completed'?100:0);
         const barVisible = pct > 0;
         const isDone = st === 'completed';
-        const isPinned = (pinnedTopics[s.id]||[]).includes(t);
+        const tier = trackerTopicPriority(k);
         const safe = k.replace(/[^a-z0-9]/gi,'_');
         // Escape for safe embedding in HTML onclick="..." attributes:
         //   & → &amp; (HTML attr), ' → \' (JS single-quoted string arg)
@@ -3806,8 +3826,8 @@ function renderTopics(){
         const rowHtml = `
           <div class="topic-row" id="row-${safe}">
             <div class="topic-row-main">
-              <button class="topic-pin-btn ${isPinned?'pinned':''}" title="${isPinned?'Unpin topic':'Pin to top'}"
-                onclick="toggleTopicPin('${s.id}','${tE}',this)">📌</button>
+              <button class="topic-tier-btn ${tier?'has-tier tier-'+tier:'tier-none'}" data-key="${roadmapEscape(k)}" title="${tier?'Priority '+tier+' · tap to change':'Set priority'}" aria-label="Priority for ${roadmapEscape(t)}: ${tier||'not set'}" aria-haspopup="dialog"
+                onclick="openTierPopover('${kE}','${tE}',this)">${tier||'–'}</button>
               <span class="topic-name ${isDone?'done':''}">${t}</span>
               <button class="rev-trigger ${revCount>0?'has-revisions':''}" id="rev-${safe}"
                 onclick="openRevPopover('${kE}','${tE}',this)"
@@ -3826,58 +3846,48 @@ function renderTopics(){
               <div class="topic-learn-fill ${isDone?'done-fill':''}" style="width:${pct}%"></div>
             </div>
           </div>`;
-        allTopicRows.push({name:t, key:k, pct, revCount, isPinned, sectionLabel:sec.label, html:rowHtml});
+        allTopicRows.push({name:t, key:k, pct, revCount, sectionLabel:sec.label, html:rowHtml});
       });
     });
 
     if(!hasVisible && (currentFilter!=='all'||query)) return;
 
     // Sort topics
-    const pinned   = allTopicRows.filter(r=>r.isPinned);
-    let   unpinned = allTopicRows.filter(r=>!r.isPinned);
-    if(currentSort==='alpha')      unpinned.sort((a,b)=>a.name.localeCompare(b.name));
-    else if(currentSort==='pct-desc') unpinned.sort((a,b)=>b.pct-a.pct);
-    else if(currentSort==='pct-asc')  unpinned.sort((a,b)=>a.pct-b.pct);
-    else if(currentSort==='revisions') unpinned.sort((a,b)=>b.revCount-a.revCount);
-    const sorted = [...pinned, ...unpinned];
+    const sorted = [...allTopicRows];
+    if(currentSort==='alpha')      sorted.sort((a,b)=>a.name.localeCompare(b.name));
+    else if(currentSort==='pct-desc') sorted.sort((a,b)=>b.pct-a.pct);
+    else if(currentSort==='pct-asc')  sorted.sort((a,b)=>a.pct-b.pct);
+    else if(currentSort==='revisions') sorted.sort((a,b)=>b.revCount-a.revCount);
 
     let topicsHtml='';
     if(currentSort!=='default'){
       // Flat list when sorting (no section labels)
       topicsHtml = sorted.map(r=>r.html).join('');
     } else {
-      // Grouped by section, pinned at very top
-      const pinnedHtml = pinned.map(r=>r.html).join('');
-      const pinnedBlock = pinnedHtml
-        ? `<div class="subsection-label" style="color:var(--gold);opacity:0.8;">📌 Pinned</div>${pinnedHtml}`
-        : '';
+      // Grouped by section
       const sectionMap = {};
-      unpinned.forEach(r=>{
+      sorted.forEach(r=>{
         if(!sectionMap[r.sectionLabel]) sectionMap[r.sectionLabel]=[];
         sectionMap[r.sectionLabel].push(r.html);
       });
-      const sectionsHtml = Object.entries(sectionMap).map(([label,rows])=>
+      topicsHtml = Object.entries(sectionMap).map(([label,rows])=>
         `<div class="subsection-label">${label}</div>${rows.join('')}`
       ).join('');
-      topicsHtml = pinnedBlock + sectionsHtml;
     }
 
     const sg = getStats(s.id);
-    const isSubPinned = pinnedSubjects.includes(s.id);
     html+=`
-      <div class="subject-card ${isSubPinned?'pinned-subject':''}" id="sc-${s.id}">
+      <div class="subject-card" id="sc-${s.id}">
         <div class="subject-header" onclick="toggleCard('${s.id}')">
           <div class="subject-icon" style="background:${s.color}18;">${s.icon}</div>
           <div class="subject-info">
-            <div class="subject-name">${s.name}${isSubPinned?'<span style="font-size:11px;color:var(--gold);margin-left:6px;">📌</span>':''}</div>
+            <div class="subject-name">${s.name}</div>
             <div class="subject-meta">${sg.done} completed · ${sg.ip} in progress · ${sg.ns} not started</div>
             <div class="subject-progress-bar">
               <div class="subject-progress-fill" style="width:${sg.pct}%;background:${s.color};"></div>
             </div>
           </div>
           <div class="subject-pct" style="color:${s.color}">${sg.pct}%</div>
-          <button class="pin-btn ${isSubPinned?'pinned':''}" title="${isSubPinned?'Unpin subject':'Pin subject to top'}"
-            onclick="event.stopPropagation();toggleSubjectPin('${s.id}',this)">📌</button>
           <span class="subject-chevron">▼</span>
         </div>
         <div class="topic-list">${topicsHtml||'<div style="padding:16px 20px;color:var(--muted);font-size:13px;">No topics match current filter.</div>'}</div>
@@ -3931,31 +3941,70 @@ document.addEventListener('click', function(e){
 });
 
 // ═══════════════════════════════════════════
-//  PIN — SUBJECTS & TOPICS
+//  TOPIC PRIORITY BOX (S–E)
 // ═══════════════════════════════════════════
-function toggleSubjectPin(subjectId, btn){
-  const idx = pinnedSubjects.indexOf(subjectId);
-  if(idx>=0) pinnedSubjects.splice(idx,1);
-  else       pinnedSubjects.unshift(subjectId);
-  saveData();
-  showToast(idx>=0?'📌 Subject unpinned':'📌 Subject pinned to top!');
-  renderTopics();
+// The box on every topic row shows that topic's priority and opens a popup to change it. It reads and writes the same per-topic value the
+// Syllabus Roadmap uses (roadmapData.topicMetadata[topicId].priority), so a topic has one priority everywhere. Unset stays unset.
+let _tierActiveKey = null, _tierTrigger = null;
+function trackerTopicPriority(key) {
+  const meta = roadmapData && roadmapData.topicMetadata && roadmapData.topicMetadata[key];
+  return meta ? roadmapNormalizePriority(meta.priority) : '';
 }
+function _tierPaintButton(btn, tier) {
+  btn.className = 'topic-tier-btn ' + (tier ? 'has-tier tier-' + tier : 'tier-none');
+  btn.textContent = tier || '–';
+  btn.title = tier ? 'Priority ' + tier + ' · tap to change' : 'Set priority';
+}
+function openTierPopover(key, topicName, triggerEl) {
+  if(_tierActiveKey === key) { closeTierPopover(); return; }
+  _tierActiveKey = key; _tierTrigger = triggerEl;
+  const current = trackerTopicPriority(key), order = ROADMAP_PRIORITY_ORDER, last = order.length - 1;
+  document.getElementById('tier-pop-topic').textContent = topicName;
+  document.getElementById('tier-pop-grid').innerHTML = order.map((p, i) =>
+    `<button type="button" class="tier-pop-opt tier-${p}${p===current?' selected':''}" aria-pressed="${p===current}" onclick="pickTier('${p}')">${p}${i===0?'<small>Highest</small>':i===last?'<small>Lowest</small>':''}</button>`
+  ).join('');
+  document.getElementById('tier-pop-clear').style.display = current ? '' : 'none';
 
-function toggleTopicPin(subjectId, topicName, btn){
-  if(!pinnedTopics[subjectId]) pinnedTopics[subjectId]=[];
-  const arr = pinnedTopics[subjectId];
-  const idx = arr.indexOf(topicName);
-  if(idx>=0) arr.splice(idx,1);
-  else       arr.unshift(topicName);
-  if(!arr.length) delete pinnedTopics[subjectId];
-  saveData();
-  showToast(idx>=0?'📌 Topic unpinned':'📌 Topic pinned to top!');
-  renderTopics();
-  // reopen card if it was open
-  const card = document.getElementById('sc-'+subjectId);
-  if(card) card.classList.add('open');
+  // Position near the box, kept inside the viewport (same approach as the other popups)
+  const pop = document.getElementById('tier-popover'), rect = triggerEl.getBoundingClientRect();
+  const popW = 214, popH = current ? 196 : 152;
+  let top = rect.bottom + 6, left = rect.left - popW/2 + rect.width/2;
+  if(left < 8) left = 8;
+  if(left + popW > window.innerWidth - 8) left = window.innerWidth - popW - 8;
+  if(top + popH > window.innerHeight - 8) top = Math.max(8, rect.top - popH - 6);
+  pop.style.top = top + 'px';
+  pop.style.left = left + 'px';
+  pop.classList.add('open');
 }
+function closeTierPopover() {
+  const pop = document.getElementById('tier-popover');
+  if(pop) pop.classList.remove('open');
+  _tierActiveKey = null;
+}
+function pickTier(tier) { if(_tierActiveKey) setTopicTier(_tierActiveKey, tier); }
+function setTopicTier(key, tier) {
+  const p = tier ? roadmapNormalizePriority(tier) : '';
+  if(tier && !p) return;                       // ignore anything outside S–E
+  roadmapEnsureData();
+  const meta = {...(roadmapData.topicMetadata[key] || {})};
+  if(p) meta.priority = p; else delete meta.priority;
+  roadmapData.topicMetadata[key] = meta;
+  saveData();
+  // Update the box in place: no re-render, so open subject cards and your scroll position stay as they are.
+  document.querySelectorAll('.topic-tier-btn').forEach(b => { if(b.dataset.key === key) _tierPaintButton(b, p); });
+  closeTierPopover();
+  showToast(p ? 'Priority ' + p + ' set' : 'Priority cleared');
+}
+document.addEventListener('click', function(e) {
+  const pop = document.getElementById('tier-popover');
+  if(!pop || !pop.classList.contains('open')) return;
+  if(!pop.contains(e.target) && !e.target.closest('.topic-tier-btn')) closeTierPopover();
+}, true);
+document.addEventListener('keydown', function(e) {
+  if(e.key === 'Escape' && _tierActiveKey) { const t = _tierTrigger; closeTierPopover(); if(t && t.focus) t.focus(); }
+});
+window.addEventListener('scroll', function() { if(_tierActiveKey) closeTierPopover(); }, true);
+window.addEventListener('resize', closeTierPopover);
 
 // ═══════════════════════════════════════════
 //  QUOTE & COUNTDOWN — DASHBOARD
@@ -4728,7 +4777,7 @@ function exportData(){
     profileName: profiles[activeProfileId]?.name || 'Default',
     progress, topicCompletionDates, roadmapData:roadmapNormalizeData(roadmapData), notes, revisions, revisionDates, topicPct,
     customSyllabus, mockTests, journal:journalNotes,
-    notesHash:notesHash||null, pinnedSubjects, pinnedTopics,
+    notesHash:notesHash||null,
     quoteData, countdownData, hiddenSubjects, hiddenTopics
   };
   const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
@@ -4754,8 +4803,6 @@ function importData(e){
       if(d.customSyllabus) customSyllabus = d.customSyllabus;
       if(d.mockTests)      mockTests      = d.mockTests;
       if(d.journal)        journalNotes   = d.journal;
-      if(d.pinnedSubjects) pinnedSubjects = d.pinnedSubjects;
-      if(d.pinnedTopics)   pinnedTopics   = d.pinnedTopics;
       if(d.quoteData)      quoteData      = d.quoteData;
       if(d.countdownData)  countdownData  = d.countdownData;
       if(d.hiddenSubjects) hiddenSubjects = d.hiddenSubjects;
@@ -4774,7 +4821,7 @@ function resetAll(){
   if(!confirm('Reset ALL progress, notes, revisions, roadmap assignments/settings, custom topics and mock tests for this profile? This cannot be undone.')) return;
   progress={}; topicCompletionDates={}; roadmapData=roadmapDefaultData(); notes={}; revisions={}; topicPct={}; revisionDates={}; customSyllabus=[]; mockTests=[]; journalNotes=[];
   notesHash=null; notesUnlocked=false;
-  pinnedSubjects=[]; pinnedTopics={}; hiddenSubjects=[]; hiddenTopics={};
+  hiddenSubjects=[]; hiddenTopics={};
   saveData();
   buildSidebarNav(); renderTopics(); renderDashboard(); renderNotes(); updateSidebar(); updateNotesNavBadge(); updateNotesLockBtn();
   showToast('🗑 Profile progress reset.');
@@ -5326,7 +5373,6 @@ async function doLogin() {
         name:'Default', icon:'📚', createdAt: new Date().toISOString(),
         progress:{}, topicCompletionDates:{}, roadmapData:roadmapDefaultData(), notes:{}, revisions:{}, revisionDates:{}, topicPct:{},
         customSyllabus:[], mockTests:[], journal:[], notesHash:null,
-        pinnedSubjects:[], pinnedTopics:{},
         quoteData: quoteData,
         countdownData: {name:'My Exam', date:''},
         hiddenSubjects:[], hiddenTopics:{},
@@ -5519,7 +5565,6 @@ async function saveProfileModal() {
     name, icon, createdAt: new Date().toISOString(),
     progress:{}, topicCompletionDates:{}, roadmapData:roadmapDefaultData(), notes:{}, revisions:{}, revisionDates:{}, topicPct:{},
     customSyllabus:[], mockTests:[], journal:[], notesHash:null,
-    pinnedSubjects:[], pinnedTopics:{},
     quoteData: {...quoteData},
     countdownData: {name:'Exam', date:''},
     hiddenSubjects:[], hiddenTopics:{}
@@ -5651,7 +5696,7 @@ function signOut() {
   userId = null; userPassphrase = null; notesUnlocked = false;
   activeProfileId = null; profiles = {};
   progress={}; notes={}; revisions={}; topicPct={}; revisionDates={}; customSyllabus=[]; mockTests=[]; journalNotes=[]; notesHash=null;
-  pinnedSubjects=[]; pinnedTopics={}; hiddenSubjects=[]; hiddenTopics={};
+  hiddenSubjects=[]; hiddenTopics={};
   pomDetachLive();
   pomSettings=null; pomSessions=[]; pomLive=null;
   todoDetach();
@@ -7106,8 +7151,8 @@ document.addEventListener('visibilitychange', () => {
 let roadmapRevisionFilter = 'all';
 const ROADMAP_EXPORT_ONLY_FIELDS = ['monthKey','weekEnd','displayStatus']; // derived values added to the AI export; never stored
 const ROADMAP_RETIRED_ASSIGNMENT_FIELDS = ['difficulty','priority']; // priority now lives on the topic only; difficulty no longer exists
-const ROADMAP_PRIORITY_ORDER = ['critical','high','medium','low']; // most to least scheduling emphasis
-const ROADMAP_PRIORITY_LABELS = {critical:'Critical',high:'High',medium:'Medium',low:'Low'};
+const ROADMAP_PRIORITY_ORDER = ['S','A','B','C','D','E']; // tier-list ranking: S is the highest scheduling emphasis, E the lowest
+const ROADMAP_LEGACY_PRIORITY = {critical:'S',high:'A',medium:'B',low:'C'}; // the earlier four-level words, converted in rank order when data loads
 const ROADMAP_MAX_ESTIMATE_HOURS = 2000;
 const ROADMAP_MAX_ASSIGNMENT_MINUTES = 6000; // sanity bound only (100 h = the largest weekly limit Settings allows); it is not a session length
 // Which months/weeks the user opened or closed; survives re-renders so a save/status change never collapses the page.
@@ -7179,12 +7224,21 @@ function roadmapOnclickArg(value) {
 // Topic planning inputs. Both are entered by the user and stored per topic ID in topicMetadata; neither is ever derived from the
 // other, from a subject setting, or from a default. An unset value is represented as null/'' and is shown to the user as missing.
 function roadmapNormalizePriority(value) {
-  const key=String(value||'').trim().toLowerCase();
-  return ROADMAP_PRIORITY_ORDER.includes(key)?key:'';
+  const raw=String(value==null?'':value).trim(), letter=raw.toUpperCase();
+  if(ROADMAP_PRIORITY_ORDER.includes(letter))return letter;
+  return ROADMAP_LEGACY_PRIORITY[raw.toLowerCase()]||'';
 }
 function roadmapPriorityLabel(value) {
-  const key=roadmapNormalizePriority(value);
-  return key?ROADMAP_PRIORITY_LABELS[key]:'Not set';
+  return roadmapNormalizePriority(value)||'Not set';
+}
+// Option text and markup for any priority <select>: S (highest) … E (lowest). emptyLabel adds a leading "unset" option (value "").
+function roadmapPriorityOptionText(p) {
+  const last=ROADMAP_PRIORITY_ORDER.length-1;
+  return p===ROADMAP_PRIORITY_ORDER[0]?`${p} (highest)`:p===ROADMAP_PRIORITY_ORDER[last]?`${p} (lowest)`:p;
+}
+function roadmapPriorityOptionsHtml(selected, emptyLabel) {
+  const sel=roadmapNormalizePriority(selected);
+  return (emptyLabel==null?'':`<option value=""${sel?'':' selected'}>${roadmapEscape(emptyLabel)}</option>`)+ROADMAP_PRIORITY_ORDER.map(p=>`<option value="${p}"${sel===p?' selected':''}>${roadmapPriorityOptionText(p)}</option>`).join('');
 }
 function roadmapNormalizeEstimateHours(value) {
   if(value==null||value==='')return null;
@@ -7221,7 +7275,7 @@ function roadmapNormalizeData(value) {
   const cfg = value.config && typeof value.config==='object' ? value.config : {};
   const rc = cfg.revision && typeof cfg.revision==='object' ? cfg.revision : {};
   const config={...base.config,...cfg,
-    subjectPriorities:{...(cfg.subjectPriorities||{})},
+    subjectPriorities:Object.fromEntries(Object.entries(cfg.subjectPriorities&&typeof cfg.subjectPriorities==='object'?cfg.subjectPriorities:{}).map(([k,v])=>[k,roadmapNormalizePriority(v)]).filter(([,v])=>v)),
     availableDays:Array.isArray(cfg.availableDays)?cfg.availableDays.map(Number).filter(n=>n>=0&&n<=6):base.config.availableDays,
     unavailableDates:Array.isArray(cfg.unavailableDates)?cfg.unavailableDates.filter(roadmapIsISODate):[],
     revision:{...base.config.revision,...rc,intervalsDays:Array.isArray(rc.intervalsDays)?rc.intervalsDays.map(Number).filter(n=>Number.isFinite(n)&&n>=0&&n<=3650):base.config.revision.intervalsDays}
@@ -7631,7 +7685,7 @@ function roadmapPlanRowMeta(t, e) {
 }
 function roadmapPlanRowHtml(t, e) {
   const idArg=roadmapOnclickArg(t.topicId), name=roadmapEscape(t.topicName);
-  const opts=`<option value=""${t.priority?'':' selected'}>Not set</option>`+ROADMAP_PRIORITY_ORDER.map(p=>`<option value="${p}"${t.priority===p?' selected':''}>${ROADMAP_PRIORITY_LABELS[p]}</option>`).join('');
+  const opts=roadmapPriorityOptionsHtml(t.priority,'Not set');
   return `<div class="roadmap-plan-row" data-topic-id="${roadmapEscape(t.topicId)}"><div class="roadmap-plan-name"><strong>${name}</strong><div class="roadmap-note roadmap-plan-meta">${roadmapPlanRowMeta(t,e)}</div></div><label class="roadmap-plan-input"><span>Priority</span><select aria-label="Priority for ${name}" onchange="roadmapInlineSetPriority(${idArg},this.value)">${opts}</select></label><label class="roadmap-plan-input"><span>Est. total hours</span><input type="number" min="0.25" max="${ROADMAP_MAX_ESTIMATE_HOURS}" step="0.25" inputmode="decimal" placeholder="Not set" value="${t.estimatedTotalStudyHours==null?'':t.estimatedTotalStudyHours}" aria-label="Estimated total study hours for ${name}" onchange="roadmapInlineSetHours(${idArg},this)"/></label></div>`;
 }
 function roadmapSetTopicPlanFilter(filter, btn) {
@@ -7734,9 +7788,9 @@ function roadmapOpenSettings() {
   document.getElementById('rm-auto-revisions').checked=!!r.autoGenerate;
   document.getElementById('rm-mock-tests').checked=!!c.includeMockTests;
   document.getElementById('rm-mock-frequency').value=c.mockTestFrequencyWeeks||2;
-  document.getElementById('rm-subject-priority').value=c.subjectPriorities.__default||'medium';
+  document.getElementById('rm-subject-priority').innerHTML=roadmapPriorityOptionsHtml(c.subjectPriorities.__default||'B');
   const subjectPriorityHost=document.getElementById('rm-subject-priorities');
-  subjectPriorityHost.innerHTML=getAllSubjects().map(subject=>`<label style="display:flex;align-items:center;justify-content:space-between;gap:8px;text-transform:none;letter-spacing:0;font-weight:500;color:var(--muted2);">${roadmapEscape(subject.name)}<select id="rm-subject-priority-${encodeURIComponent(subject.id)}" style="width:112px;min-width:112px;flex:0 0 auto;"><option value="" ${(c.subjectPriorities[subject.id]||'')===''?'selected':''}>Default</option><option value="low" ${(c.subjectPriorities[subject.id]||'')==='low'?'selected':''}>Low</option><option value="medium" ${(c.subjectPriorities[subject.id]||'')==='medium'?'selected':''}>Medium</option><option value="high" ${(c.subjectPriorities[subject.id]||'')==='high'?'selected':''}>High</option></select></label>`).join('');
+  subjectPriorityHost.innerHTML=getAllSubjects().map(subject=>`<label style="display:flex;align-items:center;justify-content:space-between;gap:8px;text-transform:none;letter-spacing:0;font-weight:500;color:var(--muted2);">${roadmapEscape(subject.name)}<select id="rm-subject-priority-${encodeURIComponent(subject.id)}" style="width:112px;min-width:112px;flex:0 0 auto;">${roadmapPriorityOptionsHtml(c.subjectPriorities[subject.id]||'','Default')}</select></label>`).join('');
   const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   document.getElementById('rm-study-days').innerHTML=days.map((name,i)=>`<label style="display:flex;align-items:center;gap:4px;text-transform:none;letter-spacing:0;font-weight:500;"><input type="checkbox" data-roadmap-day="${i}" ${c.availableDays.includes(i)?'checked':''} style="width:auto;"/>${name}</label>`).join('');
   roadmapOpenModal('roadmap-settings-overlay');
@@ -7945,7 +7999,7 @@ function roadmapEditTopicMetadata(topicId) {
   document.getElementById('roadmap-topic-details-title').textContent=`Details · ${topic.topicName}`;
   document.getElementById('rm-topic-details-subtitle').textContent=`${topic.subjectName} · Estimated hours and priority are planning inputs; they do not change actual progress.`;
   document.getElementById('rm-topic-details-hours').value=topic.estimatedTotalStudyHours==null?'':topic.estimatedTotalStudyHours;
-  document.getElementById('rm-topic-details-priority').value=topic.priority||'';
+  document.getElementById('rm-topic-details-priority').innerHTML=roadmapPriorityOptionsHtml(topic.priority,'Not set');
   roadmapUpdateTopicDetailsEffort();
   roadmapOpenModal('roadmap-topic-details-overlay');
 }
@@ -8109,7 +8163,7 @@ function roadmapSaveRevisionPlan() {
     const record={assignmentId:roadmapUID('rev'),activityType:'revision',topicId:context.topicId,subjectId:topic.subjectId,plannedDate:placed,requestedDate:requested,weekStart:roadmapWeekStart(placed,c.weekStartsOn),estimatedMinutes:Math.round(minutes),status:'planned',round:index+1,intervalDays:interval,anchorDate:context.anchorDate,anchorSource:context.anchorSource,source:'user-confirmed-spaced-plan',sourceStudyAssignmentId:context.sourceAssignmentId||null,createdAt:now};
     added.push(record);weekly[record.weekStart]=(weekly[record.weekStart]||0)+Math.round(minutes);daily[placed]=(daily[placed]||0)+Math.round(minutes);
   }
-  const priorityRank={critical:4,high:3,medium:2,low:1},topicMap=roadmapSyllabusMap(),rankOf=x=>priorityRank[topicMap[x.topicId]?.priority]||0; // a topic with no priority sorts after prioritised ones; none is assumed
+  const priorityRank=Object.fromEntries(ROADMAP_PRIORITY_ORDER.map((p,i)=>[p,ROADMAP_PRIORITY_ORDER.length-i])),topicMap=roadmapSyllabusMap(),rankOf=x=>priorityRank[topicMap[x.topicId]?.priority]||0; // a topic with no priority sorts after prioritised ones; none is assumed
   futureMovable.sort((a,b)=>(a.plannedDate||'').localeCompare(b.plannedDate||'')||rankOf(b)-rankOf(a)||(a.activityType==='revision'?-1:1));
   const moveLimitFor=a=>a.activityType==='revision'?cutoff:a.activityType==='study'?studyLimit:c.examEndDate;
   for(const movableSnapshot of futureMovable){
@@ -8165,7 +8219,7 @@ function roadmapCreateTodo(assignmentId) {
   if(existing){showView('todo',document.getElementById('nav-todo'));showToast('This assignment already has a linked to-do.');return;}
   const t=roadmapSyllabusMap()[a.topicId];
   const label=a.activityType==='revision'?`Revision ${a.round||''}: ${t?.topicName||'topic'}`:a.activityType==='study'?`Study: ${t?.topicName||'topic'}`:(a.title||'Mock test');
-  const task=todoCreate({text:label,date:a.plannedDate||todoDateStr(),important:['critical','high'].includes(roadmapSyllabusMap()[a.topicId]?.priority),notes:`Linked Syllabus Roadmap assignment: ${a.assignmentId}. Activity type: ${a.activityType}. ${a.activityType==='revision'?'Completing this task records only the revision activity and never changes canonical syllabus completion.':'Completing this task records to-do work only; mark the topic complete separately in Progress Tracker when the whole topic is actually complete.'}`,roadmapAssignmentId:a.assignmentId,roadmapActivityType:a.activityType,syllabusTopicId:a.topicId||null});
+  const task=todoCreate({text:label,date:a.plannedDate||todoDateStr(),important:['S','A'].includes(roadmapSyllabusMap()[a.topicId]?.priority),notes:`Linked Syllabus Roadmap assignment: ${a.assignmentId}. Activity type: ${a.activityType}. ${a.activityType==='revision'?'Completing this task records only the revision activity and never changes canonical syllabus completion.':'Completing this task records to-do work only; mark the topic complete separately in Progress Tracker when the whole topic is actually complete.'}`,roadmapAssignmentId:a.assignmentId,roadmapActivityType:a.activityType,syllabusTopicId:a.topicId||null});
   showToast('✅ Linked to-do created.');showView('todo',document.getElementById('nav-todo'));
   return task;
 }
@@ -8206,7 +8260,7 @@ function roadmapBuildExport(includeCompleted=true) {
     planningModel:{
       estimatedTotalStudyHours:'User-entered total focused primary study a topic needs, accumulated across all of its study assignments. It is not a session length and not the calendar span between the first and last session. null means the user has not entered it yet.',
       priorityOrder:ROADMAP_PRIORITY_ORDER,
-      priorityMeaning:'Relative scheduling emphasis when topics compete for the same daily and weekly capacity (critical first, low last). It changes distribution and timing only, never a topic\'s total hours. null means the user has not set it.',
+      priorityMeaning:'Relative scheduling emphasis when topics compete for the same daily and weekly capacity (S first, then A, B, C and D, with E last). It changes distribution and timing only, never a topic\'s total hours. null means the user has not set it.',
       studyAssignmentMeaning:'A study assignment is the time allotted to one topic within one planning week (estimatedMinutes), at most one per topic per week. It is not one sitting and there is no standard or fixed length; lengths vary by topic, week, priority and free capacity.'},
     topicsMissingEstimate:items.filter(t=>t.status!=='completed'&&t.estimatedTotalStudyHours==null).map(t=>t.topicId),
     topicsMissingPriority:items.filter(t=>t.status!=='completed'&&!t.priority).map(t=>t.topicId),
@@ -8241,7 +8295,7 @@ function roadmapBuildTemplate() {
     exampleUnallocatedStudy:[{topicId,unallocatedMinutes:120,reason:'Illustrative: not enough free weekly capacity before the examination window.'}],
     exampleRevisionActivity:{assignmentId:'rev_maths_percentage_round_1_example',activityType:'revision',topicId,subjectId:'maths',plannedDate:exampleDate,weekStart:week1,estimatedMinutes:30,status:'planned',round:1,intervalDays:7,anchorDate:today,anchorSource:'user-confirmed',source:'external-ai-example'},
     formatNotes:{canonicalTopicId:'Use the existing subjectId::topicName key exactly; do not create syllabus records.',
-      studyEffort:'syllabus[].estimatedTotalStudyHours is the user-entered total primary study a topic needs across all its study assignments (null = not entered; do not guess one). Plan only the remaining effort. Priority (critical, high, medium, low, or null) changes how time is distributed, never the total hours. Each study assignment is the time allotted to one topic in one planning week; there is no standard length. Every study assignment needs a positive estimatedMinutes.',
+      studyEffort:'syllabus[].estimatedTotalStudyHours is the user-entered total primary study a topic needs across all its study assignments (null = not entered; do not guess one). Plan only the remaining effort. Priority (S highest, then A, B, C, D, with E lowest, or null) changes how time is distributed, never the total hours. Each study assignment is the time allotted to one topic in one planning week; there is no standard length. Every study assignment needs a positive estimatedMinutes.',
       unallocatedStudy:'Optional array of {topicId, unallocatedMinutes, reason} naming remaining study effort that could not fit within the daily/weekly capacity or the preparation window.',
       planningNotes:'Optional array of up to 20 short plain-text notes (assumptions, trade-offs, anything that could not be planned). The app shows them in the import preview.',
       completePlan:'assignments is the complete plan for everything not completed or skipped: existing assignments you keep or move (same assignmentId) plus new ones (new assignmentId). Never re-create an existing assignment under a new ID.',
@@ -8260,7 +8314,7 @@ function roadmapBuildAIPrompt() {
 `1. Treat all provided data as source facts. Clearly distinguish estimated exam dates from confirmed dates, and planned activity durations from actual study time.`,
 `2. Use topicId, subjectId, subject names, and existing IDs exactly as supplied. Never create, rename, duplicate, or delete syllabus topics. Schedule only existing syllabus topic IDs.`,
 `3. STUDY EFFORT. Each syllabus topic may have estimatedTotalStudyHours, entered by the user: the total focused primary study the topic needs, accumulated across ALL of its study activities. It is not the length of one session and not the calendar time between the first and last session. When it is set, syllabus[].studyEffort holds completedStudyMinutes, scheduledStudyMinutes (existing planned activities), remainingStudyMinutes (estimate minus completed) and unallocatedStudyMinutes (remaining minus already scheduled). In your returned plan, each topic's non-completed study assignments (the existing ones you keep plus the new ones you add) should total approximately remainingStudyMinutes: never inflate, shrink, round up or "correct" an estimate, never apply a multiplier to it, and never let priority change it. If estimatedTotalStudyHours is null the user has not entered an estimate: do not guess one, create no new study assignments for that topic, and leave any existing ones unchanged. topicsMissingEstimate is shown to the user automatically, so do not list those topics one by one; just say in planningNotes how many were skipped. A topic already completed in the Progress Tracker needs no further primary study.`,
-`4. PRIORITY. syllabus[].priority is critical, high, medium or low, or null when the user has not set one. It expresses how much scheduling emphasis a topic deserves relative to competing topics, in the order critical > high > medium > low. It affects how the available study time is distributed and when topics are worked on; it never affects how many hours a topic needs (a 12-hour topic stays about 12 hours at any priority). These are relative preferences, not quotas or multipliers: do not assign fixed percentages of a day or week to each priority. When topics compete for the same capacity, generally give critical topics the largest share and the earliest, most substantial attention, then high, then medium, then low, while still balancing the whole syllabus, respecting prerequisites and deadlines, and not letting any one topic consume a whole day or week without reason. Critical never means "study only this topic". Do not let a lower-priority topic disappear from the plan because higher-priority topics exist; give it the capacity that remains. If priority is null, do not invent one: schedule the topic in the capacity left after prioritised work. topicsMissingPriority is shown to the user automatically, so do not list those topics individually; mention the count in planningNotes. planningPreferences.subjectPriorities, when present, is only a secondary hint for balancing subjects; it never replaces or fills in a topic's own priority.`,
+`4. PRIORITY. syllabus[].priority is one of S, A, B, C, D or E, or null when the user has not set one; S is the highest scheduling emphasis and E the lowest. It expresses how much scheduling emphasis a topic deserves relative to competing topics, in the order S > A > B > C > D > E. It affects how the available study time is distributed and when topics are worked on; it never affects how many hours a topic needs (a 12-hour topic stays about 12 hours at any priority). These are relative preferences, not quotas or multipliers: do not assign fixed percentages of a day or week to each priority. When topics compete for the same capacity, generally give S topics the largest share and the earliest, most substantial attention, then A, then B, then C, then D, then E, while still balancing the whole syllabus, respecting prerequisites and deadlines, and not letting any one topic consume a whole day or week without reason. S never means "study only this topic". Do not let a lower-priority topic disappear from the plan because higher-priority topics exist; give it the capacity that remains. If priority is null, do not invent one: schedule the topic in the capacity left after prioritised work. topicsMissingPriority is shown to the user automatically, so do not list those topics individually; mention the count in planningNotes. planningPreferences.subjectPriorities, when present (same S to E scale), is only a secondary hint for balancing subjects; it never replaces or fills in a topic's own priority.`,
 `5. DISTRIBUTION. Never treat a topic's total hours as one continuous sitting, and do not assume any standard, fixed or equal session length: none exists. Each study assignment is the time allotted to ONE topic within ONE planning week (estimatedMinutes); use at most one study assignment per topic per week and put that week's whole allotment for the topic in it. Decide the length of every allotment yourself from the topic's priority, its remaining effort, the week's free capacity, the other topics that need time and the overall plan. The same topic may receive different amounts in different weeks, and several subjects normally share a week. Because the learner studies on several days each week, a weekly allotment is itself spread across that week's usableStudyDates within the daily limit. Spread a large topic's remaining effort over as many weeks as the plan needs rather than placing all of it at once, unless the capacity and the other work genuinely allow it. When planningPreferences.allowTopicSplitting is false, keep a topic's remaining effort inside one week where it fits and report any part that cannot fit as unallocated; this never changes the total effort.`,
 `6. CAPACITY (HARD LIMITS). capacity.dailyLimitMinutes and capacity.weeklyLimitMinutes are hard limits that must never be exceeded to make the plan fit. capacity.weeks lists every week that may still receive work (none starts before capacity.schedulableFrom; never plan into the past or into an unlisted week) with its usableStudyDates (available study days that are not unavailable dates), its capacityMinutes (the lower of the weekly limit and the daily limit multiplied by that week's usable days) and existingPlannedMinutes (what activities already saved in that week occupy). For every week, the combined estimatedMinutes of all study, revision and mock-test assignments that are not completed or skipped must not exceed that week's capacityMinutes. Use only availableDays and avoid unavailableDates. Revision activities are the only activities pinned to a specific plannedDate: keep them on usable study dates with each date's total inside the daily limit.`,
 `7. UNALLOCATED EFFORT. If the capacity or the preparation period cannot hold all remaining effort, schedule what fits in priority order, never exceed capacity, never silently drop or inflate work, and report the rest: add an unallocatedStudy array of {"topicId", "unallocatedMinutes", "reason"}, where unallocatedMinutes is remainingStudyMinutes minus the non-completed study minutes you scheduled for that topic, and summarise it in planningNotes. Topics that receive no study assignment at all go in unscheduledTopicIds (except those already reported through topicsMissingEstimate).`,
@@ -8623,22 +8677,22 @@ function roadmapRunSelfTests() {
   test('Retired settings, fields and difficulty values are dropped when data loads',()=>{
     const d=roadmapNormalizeData({config:{defaultStudySessionMinutes:90,difficultyWeighting:{hard:2},defaultTopicHours:2},topicMetadata:{'s::t':{difficulty:'hard',effortHours:3,effortSource:'x',priority:'critical',estimatedTotalStudyHours:12}},assignments:[{assignmentId:'a',activityType:'study',difficulty:'hard',priority:'low',estimatedMinutes:60}]});
     const m=d.topicMetadata['s::t'],a=d.assignments[0];
-    return !('defaultStudySessionMinutes' in d.config)&&!('difficultyWeighting' in d.config)&&!('defaultTopicHours' in d.config)&&!('difficulty' in m)&&!('effortHours' in m)&&!('effortSource' in m)&&m.priority==='critical'&&m.estimatedTotalStudyHours===12&&!('difficulty' in a)&&!('priority' in a);
+    return !('defaultStudySessionMinutes' in d.config)&&!('difficultyWeighting' in d.config)&&!('defaultTopicHours' in d.config)&&!('difficulty' in m)&&!('effortHours' in m)&&!('effortSource' in m)&&m.priority==='S'&&m.estimatedTotalStudyHours===12&&!('difficulty' in a)&&!('priority' in a);
   });
   test('Export and generated prompt contain no difficulty or default-session references',()=>{
     const text=JSON.stringify(roadmapBuildExport(true))+roadmapBuildAIPrompt()+JSON.stringify(roadmapBuildTemplate());
     return !/difficult|defaultStudySession|default study session|default session|session length of/i.test(text);
   });
   // ---- Priority and estimate fields ----
-  test('Priority accepts Critical, High, Medium and Low and rejects anything else',()=>['Critical','high','MEDIUM','low'].every(p=>roadmapNormalizePriority(p)===p.toLowerCase())&&roadmapNormalizePriority('urgent')===''&&roadmapNormalizePriority('')===''&&roadmapNormalizePriority(null)==='');
+  test('Priority uses the S–E scale (any case), converts the earlier words in rank order, and rejects anything else',()=>['S','A','B','C','D','E'].every(p=>roadmapNormalizePriority(p)===p&&roadmapNormalizePriority(p.toLowerCase())===p)&&roadmapNormalizePriority('critical')==='S'&&roadmapNormalizePriority('High')==='A'&&roadmapNormalizePriority('medium')==='B'&&roadmapNormalizePriority('LOW')==='C'&&['urgent','F','','  ',null,undefined,'SS'].every(v=>roadmapNormalizePriority(v)===''));
   test('Estimated hours: unset stays unset, invalid values are rejected, valid values kept',()=>[undefined,null,'',0,-3,'abc',NaN,Infinity,ROADMAP_MAX_ESTIMATE_HOURS+1].every(v=>roadmapNormalizeEstimateHours(v)===null)&&roadmapNormalizeEstimateHours(12)===12&&roadmapNormalizeEstimateHours('7.5')===7.5);
-  test('A missing priority or estimate is never invented (even with a default subject priority)',()=>withSample(null,{subjectPriorities:{__default:'high'}},t=>t.priority===null&&t.estimatedTotalStudyHours===null));
-  test('Entered estimate and priority are stored independently under the topic ID',()=>withSample({estimatedTotalStudyHours:12},null,t=>t.estimatedTotalStudyHours===12&&t.priority===null)&&withSample({priority:'critical'},null,t=>t.priority==='critical'&&t.estimatedTotalStudyHours===null));
+  test('A missing priority or estimate is never invented (even with a default subject priority)',()=>withSample(null,{subjectPriorities:{__default:'A'}},t=>t.priority===null&&t.estimatedTotalStudyHours===null));
+  test('Entered estimate and priority are stored independently under the topic ID',()=>withSample({estimatedTotalStudyHours:12},null,t=>t.estimatedTotalStudyHours===12&&t.priority===null)&&withSample({priority:'S'},null,t=>t.priority==='S'&&t.estimatedTotalStudyHours===null));
   // ---- Effort accounting ----
   const topic12={topicId:'t',status:'not-started',estimatedTotalStudyHours:12};
   const asg=[{activityType:'study',topicId:'t',status:'completed',estimatedMinutes:120},{activityType:'study',topicId:'t',status:'planned',estimatedMinutes:300},{activityType:'study',topicId:'t',status:'skipped',estimatedMinutes:999},{activityType:'study',topicId:'other',status:'planned',estimatedMinutes:500}];
   test('Effort accounting counts completed and scheduled study separately and ignores skipped/other topics',()=>{const e=roadmapTopicEffort(topic12,asg);return e.estimateMin===720&&e.completedMin===120&&e.scheduledMin===300&&e.remainingMin===600&&e.unallocatedMin===300&&e.excessMin===0;});
-  test('Priority never changes a topic\'s total effort',()=>{const a=roadmapTopicEffort({...topic12,priority:'critical'},asg),b=roadmapTopicEffort({...topic12,priority:'low'},asg),c=roadmapTopicEffort({...topic12,priority:null},asg);return JSON.stringify(a)===JSON.stringify(b)&&JSON.stringify(b)===JSON.stringify(c)&&a.estimateMin===720;});
+  test('Priority never changes a topic\'s total effort',()=>{const a=roadmapTopicEffort({...topic12,priority:'S'},asg),b=roadmapTopicEffort({...topic12,priority:'E'},asg),c=roadmapTopicEffort({...topic12,priority:null},asg);return JSON.stringify(a)===JSON.stringify(b)&&JSON.stringify(b)===JSON.stringify(c)&&a.estimateMin===720;});
   test('Unset estimate gives no remaining-effort figure; tracker-complete topic has none remaining',()=>{const none=roadmapTopicEffort({topicId:'t',status:'not-started',estimatedTotalStudyHours:null},asg),done=roadmapTopicEffort({...topic12,status:'completed'},asg);return none.estimateMin===null&&none.remainingMin===null&&none.unallocatedMin===null&&done.remainingMin===0&&done.excessMin===300;});
   test('A 12-hour topic is not a single activity: effort can be spread over weeks with different lengths',()=>{const parts=[{activityType:'study',topicId:'t',status:'planned',estimatedMinutes:420},{activityType:'study',topicId:'t',status:'planned',estimatedMinutes:180},{activityType:'study',topicId:'t',status:'planned',estimatedMinutes:120}];const e=roadmapTopicEffort(topic12,parts);return e.scheduledMin===720&&e.unallocatedMin===0&&e.excessMin===0;});
   // ---- Capacity ----
@@ -8646,17 +8700,17 @@ function roadmapRunSelfTests() {
   test('An unavailable date lowers that week\'s capacity',()=>withSample(null,{unavailableDates:['2026-11-10']},()=>roadmapCapacityMinutes(W1)===20*60&&roadmapCapacityMinutes(W2)===24*60));
   // ---- Export ----
   test('Export marks a missing estimate or priority as null and lists it, never inventing one',()=>withSample(null,null,t=>{const e=roadmapBuildExport(true),row=e.syllabus.find(x=>x.topicId===t.topicId);return row&&row.priority===null&&row.estimatedTotalStudyHours===null&&row.studyEffort===null&&!('estimateMissing' in row)&&e.topicsMissingEstimate.includes(t.topicId)&&e.topicsMissingPriority.includes(t.topicId);}));
-  test('Export carries the entered estimate, priority, remaining effort and per-week capacity',()=>withSample({estimatedTotalStudyHours:12,priority:'critical'},null,t=>{const e=roadmapBuildExport(true),row=e.syllabus.find(x=>x.topicId===t.topicId);return row.estimatedTotalStudyHours===12&&row.priority==='critical'&&row.studyEffort.remainingStudyMinutes===720&&row.studyEffort.unallocatedStudyMinutes===720&&e.capacity.weeks.length>0&&e.capacity.weeks.every(w=>w.capacityMinutes<=e.capacity.weeklyLimitMinutes)&&!('defaultStudySessionMinutes' in e.planningPreferences)&&!('difficultyWeighting' in e.planningPreferences);}));
-  test('Generated prompt explains effort, priority, dynamic durations, hard capacity and unallocated work',()=>{const p=roadmapBuildAIPrompt();return ['estimatedTotalStudyHours','priority','critical > high > medium > low','not quotas or multipliers','capacityMinutes','unallocatedStudy','ONE topic within ONE planning week','COMPLETE PLAN','planningNotes','schedulableFrom','no markdown code fences','SELF-CHECK','remainingStudyMinutes'].every(x=>p.includes(x));});
+  test('Export carries the entered estimate, priority, remaining effort and per-week capacity',()=>withSample({estimatedTotalStudyHours:12,priority:'S'},null,t=>{const e=roadmapBuildExport(true),row=e.syllabus.find(x=>x.topicId===t.topicId);return row.estimatedTotalStudyHours===12&&row.priority==='S'&&row.studyEffort.remainingStudyMinutes===720&&row.studyEffort.unallocatedStudyMinutes===720&&e.capacity.weeks.length>0&&e.capacity.weeks.every(w=>w.capacityMinutes<=e.capacity.weeklyLimitMinutes)&&!('defaultStudySessionMinutes' in e.planningPreferences)&&!('difficultyWeighting' in e.planningPreferences);}));
+  test('Generated prompt explains effort, priority, dynamic durations, hard capacity and unallocated work',()=>{const p=roadmapBuildAIPrompt();return ['estimatedTotalStudyHours','priority','S > A > B > C > D > E','not quotas or multipliers','capacityMinutes','unallocatedStudy','ONE topic within ONE planning week','COMPLETE PLAN','planningNotes','schedulableFrom','no markdown code fences','SELF-CHECK','remainingStudyMinutes'].every(x=>p.includes(x));});
   // ---- Import validation ----
   const val=(t,assign,extra)=>roadmapValidateImport(proposal(assign.map(a=>typeof a==='function'?a(t):a),extra));
   test('Import rejects negative, zero, missing and non-numeric study durations',()=>withSample({estimatedTotalStudyHours:12},null,t=>[-5,0,'90',null,undefined].every(m=>{const a=study(t,W1,60,'bad');if(m===undefined)delete a.estimatedMinutes;else a.estimatedMinutes=m;return val(t,[a]).errors.length>0;})));
   test('Import rejects unknown topic IDs and unknown unallocatedStudy topics',()=>withSample(null,null,t=>val(t,[{...study(t,W1,60),topicId:'nope::nope'}]).errors.some(e=>e.includes('unknown topicId'))&&val(t,[],{unallocatedStudy:[{topicId:'nope::nope',unallocatedMinutes:30}]}).errors.some(e=>e.includes('unknown topicId'))&&val(t,[],{unallocatedStudy:[{topicId:t.topicId,unallocatedMinutes:-1}]}).errors.length>0));
   test('Import detects duplicate assignment IDs and duplicate activities',()=>withSample({estimatedTotalStudyHours:12},null,t=>val(t,[study(t,W1,60,'x'),study(t,W2,60,'x')]).errors.some(e=>e.includes('duplicate assignmentId'))&&val(t,[study(t,W1,60,'a1'),study(t,W1,60,'a2')]).warnings.some(w=>w.includes('duplicates'))));
   test('Import imposes no session-length limit (a long weekly allotment within capacity is accepted)',()=>withSample({estimatedTotalStudyHours:12},null,t=>{const r=val(t,[study(t,W1,600)]);return r.errors.length===0&&!r.warnings.some(w=>/session|too long|exceeds.*limit/i.test(w));}));
-  test('Import accepts a topic spread over weeks with different durations and reports nothing unallocated',()=>withSample({estimatedTotalStudyHours:12,priority:'critical'},null,t=>{const r=val(t,[study(t,W1,420),study(t,W2,300)]);return r.errors.length===0&&r.effort.unallocatedTotalMin===0&&r.effort.rows.length===0&&!r.warnings.some(w=>/does not schedule|beyond|only .* remain/.test(w));}));
-  test('Import warns when scheduled effort exceeds the remaining estimate',()=>withSample({estimatedTotalStudyHours:12,priority:'high'},null,t=>{const r=val(t,[study(t,W1,600),study(t,W2,300)]);return r.errors.length===0&&r.warnings.some(w=>w.includes('only 12h remain')||w.includes('only 12h'))&&r.effort.excessTotalMin===180;}));
-  test('Import warns about and reports unallocated study effort',()=>withSample({estimatedTotalStudyHours:12,priority:'high'},null,t=>{const r=val(t,[study(t,W1,300)]);const row=r.effort.rows.find(x=>x.topicId===t.topicId);return r.errors.length===0&&r.warnings.some(w=>w.includes('does not schedule'))&&row&&row.kind==='unallocated'&&row.unallocatedMin===420&&r.effort.unallocatedTotalMin===420&&r.stats.unallocatedMinutes===420;}));
+  test('Import accepts a topic spread over weeks with different durations and reports nothing unallocated',()=>withSample({estimatedTotalStudyHours:12,priority:'S'},null,t=>{const r=val(t,[study(t,W1,420),study(t,W2,300)]);return r.errors.length===0&&r.effort.unallocatedTotalMin===0&&r.effort.rows.length===0&&!r.warnings.some(w=>/does not schedule|beyond|only .* remain/.test(w));}));
+  test('Import warns when scheduled effort exceeds the remaining estimate',()=>withSample({estimatedTotalStudyHours:12,priority:'A'},null,t=>{const r=val(t,[study(t,W1,600),study(t,W2,300)]);return r.errors.length===0&&r.warnings.some(w=>w.includes('only 12h remain')||w.includes('only 12h'))&&r.effort.excessTotalMin===180;}));
+  test('Import warns about and reports unallocated study effort',()=>withSample({estimatedTotalStudyHours:12,priority:'A'},null,t=>{const r=val(t,[study(t,W1,300)]);const row=r.effort.rows.find(x=>x.topicId===t.topicId);return r.errors.length===0&&r.warnings.some(w=>w.includes('does not schedule'))&&row&&row.kind==='unallocated'&&row.unallocatedMin===420&&r.effort.unallocatedTotalMin===420&&r.stats.unallocatedMinutes===420;}));
   test('Completed sessions count towards the estimate; completed topics need no more primary study',()=>{
     const done=withSample({estimatedTotalStudyHours:12},null,t=>{const saved=roadmapData.assignments;roadmapData.assignments=[{assignmentId:'done1',activityType:'study',topicId:t.topicId,subjectId:t.subjectId,plannedDate:W1,weekStart:W1,estimatedMinutes:300,status:'completed'}];try{const r=val(t,[study(t,W2,420,'rest')]);return r.errors.length===0&&r.effort.unallocatedTotalMin===0&&r.effort.rows.length===0;}finally{roadmapData.assignments=saved;}});
     const complete=withSample({estimatedTotalStudyHours:12},null,t=>{progress[t.topicId]='completed';_roadmapMapCache=null;return val(t,[study(t,W1,300)]).warnings.some(w=>w.includes('already marked complete'));});
@@ -8666,7 +8720,7 @@ function roadmapRunSelfTests() {
   test('Import still checks weekly capacity with no session setting',()=>withSample({estimatedTotalStudyHours:40},null,t=>val(t,[study(t,W1,900,'a'),study(t,W1,700,'b')]).warnings.some(w=>w.includes('above the 24h weekly capacity'))&&!val(t,[study(t,W1,900,'a')]).warnings.some(w=>w.includes('weekly capacity'))));
   test('Import applies per-week capacity when a date is unavailable',()=>withSample({estimatedTotalStudyHours:40},{unavailableDates:['2026-11-10','2026-11-11']},t=>val(t,[study(t,W1,1100)]).warnings.some(w=>w.includes('weekly capacity'))));
   test('Import checks the daily limit for date-pinned revision activities',()=>withSample({estimatedTotalStudyHours:12},null,t=>{const rev=(id,min)=>({assignmentId:id,activityType:'revision',topicId:t.topicId,subjectId:t.subjectId,plannedDate:'2026-11-10',weekStart:W1,estimatedMinutes:min,status:'planned',round:id==='r1'?1:2,anchorDate:'2026-10-20'});const r=val(t,[rev('r1',150),rev('r2',150)]);return r.errors.length===0&&r.warnings.some(w=>w.includes('daily study limit'))&&val(t,[{...rev('r3',60),plannedDate:'2026-11-08'}]).warnings.some(w=>w.includes('not one of your available study days'));}));
-  test('Import ignores retired priority and difficulty fields on assignments',()=>withSample({estimatedTotalStudyHours:12},null,t=>{const r=val(t,[{...study(t,W1,300),difficulty:'hard',priority:'low'}]);const a=r.assignments[0];return r.errors.length===0&&!('difficulty' in a)&&!('priority' in a)&&r.warnings.some(w=>w.includes('ignored'));}));
+  test('Import ignores retired priority and difficulty fields on assignments',()=>withSample({estimatedTotalStudyHours:12},null,t=>{const r=val(t,[{...study(t,W1,300),difficulty:'hard',priority:'E'}]);const a=r.assignments[0];return r.errors.length===0&&!('difficulty' in a)&&!('priority' in a)&&r.warnings.some(w=>w.includes('ignored'));}));
   test('Import keeps exam-window, week-alignment and status checks',()=>withSample({estimatedTotalStudyHours:12},null,t=>val(t,[study(t,'2027-11-08',60,'late')]).warnings.some(w=>w.includes('after the configured exam window'))&&val(t,[{...study(t,W1,60,'wk'),weekStart:'2026-11-10'}]).errors.some(e=>e.includes('weekStart'))&&val(t,[{...study(t,W1,60,'st'),status:'completed'}]).errors.some(e=>e.includes('status must be planned'))));
   // ---- Review additions ----
   test('Export offers only current or future weeks and reports what each already holds',()=>withSample(null,null,()=>{const e=roadmapBuildExport(true),w=e.capacity.weeks;return e.capacity.schedulableFrom>=roadmapToday()&&w.length>0&&w.every(x=>roadmapAddDays(x.weekStart,6)>=roadmapToday()&&Number.isFinite(x.existingPlannedMinutes))&&w[0].usableStudyDates.every(d=>d>=e.capacity.schedulableFrom);}));
@@ -8689,8 +8743,35 @@ function roadmapRunSelfTests() {
   test('The export file for an AI is compact JSON while the format example stays readable',()=>{const e=JSON.stringify(roadmapBuildExport(true));const a=JSON.stringify(roadmapBuildExport(true),null,2);return a.length>e.length*1.15;});
   test('Every syllabus topic ID appears exactly once (English "Narration" lives only under Non-Grammar)',()=>{const ids=roadmapSyllabusItems(true).map(t=>t.topicId),eng=getAllSubjects().find(x=>x.id==='english'),sec=l=>eng.sections.find(x=>x.label===l).topics;return new Set(ids).size===ids.length&&sec('Non-Grammar').includes('Narration')&&!sec('Grammar').includes('Narration');});
   test('A topic listed under two sections would still be one topic in planning, counts and export',()=>{const u=roadmapUniqueTopics([{topicId:'a',section:'X'},{topicId:'a',section:'Y'},{topicId:'b',section:'X'}]);const raw=roadmapSyllabusItems(true),e=roadmapBuildExport(true);return u.length===2&&u[0].section==='X / Y'&&e.syllabus.length===roadmapUniqueTopics(raw).length&&new Set(e.syllabus.map(t=>t.topicId)).size===e.syllabus.length&&new Set(e.unscheduledTopicIds).size===e.unscheduledTopicIds.length&&roadmapPlanningCounts().total===e.syllabus.length;});
-  test('Counts of topics still needing an estimate or a priority ignore topics already complete',()=>withSample(null,null,()=>{const c=roadmapPlanningCounts(),all=roadmapUniqueTopics(roadmapSyllabusItems(true)).filter(t=>t.status!=='completed').length;return c.needEstimate===all&&c.needPriority===all;})&&withSample({estimatedTotalStudyHours:5,priority:'low'},null,()=>{const c=roadmapPlanningCounts(),all=roadmapUniqueTopics(roadmapSyllabusItems(true)).filter(t=>t.status!=='completed').length;return c.needEstimate===all-1&&c.needPriority===all-1;}));
+  test('Counts of topics still needing an estimate or a priority ignore topics already complete',()=>withSample(null,null,()=>{const c=roadmapPlanningCounts(),all=roadmapUniqueTopics(roadmapSyllabusItems(true)).filter(t=>t.status!=='completed').length;return c.needEstimate===all&&c.needPriority===all;})&&withSample({estimatedTotalStudyHours:5,priority:'E'},null,()=>{const c=roadmapPlanningCounts(),all=roadmapUniqueTopics(roadmapSyllabusItems(true)).filter(t=>t.status!=='completed').length;return c.needEstimate===all-1&&c.needPriority===all-1;}));
   test('Unscheduled topics is a collapsible card whose list scrolls inside it, with the shared search kept outside so it stays visible',()=>{const d=document.getElementById('roadmap-unscheduled-details'),l=document.getElementById('roadmap-unscheduled'),q=document.getElementById('roadmap-search');return !!d&&d.tagName==='DETAILS'&&d.contains(l)&&l.getAttribute('role')==='region'&&!!q&&!d.contains(q);});
+  // ---- S–E priority and the tracker box ----
+  test('The roadmap priority scale is S, A, B, C, D, E with S highest',()=>JSON.stringify(ROADMAP_PRIORITY_ORDER)==='["S","A","B","C","D","E"]'&&roadmapPriorityOptionsHtml('B','Not set').includes('<option value="B" selected>')&&roadmapPriorityOptionsHtml('','Not set').includes('<option value="" selected>')&&roadmapPriorityOptionText('S')==='S (highest)'&&roadmapPriorityOptionText('E')==='E (lowest)');
+  test('Subject-level priorities use the same scale; earlier words are converted and invalid values dropped',()=>{const c=roadmapNormalizeData({config:{subjectPriorities:{__default:'medium',maths:'high',english:'x',gk:'D'}}}).config.subjectPriorities;return c.__default==='B'&&c.maths==='A'&&!('english' in c)&&c.gk==='D';});
+  test('Tracker topic rows carry a priority box and no pin controls',()=>{renderTopics();const c=document.getElementById('subjects-container');return c.querySelectorAll('.topic-tier-btn').length>0&&!c.querySelector('.pin-btn,.topic-pin-btn')&&!c.innerHTML.includes('📌')&&!c.querySelector('.pinned-subject');});
+  test('Pin data is no longer saved or restored',()=>{const snap=_profileSnapshot();return !('pinnedSubjects' in snap)&&!('pinnedTopics' in snap)&&typeof toggleTopicPin==='undefined'&&typeof toggleSubjectPin==='undefined';});
+  test('Setting a priority from the tracker box is the roadmap\'s topic priority, and clearing it leaves it unset',()=>withSample(null,null,t=>{
+    const realSave=saveData;let saves=0;saveData=()=>{saves++;};
+    try{
+      setTopicTier(t.topicId,'B');
+      const set=trackerTopicPriority(t.topicId)==='B'&&roadmapSyllabusItems(true).find(x=>x.topicId===t.topicId).priority==='B'&&roadmapData.topicMetadata[t.topicId].priority==='B';
+      setTopicTier(t.topicId,'z');  // outside S–E: ignored
+      const ignored=trackerTopicPriority(t.topicId)==='B';
+      setTopicTier(t.topicId,'');
+      const cleared=trackerTopicPriority(t.topicId)===''&&roadmapSyllabusItems(true).find(x=>x.topicId===t.topicId).priority===null&&!('priority' in roadmapData.topicMetadata[t.topicId]);
+      return set&&ignored&&cleared&&saves===2;
+    } finally{saveData=realSave;}
+  }));
+  test('The tracker priority popup lists S to E, marks the current tier, and closes again',()=>{
+    const btn=document.createElement('button');document.body.appendChild(btn);
+    try{
+      openTierPopover('maths::Percentage','Percentage',btn);
+      const pop=document.getElementById('tier-popover'),opts=[...pop.querySelectorAll('.tier-pop-opt')].map(b=>b.firstChild.textContent);
+      const open=pop.classList.contains('open')&&opts.join('')==='SABCDE'&&pop.textContent.includes('Highest')&&pop.textContent.includes('Lowest');
+      closeTierPopover();
+      return open&&!pop.classList.contains('open');
+    } finally{closeTierPopover();btn.remove();}
+  });
   return {passed:results.filter(r=>r.passed).length,total:results.length,results};
 }
 
