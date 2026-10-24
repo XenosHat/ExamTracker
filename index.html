@@ -3395,6 +3395,79 @@ function saveCustom()  { clearTimeout(_saveTimer); _saveTimer = setTimeout(_push
 function saveMocks()   { clearTimeout(_saveTimer); _saveTimer = setTimeout(_pushAll, 1200); }
 function saveJournal() { clearTimeout(_saveTimer); _saveTimer = setTimeout(_pushAll, 1200); }
 
+// ═══════════════════════════════════════════
+//  FIREBASE KEY SAFETY
+//  Firebase Realtime Database rejects any object key containing  .  $  #  [  ]  /
+//  (or control characters). Topic IDs are "subjectId::topicName" and are used as
+//  object keys (progress, topicPct, revisions, topicMetadata …), so a topic name
+//  such as "Constitutional / Non-Constitutional / Statutory Bodies" or
+//  "Classical Dances (… etc.)" made the WHOLE profile write throw, and nothing
+//  after it could sync. Keys are now escaped on the way out and restored on the
+//  way in. Safe keys are stored exactly as before, so existing data stays valid.
+// ═══════════════════════════════════════════
+const FB_UNSAFE_CHARS_G = /[.$#\[\]\/%\u0000-\u001F\u007F]/g;   // chars that get escaped (includes % so escaping is reversible)
+const FB_UNSAFE_CHAR    = /[.$#\[\]\/%\u0000-\u001F\u007F]/;    // single-char test (non-global)
+function fbEncodeKey(key) {
+  const s = String(key);
+  return s.replace(FB_UNSAFE_CHARS_G, c => '%' + c.charCodeAt(0).toString(16).toUpperCase().padStart(2, '0'));
+}
+function fbDecodeKey(key) {
+  // Only sequences that fbEncodeKey can produce are decoded; anything else (e.g. a literal "50%") is left alone.
+  return String(key).replace(/%([0-9A-F]{2})/g, (m, hex) => {
+    const ch = String.fromCharCode(parseInt(hex, 16));
+    return FB_UNSAFE_CHAR.test(ch) ? ch : m;
+  });
+}
+function fbMapKeys(obj, fn) {
+  if(!obj || typeof obj !== 'object' || Array.isArray(obj)) return obj;
+  const out = {};
+  Object.keys(obj).forEach(k => { out[fn(k)] = obj[k]; });
+  return out;
+}
+// Maps keyed by topic ID (or subject ID) anywhere in a profile.
+const FB_KEYED_MAP_FIELDS = ['progress','topicCompletionDates','notes','revisions','revisionDates','topicPct','hiddenTopics'];
+function _fbTransformProfile(p, fn) {
+  const out = {...p};
+  FB_KEYED_MAP_FIELDS.forEach(f => { if(out[f] && typeof out[f]==='object') out[f] = fbMapKeys(out[f], fn); });
+  if(out.roadmapData && typeof out.roadmapData === 'object') {
+    const r = {...out.roadmapData};
+    if(r.topicMetadata)   r.topicMetadata   = fbMapKeys(r.topicMetadata, fn);
+    if(r.revisionAnchors) r.revisionAnchors = fbMapKeys(r.revisionAnchors, fn);
+    if(r.config && typeof r.config === 'object' && r.config.subjectPriorities)
+      r.config = {...r.config, subjectPriorities: fbMapKeys(r.config.subjectPriorities, fn)};
+    out.roadmapData = r;
+  }
+  return out;
+}
+// App state → Firebase-safe payload. The JSON round-trip also strips `undefined`
+// values (another thing Firebase refuses to write) without touching live state.
+function _profileForDb(snapshot) {
+  return _fbTransformProfile(JSON.parse(JSON.stringify(snapshot)), fbEncodeKey);
+}
+// Firebase payload → app state (original keys restored).
+function _profileFromDb(data) {
+  return _fbTransformProfile(data || {}, fbDecodeKey);
+}
+
+// Writes the active (or given) profile. Never throws: Firebase validates keys/values
+// synchronously, so any rejection is turned into a rejected Promise and reported.
+let _lastSyncToastAt = 0;
+function _reportSyncError(err) {
+  console.error('Firebase write error:', err);
+  if(Date.now() - _lastSyncToastAt > 8000) {
+    _lastSyncToastAt = Date.now();
+    showToast('⚠️ Could not sync to cloud: ' + String((err && err.message) || err).slice(0, 90));
+  }
+}
+function _writeProfile(profileId) {
+  try {
+    const payload = _profileForDb(_profileSnapshot());
+    return db.ref(`users/${userId}/profiles/${profileId}`).update(payload);
+  } catch(err) {
+    return Promise.reject(err);
+  }
+}
+
 // Snapshot current profile's data into an object
 function _profileSnapshot() {
   return {
@@ -3413,6 +3486,7 @@ function _profileSnapshot() {
 
 // Apply a profile data object into all state variables
 function _applyProfile(d) {
+  d = _profileFromDb(d); // restore topic keys that were escaped for Firebase
   progress       = d.progress       || {};
   topicCompletionDates = d.topicCompletionDates || {};
   roadmapData    = roadmapNormalizeData(d.roadmapData);
@@ -3446,8 +3520,7 @@ function _pushAll() {
   // deleting the just-written break/next-session state out from under it.
   // update() merges these top-level keys in place and leaves pomodoroLive
   // (and any other sibling) untouched.
-  db.ref(`users/${userId}/profiles/${activeProfileId}`).update(_profileSnapshot())
-    .catch(err => console.warn('Firebase write error:', err));
+  _writeProfile(activeProfileId).catch(_reportSyncError);
   db.ref(`users/${userId}/_verified`).set(true);
   db.ref(`users/${userId}/activeProfile`).set(activeProfileId);
 }
@@ -3456,7 +3529,7 @@ function _pushNow() {
   if(!userId || !activeProfileId) return;
   // See _pushAll() above — update(), not set(), to avoid wiping pomodoroLive.
   return Promise.all([
-    db.ref(`users/${userId}/profiles/${activeProfileId}`).update(_profileSnapshot()),
+    _writeProfile(activeProfileId),
     db.ref(`users/${userId}/_verified`).set(true),
     db.ref(`users/${userId}/activeProfile`).set(activeProfileId)
   ]);
@@ -3497,7 +3570,7 @@ async function loadFromFirebase() {
     activeProfileId = pid;
     _applyProfile(migrated);
     // Migrate in Firebase (write new format, remove old flat keys)
-    await db.ref(`users/${userId}`).set({ _verified: true, activeProfile: pid, profiles: { [pid]: migrated } });
+    await db.ref(`users/${userId}`).set({ _verified: true, activeProfile: pid, profiles: { [pid]: migrated } }); // already in Firebase form (read straight from the DB)
     return true;
   }
 
@@ -5501,7 +5574,13 @@ async function switchProfile(pid) {
   // Save current profile before switching. update() (not set()) so we
   // don't wipe this profile's pomodoroLive sibling key — see _pushAll().
   clearTimeout(_saveTimer);
-  await db.ref(`users/${userId}/profiles/${activeProfileId}`).update(_profileSnapshot());
+  try {
+    await _writeProfile(activeProfileId);
+  } catch(err) {
+    // Don't switch (and silently lose unsaved changes) if the current profile can't be saved.
+    _reportSyncError(err);
+    return;
+  }
   await db.ref(`users/${userId}/activeProfile`).set(pid);
   pomDetachLive();
   todoDetach();
@@ -8843,6 +8922,28 @@ function roadmapRunSelfTests() {
       menu.getBoundingClientRect=()=>({left:28,right:256,width:228});placeSortMenu(menu,390);const untouched=menu.style.left==='0px'||menu.style.left==='0';
       return shifted&&untouched;
     } finally{delete menu.getBoundingClientRect;menu.style.left='';}
+  });
+  // ---- Firebase-safe keys (topics with "/", ".", "#", "$", "[", "]" in the name) ----
+  test('Firebase key encoding leaves ordinary keys untouched and round-trips awkward ones',()=>{
+    const plain='gs-polity::Preamble of the Constitution';
+    const nasty=['gs-polity::Constitutional / Non-Constitutional / Statutory Bodies','x::Classical Dances (Bharatanatyam, Kathak, Odissi etc.)','a::b#c$d[e]f','a::100% sure','a::%2F literal','a::tab\there'];
+    const bad=/[.$#\[\]\/\u0000-\u001F\u007F]/;
+    return fbEncodeKey(plain)===plain&&nasty.every(k=>{const e=fbEncodeKey(k);return !bad.test(e)&&fbDecodeKey(e)===k;});
+  });
+  test('Profile payload sent to Firebase has no illegal keys or undefined values, and loads back unchanged',()=>{
+    const k1=topicKey('gs-polity','Constitutional / Non-Constitutional / Statutory Bodies'),k2=topicKey('geo','Ocean Currents (Gulf Stream, Kuroshio etc.)');
+    const snap={progress:{[k1]:80,[k2]:10},topicPct:{[k1]:80},notes:{[k1]:'n'},revisions:{[k1]:2},revisionDates:{[k1]:['2025-01-01']},topicCompletionDates:{[k1]:'2025-01-01'},
+      hiddenTopics:{[k2]:true},roadmapData:{topicMetadata:{[k1]:{tier:'A',skip:undefined}},revisionAnchors:{[k1]:'2025-01-01'},config:{subjectPriorities:{'gs/polity':3}}}};
+    const out=_profileForDb(snap);
+    const keysOk=o=>!o||typeof o!=='object'||Object.keys(o).every(k=>!/[.$#\[\]\/]/.test(k)&&keysOk(o[k]));
+    const hasUndef=o=>o&&typeof o==='object'&&Object.keys(o).some(k=>o[k]===undefined||hasUndef(o[k]));
+    const back=_profileFromDb(out);
+    return keysOk(out)&&!hasUndef(out)&&back.progress[k1]===80&&back.progress[k2]===10&&back.roadmapData.topicMetadata[k1].tier==='A'
+      &&back.roadmapData.revisionAnchors[k1]==='2025-01-01'&&back.roadmapData.config.subjectPriorities['gs/polity']===3&&back.hiddenTopics[k2]===true;
+  });
+  test('Every built-in syllabus topic produces a Firebase-safe key',()=>{
+    const bad=/[.$#\[\]\/\u0000-\u001F\u007F]/;
+    return getAllSubjects().every(s=>(s.topics||[]).every(t=>{const n=typeof t==='string'?t:(t&&t.name);return n==null||!bad.test(fbEncodeKey(topicKey(s.id,n)));}));
   });
   return {passed:results.filter(r=>r.passed).length,total:results.length,results};
 }
